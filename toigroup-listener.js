@@ -4,8 +4,10 @@
 // Env: MACMINI_TRIGGER_TOKEN, <ORG>_CROSS_REPO_TOKEN per target
 
 const http = require('http');
-const { execSync } = require('child_process');
+const { execSync, execFile } = require('child_process');
 const path = require('path');
+
+let skillRunning = false;
 
 const PORT = 3456;
 const TARGETS = require(path.join(__dirname, 'targets.json'));
@@ -27,10 +29,11 @@ function writeEntriesToGitHub(entries, outputRepo, token) {
       ).toString());
 
       const current = Buffer.from(file.content, 'base64').toString('utf8');
-      const updated = current.replace(
-        /(####### <!-- ANCHOR MARKER[^\n]*\n)/,
-        `$1${entry}\n`
-      );
+      const anchorIdx = current.indexOf('####### <!-- ANCHOR MARKER');
+      if (anchorIdx === -1) throw new Error('Anchor marker not found');
+      const newlineIdx = current.indexOf('\n', anchorIdx);
+      const insertAt = newlineIdx === -1 ? current.length : newlineIdx + 1;
+      const updated = current.slice(0, insertAt) + entry + '\n' + current.slice(insertAt);
 
       const payload = JSON.stringify({
         message: `would-update: ${filePath}`,
@@ -54,37 +57,55 @@ function writeEntriesToGitHub(entries, outputRepo, token) {
 }
 
 function runSkill(target, quarter_override) {
+  if (skillRunning) {
+    console.log(`[${new Date().toISOString()}] skill busy — dropping request for target: ${target}`);
+    return;
+  }
+  skillRunning = true;
   console.log(`[${new Date().toISOString()}] skill starting — target: ${target}`);
-  try {
-    const { outputRepo, token } = getTargetConfig(target);
 
-    const output = execSync(
-      `claude --dangerously-skip-permissions --print "/would-update ${target}"`,
-      {
-        env: {
-          ...process.env,
-          GH_TOKEN: token,
-          ...(quarter_override ? { QUARTER_OVERRIDE: quarter_override } : {}),
-        },
-        maxBuffer: 10 * 1024 * 1024,
-      }
-    ).toString();
+  const { outputRepo, token } = getTargetConfig(target);
+  const env = {
+    ...process.env,
+    GH_TOKEN: token,
+    ...(quarter_override ? { QUARTER_OVERRIDE: quarter_override } : {}),
+  };
 
-    const jsonMatch = output.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) {
-      console.error(`[${new Date().toISOString()}] skill error: No JSON array in skill output`);
-      console.error(`[${new Date().toISOString()}] raw output (first 2000 chars): ${output.slice(0, 2000)}`);
+  let output = '';
+  const child = execFile('claude', ['--dangerously-skip-permissions', '--print', `/would-update ${target}`], {
+    env,
+    maxBuffer: 10 * 1024 * 1024,
+  }, (err, stdout, stderr) => {
+    skillRunning = false;
+    if (err) {
+      console.error(`[${new Date().toISOString()}] skill error: ${err.message}`);
+      if (stderr) console.error(`[${new Date().toISOString()}] stderr: ${stderr.slice(0, 1000)}`);
       return;
     }
-    const entries = JSON.parse(jsonMatch[0]);
+
+    const jsonMatch = stdout.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) {
+      console.error(`[${new Date().toISOString()}] skill error: No JSON array in skill output`);
+      console.error(`[${new Date().toISOString()}] raw output (first 2000 chars): ${stdout.slice(0, 2000)}`);
+      return;
+    }
+    // Sanitize: replace raw newlines/tabs inside JSON string values
+    const sanitized = jsonMatch[0].replace(/("(?:[^"\\]|\\.)*")/g, m =>
+      m.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
+    );
+    let entries;
+    try {
+      entries = JSON.parse(sanitized);
+    } catch (parseErr) {
+      console.error(`[${new Date().toISOString()}] skill error: ${parseErr.message}`);
+      console.error(`[${new Date().toISOString()}] raw JSON match (first 3000 chars): ${jsonMatch[0].slice(0, 3000)}`);
+      return;
+    }
 
     console.log(`[${new Date().toISOString()}] skill done — ${entries.length} entries`);
     writeEntriesToGitHub(entries, outputRepo, token);
     console.log(`[${new Date().toISOString()}] all entries written`);
-  } catch (e) {
-    console.error(`[${new Date().toISOString()}] skill error: ${e.message}`);
-    if (e.stderr) console.error(`[${new Date().toISOString()}] stderr: ${e.stderr.toString().slice(0, 1000)}`);
-  }
+  });
 }
 
 function handle(req, res) {
