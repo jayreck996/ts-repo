@@ -10,6 +10,15 @@ REQUIRED FORMAT FOR EACH ISSUE ENTRY:
 ## ISSUE:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
 
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-14 → toifood repo renames broke outputRepo paths and skill could/ reads
+
+`toifood/ts-back` and `toifood/ts-web` renamed to `toifood/-ts-toifood-back` and `toifood/-ts-toifood-web`. Two breakages: (1) targets.json outputRepo fields pointed to old names → writeEntriesToGitHub 404; (2) skill step 3 derived output repo from $ARGUMENTS as `repos/toifood/$ARGUMENTS/contents/...` — hardcoded org prefix no longer matched actual repo path. Fixed by updating targets.json + passing OUTPUT_REPO env var from listener to skill.
+
+## ISSUE:ts-repo 2026-06-14 → skill had hardcoded category list — didn't reflect actual could/ contents per repo
+
+would-update.md step 3 looped over a fixed 8-category list regardless of what exists in the output repo's could/ directory. New repos with different categories (or missing some) would either generate entries for non-existent files (404 on write) or miss existing categories entirely. Fixed: skill now discovers categories by listing could/ in the output repo at runtime.
+
+
 ## ISSUE:ts-repo 2026-06-14 → would-update-md-test.js is write-logic only — not full end-to-end
 
 Test script covers: JSON sanitizer, anchor insertion, GitHub API write. Does not cover: Claude skill run, listener HTTP server, or GitHub Actions trigger. True end-to-end still requires a real skill run (~5 min, Claude Pro). Use the test script to rule out listener write bugs before triggering a full run.
