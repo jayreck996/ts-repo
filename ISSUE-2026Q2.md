@@ -10,6 +10,11 @@ REQUIRED FORMAT FOR EACH ISSUE ENTRY:
 ## ISSUE:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
 
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-14 → would-update-md-test.js is write-logic only — not full end-to-end
+
+Test script covers: JSON sanitizer, anchor insertion, GitHub API write. Does not cover: Claude skill run, listener HTTP server, or GitHub Actions trigger. True end-to-end still requires a real skill run (~5 min, Claude Pro). Use the test script to rule out listener write bugs before triggering a full run.
+
+
 ## ISSUE:ts-repo 2026-06-14 → execSync blocked event loop — stale TCP connections triggered phantom skill runs
 
 `toigroup-listener.js` used `execSync` for the Claude skill, blocking the event loop for ~5 min per run. Incoming TCP connections during a skill run queued in the OS listen backlog. When the skill finished, Node.js accepted the stale connections and launched extra skill runs. Fixed: `execFile` (async) + `skillRunning` boolean guard — concurrent requests get 202 but are dropped with a log entry.
