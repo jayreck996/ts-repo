@@ -1,19 +1,29 @@
 #!/usr/bin/env node
 // toigroup-listener — responds 202 immediately, runs skill async, writes to GitHub
 // PM2: pm2 start toigroup-listener.js --name toigroup-listener
-// Env: MACMINI_TRIGGER_TOKEN, TOIFOOD_CROSS_REPO_TOKEN
+// Env: MACMINI_TRIGGER_TOKEN, <ORG>_CROSS_REPO_TOKEN per target
 
 const http = require('http');
 const { execSync } = require('child_process');
+const path = require('path');
 
 const PORT = 3456;
+const TARGETS = require(path.join(__dirname, 'targets.json'));
 
-function writeEntriesToGitHub(entries, token) {
-  for (const { path, entry } of entries) {
+function getTargetConfig(target) {
+  const config = TARGETS.find(t => t.target === target);
+  if (!config) throw new Error(`Unknown target: ${target}`);
+  const token = process.env[config.tokenSecret];
+  if (!token) throw new Error(`Missing env var: ${config.tokenSecret}`);
+  return { ...config, token };
+}
+
+function writeEntriesToGitHub(entries, outputRepo, token) {
+  for (const { path: filePath, entry } of entries) {
     try {
       const file = JSON.parse(execSync(
         `curl -sf -H "Authorization: Bearer ${token}" ` +
-        `"https://api.github.com/repos/toifood/ts-back/contents/${path}"`
+        `"https://api.github.com/repos/${outputRepo}/contents/${filePath}"`
       ).toString());
 
       const current = Buffer.from(file.content, 'base64').toString('utf8');
@@ -23,7 +33,7 @@ function writeEntriesToGitHub(entries, token) {
       );
 
       const payload = JSON.stringify({
-        message: `would-update: ${path}`,
+        message: `would-update: ${filePath}`,
         content: Buffer.from(updated).toString('base64'),
         sha: file.sha,
         committer: { name: 'would-update', email: 'admin@toigroup.co.nz' },
@@ -32,26 +42,28 @@ function writeEntriesToGitHub(entries, token) {
       execSync(
         `curl -sf -X PUT -H "Authorization: Bearer ${token}" ` +
         `-H "Content-Type: application/json" ` +
-        `"https://api.github.com/repos/toifood/ts-back/contents/${path}" ` +
+        `"https://api.github.com/repos/${outputRepo}/contents/${filePath}" ` +
         `--data-binary @-`,
         { input: payload }
       );
-      console.log(`✅ ${path}`);
+      console.log(`✅ ${filePath}`);
     } catch (e) {
-      console.error(`❌ ${path}:`, e.message);
+      console.error(`❌ ${filePath}:`, e.message);
     }
   }
 }
 
-function runSkill(quarter_override) {
-  console.log(`[${new Date().toISOString()}] skill starting`);
+function runSkill(target, quarter_override) {
+  console.log(`[${new Date().toISOString()}] skill starting — target: ${target}`);
   try {
+    const { outputRepo, token } = getTargetConfig(target);
+
     const output = execSync(
-      'claude --dangerously-skip-permissions --print "/would-update ts-back"',
+      `claude --dangerously-skip-permissions --print "/would-update ${target}"`,
       {
         env: {
           ...process.env,
-          GH_TOKEN: process.env.TOIFOOD_CROSS_REPO_TOKEN,
+          GH_TOKEN: token,
           ...(quarter_override ? { QUARTER_OVERRIDE: quarter_override } : {}),
         },
         maxBuffer: 10 * 1024 * 1024,
@@ -67,7 +79,7 @@ function runSkill(quarter_override) {
     const entries = JSON.parse(jsonMatch[0]);
 
     console.log(`[${new Date().toISOString()}] skill done — ${entries.length} entries`);
-    writeEntriesToGitHub(entries, process.env.TOIFOOD_CROSS_REPO_TOKEN);
+    writeEntriesToGitHub(entries, outputRepo, token);
     console.log(`[${new Date().toISOString()}] all entries written`);
   } catch (e) {
     console.error(`[${new Date().toISOString()}] skill error: ${e.message}`);
@@ -90,17 +102,14 @@ function handle(req, res) {
   let body = '';
   req.on('data', d => { body += d; });
   req.on('end', () => {
-    const { quarter_override } = body ? JSON.parse(body) : {};
-    console.log(`[${new Date().toISOString()}] /would-update accepted${quarter_override ? ` quarter=${quarter_override}` : ''}`);
+    const { target = 'ts-back', quarter_override } = body ? JSON.parse(body) : {};
+    console.log(`[${new Date().toISOString()}] /would-update accepted — target: ${target}${quarter_override ? ` quarter=${quarter_override}` : ''}`);
 
-    // respond before Cloudflare proxy times out (~100s)
     res.writeHead(202).end('Accepted');
-
-    // run skill in background
-    setImmediate(() => runSkill(quarter_override));
+    setImmediate(() => runSkill(target, quarter_override));
   });
 }
 
 http.createServer(handle).listen(PORT, () => {
-  console.log(`toigroup-listener ready on :${PORT}`);
+  console.log(`toigroup-listener ready on :${PORT} — targets: ${TARGETS.map(t => t.target).join(', ')}`);
 });

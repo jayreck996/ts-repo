@@ -1,0 +1,7 @@
+[
+  {
+    "target": "ts-back",
+    "outputRepo": "toifood/ts-back",
+    "tokenSecret": "TOIFOOD_CROSS_REPO_TOKEN"
+  }
+]

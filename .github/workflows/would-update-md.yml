@@ -1,4 +1,4 @@
-name: would-update
+name: would-update-md
 
 on:
   schedule:
@@ -9,14 +9,43 @@ on:
         description: 'Override quarter (e.g. 2026Q3)'
         type: string
         required: false
+      target:
+        description: 'Single target to run (e.g. ts-back). Leave empty to run all.'
+        type: string
+        required: false
 
 jobs:
-  trigger:
+  setup:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.load.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Load targets
+        id: load
+        run: |
+          if [ -n "${{ inputs.target }}" ]; then
+            matrix=$(jq -c '[.[] | select(.target == "${{ inputs.target }}") | .target]' targets.json)
+          else
+            matrix=$(jq -c '[.[].target]' targets.json)
+          fi
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+          echo "Targets: $matrix"
+
+  trigger:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: ${{ fromJson(needs.setup.outputs.matrix) }}
+      fail-fast: false
     steps:
       - name: Trigger toigroup-listener
         run: |
-          BODY=$(jq -n --arg q "${{ inputs.quarter_override }}" '{"quarter_override": $q}')
+          BODY=$(jq -n \
+            --arg t "${{ matrix.target }}" \
+            --arg q "${{ inputs.quarter_override }}" \
+            '{"target": $t, "quarter_override": $q}')
           STATUS=$(curl -s -o /tmp/response.txt -w "%{http_code}" \
             -X POST https://local.toigroup.co.nz/would-update \
             -H "x-secret: ${{ secrets.TOIGROUP_SECRET }}" \
