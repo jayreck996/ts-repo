@@ -1,0 +1,28 @@
+name: would-update
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Monday 06:00 UTC = 18:00 NZST
+  workflow_dispatch:
+    inputs:
+      quarter_override:
+        description: 'Override quarter (e.g. 2026Q3)'
+        type: string
+        required: false
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger toigroup-listener
+        run: |
+          BODY=$(jq -n --arg q "${{ inputs.quarter_override }}" '{"quarter_override": $q}')
+          STATUS=$(curl -s -o /tmp/response.txt -w "%{http_code}" \
+            -X POST https://local.toigroup.co.nz/would-update \
+            -H "x-secret: ${{ secrets.TOIGROUP_SECRET }}" \
+            -H "X-Token: ${{ secrets.MACMINI_TRIGGER_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --max-time 30 \
+            -d "$BODY")
+          cat /tmp/response.txt
+          [ "$STATUS" = "202" ] || exit 1

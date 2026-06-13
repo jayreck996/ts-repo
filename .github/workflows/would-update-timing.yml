@@ -1,0 +1,21 @@
+name: would-update
+
+on:
+  schedule:
+    - cron: '0 0 1 1,4,7,10 *'  # quarterly: Jan 1, Apr 1, Jul 1, Oct 1 UTC
+  workflow_dispatch:
+    inputs:
+      quarter_override:
+        description: 'Override quarter (e.g. 2026Q3) for testing'
+        type: string
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  timing:
+    uses: toiflow/-toiflow/.github/workflows/must-update-timing.yml@main
+    secrets: inherit
+    with:
+      quarter_override: ${{ inputs.quarter_override }}
