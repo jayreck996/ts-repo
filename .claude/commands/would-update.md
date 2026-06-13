@@ -73,10 +73,11 @@ Hold all file contents in context for all analyses.
 For each category in `migrate`, `price`, `recovery`, `usage`, `instruction`, `bug`, `analysis`, `test` — fetch the ISSUE and ASSET file headers from the target repo via GitHub API to read CUSTOM PROMPT and PATHS:
 
 ```bash
+OUTPUT_REPO="${OUTPUT_REPO}"
 for type in ISSUE ASSET; do
   for cat in MIGRATE PRICE RECOVERY USAGE INSTRUCTION BUG ANALYSIS TEST; do
     path="could/${cat}-${type}-${QUARTER}.md"
-    gh api "repos/toifood/$ARGUMENTS/contents/${path}" --jq '.content' | base64 -d 2>/dev/null || echo ""
+    gh api "repos/${OUTPUT_REPO}/contents/${path}" --jq '.content' | base64 -d 2>/dev/null || echo ""
   done
 done
 ```

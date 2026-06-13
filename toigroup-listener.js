@@ -68,6 +68,7 @@ function runSkill(target, quarter_override) {
   const env = {
     ...process.env,
     GH_TOKEN: token,
+    OUTPUT_REPO: outputRepo,
     ...(quarter_override ? { QUARTER_OVERRIDE: quarter_override } : {}),
   };
 
