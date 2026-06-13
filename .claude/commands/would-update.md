@@ -5,7 +5,7 @@ Analyse the source codebase and output a JSON array of issue/asset entries for t
 
 ## Derived values
 - Source repo: `toifood-dev/ts-toifood-{suffix}` where suffix = strip `ts-` from `$ARGUMENTS`
-- Categories: `migrate`, `price`, `recovery`, `usage`, `instruction`, `bug`, `analysis`, `test`
+- Categories: discovered at runtime from the output repo's `could/` directory (see step 3)
 
 ## Steps
 
@@ -70,12 +70,20 @@ Hold all file contents in context for all analyses.
 
 ### 3. Fetch could/ file headers from GitHub
 
-For each category in `migrate`, `price`, `recovery`, `usage`, `instruction`, `bug`, `analysis`, `test` — fetch the ISSUE and ASSET file headers from the target repo via GitHub API to read CUSTOM PROMPT and PATHS:
+First, discover which categories exist in the output repo's `could/` directory for the current quarter:
 
 ```bash
 OUTPUT_REPO="${OUTPUT_REPO}"
-for type in ISSUE ASSET; do
-  for cat in MIGRATE PRICE RECOVERY USAGE INSTRUCTION BUG ANALYSIS TEST; do
+CATS=$(gh api "repos/${OUTPUT_REPO}/contents/could" --jq '.[].name' 2>/dev/null \
+  | grep -oE '^[A-Z]+' | sort -u)
+echo "Categories: $CATS"
+```
+
+For each discovered category, fetch the ISSUE and ASSET file headers to read CUSTOM PROMPT and PATHS:
+
+```bash
+for cat in $CATS; do
+  for type in ISSUE ASSET; do
     path="could/${cat}-${type}-${QUARTER}.md"
     gh api "repos/${OUTPUT_REPO}/contents/${path}" --jq '.content' | base64 -d 2>/dev/null || echo ""
   done
@@ -110,7 +118,7 @@ Print a single JSON array — nothing else before or after it:
 ]
 ```
 
-Use the computed `$QUARTER` value in each path. Emit exactly 16 objects.
+Use the computed `$QUARTER` value in each path. Emit exactly N×2 objects — one ISSUE and one ASSET per discovered category.
 
 ### 6. Clean up
 
