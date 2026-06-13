@@ -15,7 +15,6 @@ const token = process.env[config.tokenSecret];
 if (!token) { console.error(`Missing env var: ${config.tokenSecret}`); process.exit(1); }
 const { outputRepo } = config;
 
-const QUARTER = 'TEST-2026Q2';
 const TS = new Date().toISOString().slice(0, 16).replace('T', ' ');
 
 // --- 1. JSON sanitizer (mirrors listener logic) ---
@@ -71,7 +70,7 @@ function testAnchorInsertion(entry) {
 
 // --- 3. GitHub write (real API call to a test file) ---
 function testGitHubWrite(entry) {
-  const testPath = `could/TEST-ISSUE-${QUARTER}.md`;
+  const testPath = `.would-update-test.md`;
   const header = `TEST FILE — safe to delete\n\n####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->`;
 
   // Ensure test file exists
