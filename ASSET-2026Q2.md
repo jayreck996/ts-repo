@@ -10,6 +10,20 @@ REQUIRED FORMAT FOR EACH ASSET ENTRY:
 ## ASSET:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
 
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-14 → would-update-md-test.js passed all 4 checks on ts-web
+
+Run: `node would-update-md-test.js ts-web`
+
+| Check | Result |
+|---|---|
+| JSON sanitizer (raw newlines injected) | ✅ |
+| Anchor insertion — no trailing newline | ✅ |
+| Anchor insertion — with trailing newline | ✅ |
+| GitHub write — entry visible in toifood/ts-web/could/ | ✅ |
+
+**Scope:** write-logic unit test only — does not invoke Claude or the listener HTTP server. For true E2E, POST directly to listener: `curl -X POST https://local.toigroup.co.nz/would-update -H 'x-secret: ...' -H 'X-Token: ...' -d '{"target": "ts-web"}'` (~5 min, Claude Pro tokens).
+
+
 ## ASSET:ts-repo 2026-06-14 → ts-web confirmed working end-to-end, listener hardened
 
 | Fix | Detail |
