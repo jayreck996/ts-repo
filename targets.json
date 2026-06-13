@@ -4,4 +4,10 @@
     "outputRepo": "toifood/ts-back",
     "tokenSecret": "TOIFOOD_CROSS_REPO_TOKEN"
   }
+  ,
+  {
+    "target": "ts-web",
+    "outputRepo": "toifood/ts-web",
+    "tokenSecret": "TOIFOOD_CROSS_REPO_TOKEN"
+  }
 ]
