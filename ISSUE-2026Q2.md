@@ -10,6 +10,15 @@ REQUIRED FORMAT FOR EACH ISSUE ENTRY:
 ## ISSUE:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
 
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-14 -> would-update-md-test.js had two bugs — QUARTER undefined, default target stale
+
+Two bugs found during test run:
+1. QUARTER variable used on line 30 but never defined — produced path `could/TEST-ISSUE-undefined.md`; fixed by computing QUARTER at top of script.
+2. Default target was `ts-web` — renamed to `ts-toifood-web` in targets.json; script would exit with 'Unknown target' if no arg passed.
+
+Both fixed and pushed. Full test suite passed: 4/4 checks x 2 targets.
+
+
 ## ISSUE:ts-repo 2026-06-14 → would-update skill no longer finds latest branch — always reads main
 
 Step 1 branch-detection loop removed. Skill previously iterated all non-main branches in the source repo and picked the one with the most recent commit date. This was fragile when two branches shared the same date (ts-toifood-web: 1-1-2 and 1-1-3 tied). Simplified to always read from main.
