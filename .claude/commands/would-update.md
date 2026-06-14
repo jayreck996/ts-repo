@@ -23,22 +23,10 @@ TS=$(TZ=Pacific/Auckland date '+%Y-%m-%d %H:%M')
 echo "Quarter: $QUARTER | Timestamp: $TS"
 ```
 
-### 1. Find latest branch
+### 1. Set source branch
 
-Run in bash:
 ```bash
-suffix="${ARGUMENTS#ts-}"
-latestBranch=""
-latestDate=""
-for branch in $(gh api "repos/toifood-dev/ts-toifood-${suffix}/branches" --jq '.[].name'); do
-  [[ "$branch" == "main" ]] && continue
-  created=$(gh api "repos/toifood-dev/ts-toifood-${suffix}/compare/main...${branch}" \
-    --jq '.commits[-1].commit.committer.date' 2>/dev/null)
-  if [[ "$created" > "$latestDate" ]]; then
-    latestDate="$created"
-    latestBranch="$branch"
-  fi
-done
+latestBranch="main"
 echo "Branch: $latestBranch"
 ```
 
