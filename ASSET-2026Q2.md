@@ -10,6 +10,11 @@ REQUIRED FORMAT FOR EACH ASSET ENTRY:
 ## ASSET:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
 
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-14 → would-update skill simplified — source branch hardcoded to main
+
+Removed step 1 branch-detection loop. Skill now sets `latestBranch=\"main\"` directly. All gh API reads in step 2 use main branch of toifood-dev/ts-toifood-{suffix}.
+
+
 ## ASSET:ts-repo 2026-06-14 -> targets renamed to match output repo names
 
 | Before | After |
