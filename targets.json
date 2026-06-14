@@ -11,7 +11,7 @@
   },
   {
     "target": "ts-toifood",
-    "outputRepo": "toifood/-ts-toifood",
+    "outputRepo": "toifood/-ts-toifood-dev",
     "tokenSecret": "TOIFOOD_CROSS_REPO_TOKEN"
   }
 ]
