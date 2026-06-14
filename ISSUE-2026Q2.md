@@ -10,6 +10,11 @@ REQUIRED FORMAT FOR EACH ISSUE ENTRY:
 ## ISSUE:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
 
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-14 → toifood/-ts-toifood renamed to toifood/-ts-toifood-dev
+
+targets.json outputRepo for ts-toifood updated from toifood/-ts-toifood to toifood/-ts-toifood-dev. Listener picked up change automatically via remote fetch (no restart needed).
+
+
 ## ISSUE:ts-repo 2026-06-14 -> would-update-md-test.js had two bugs — QUARTER undefined, default target stale
 
 Two bugs found during test run:
