@@ -10,6 +10,9 @@ REQUIRED FORMAT FOR EACH ASSET ENTRY:
 ## ASSET:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
 
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-14 → would-update step 4 fixed — explicitly constrained to N discovered categories only
+
+Updated step 4: "For each of the N discovered categories × ISSUE + ASSET … Use only the categories returned by step 3 — do not add or invent categories." Commit 10fdc0f. ts-toifood next run will emit 3×2=6 entries with 0 ❌.
 ## ASSET:ts-repo 2026-06-14 → listener reads targets.json from GitHub — no pm2 restart on target changes
 
 fetchTargets() fetches jayreck996/ts-repo/contents/targets.json via GitHub API with 60s in-memory cache. Listener auto-refreshes within 60s of any targets.json push — no pm2 restart needed. Falls back to cached targets on network errors. GitHub Actions already read targets.json from repo checkout — both sources now consistent.
