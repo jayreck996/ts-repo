@@ -10,6 +10,11 @@ REQUIRED FORMAT FOR EACH ISSUE ENTRY:
 ## ISSUE:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
 
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-14 → would-update skill no longer finds latest branch — always reads main
+
+Step 1 branch-detection loop removed. Skill previously iterated all non-main branches in the source repo and picked the one with the most recent commit date. This was fragile when two branches shared the same date (ts-toifood-web: 1-1-2 and 1-1-3 tied). Simplified to always read from main.
+
+
 ## ISSUE:ts-repo 2026-06-14 → target names renamed — ts-back to ts-toifood-back, ts-web to ts-toifood-web
 
 `target` field in targets.json renamed from short aliases to match output repo suffix convention. Ensures pipeline target names are unambiguous when multiple orgs are in scope.
