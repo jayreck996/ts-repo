@@ -10,6 +10,16 @@ REQUIRED FORMAT FOR EACH ASSET ENTRY:
 ## ASSET:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
 
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-14 -> targets renamed to match output repo names
+
+| Before | After |
+|---|---|
+| ts-back | ts-toifood-back |
+| ts-web | ts-toifood-web |
+
+outputRepo and tokenSecret fields unchanged - only the target identifier updated in targets.json.
+
+
 ## ASSET:ts-repo 2026-06-14 → skill categories now discovered dynamically from could/ at runtime
 
 Removed hardcoded category list from would-update.md. Step 3 now lists `could/` in the output repo via GitHub API, extracts unique uppercase prefixes, reads each header for CUSTOM PROMPT + PATHS, and generates N×2 entries. Different repos can have entirely different category sets — skill adapts with no code changes.
