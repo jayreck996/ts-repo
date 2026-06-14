@@ -10,6 +10,9 @@ REQUIRED FORMAT FOR EACH ISSUE ENTRY:
 ## ISSUE:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
 
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-14 → would-update step 4 still hardcoded "16 combinations" — skill emitted 8 categories despite dynamic discovery
+
+Step 3 of would-update.md discovered categories dynamically from the output repo's could/ dir. But step 4 retained "For each of the 16 combinations (8 categories × ISSUE + ASSET)" — Claude followed the hardcoded number and emitted all 8 categories regardless. On ts-toifood (only 3 categories: ANALYSIS, PRICE, USAGE), this produced 10 ❌ failures per run for MIGRATE, RECOVERY, INSTRUCTION, BUG, TEST files that don't exist in -ts-toifood-dev.
 ## ISSUE:ts-repo 2026-06-14 → toifood/-ts-toifood renamed to toifood/-ts-toifood-dev
 
 targets.json outputRepo for ts-toifood updated from toifood/-ts-toifood to toifood/-ts-toifood-dev. Listener picked up change automatically via remote fetch (no restart needed).
