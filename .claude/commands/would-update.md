@@ -87,7 +87,7 @@ For each file, extract the header section (everything above the `####### <!-- AN
 
 ### 4. Generate analyses
 
-For each of the 16 combinations (8 categories × ISSUE + ASSET), generate a concise analysis grounded in the actual source code, shaped by the CUSTOM PROMPT.
+For each of the N discovered categories × ISSUE + ASSET, generate a concise analysis grounded in the actual source code, shaped by the CUSTOM PROMPT. Use only the categories returned by step 3 — do not add or invent categories.
 
 Format each entry as:
 ```
