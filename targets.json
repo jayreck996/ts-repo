@@ -1,11 +1,11 @@
 [
   {
-    "target": "ts-back",
+    "target": "ts-toifood-back",
     "outputRepo": "toifood/-ts-toifood-back",
     "tokenSecret": "TOIFOOD_CROSS_REPO_TOKEN"
   },
   {
-    "target": "ts-web",
+    "target": "ts-toifood-web",
     "outputRepo": "toifood/-ts-toifood-web",
     "tokenSecret": "TOIFOOD_CROSS_REPO_TOKEN"
   }
