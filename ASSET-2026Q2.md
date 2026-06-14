@@ -10,6 +10,23 @@ REQUIRED FORMAT FOR EACH ASSET ENTRY:
 ## ASSET:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
 
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-14 -> would-update-md-test.js fixed and passing — 4/4 x 2 targets
+
+| Fix | Detail |
+|---|---|
+| QUARTER undefined | Added `const QUARTER = ...` at top of script |
+| Stale default target | `ts-web` -> `ts-toifood-web` |
+
+Test run results:
+
+| Check | ts-toifood-back | ts-toifood-web |
+|---|---|---|
+| JSON sanitizer | PASS | PASS |
+| Anchor insertion (no trailing newline) | PASS | PASS |
+| Anchor insertion (with trailing newline) | PASS | PASS |
+| GitHub API write | PASS | PASS |
+
+
 ## ASSET:ts-repo 2026-06-14 → would-update skill simplified — source branch hardcoded to main
 
 Removed step 1 branch-detection loop. Skill now sets `latestBranch=\"main\"` directly. All gh API reads in step 2 use main branch of toifood-dev/ts-toifood-{suffix}.
