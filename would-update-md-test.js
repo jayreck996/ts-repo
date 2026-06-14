@@ -7,7 +7,10 @@ const { execSync } = require('child_process');
 const path = require('path');
 
 const TARGETS = require(path.join(__dirname, 'targets.json'));
-const target = process.argv[2] || 'ts-web';
+const target = process.argv[2] || 'ts-toifood-web';
+
+const m = new Date().getMonth() + 1;
+const QUARTER = new Date().getFullYear() + 'Q' + Math.ceil(m / 3);
 
 const config = TARGETS.find(t => t.target === target);
 if (!config) { console.error(`Unknown target: ${target}`); process.exit(1); }
