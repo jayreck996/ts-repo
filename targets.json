@@ -8,5 +8,10 @@
     "target": "ts-toifood-web",
     "outputRepo": "toifood/-ts-toifood-web",
     "tokenSecret": "TOIFOOD_CROSS_REPO_TOKEN"
+  },
+  {
+    "target": "ts-toifood",
+    "outputRepo": "toifood/-ts-toifood",
+    "tokenSecret": "TOIFOOD_CROSS_REPO_TOKEN"
   }
 ]
