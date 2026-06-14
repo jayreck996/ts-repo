@@ -10,6 +10,11 @@ REQUIRED FORMAT FOR EACH ISSUE ENTRY:
 ## ISSUE:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
 
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-14 → target names renamed — ts-back to ts-toifood-back, ts-web to ts-toifood-web
+
+`target` field in targets.json renamed from short aliases to match output repo suffix convention. Ensures pipeline target names are unambiguous when multiple orgs are in scope.
+
+
 ## ISSUE:ts-repo 2026-06-14 → skill had hardcoded category list — didn't reflect actual could/ contents per repo
 
 would-update.md step 3 looped over a fixed 8-category list regardless of what exists in the output repo's could/ directory. Fixed: skill now discovers categories by listing could/ in the output repo at runtime.
