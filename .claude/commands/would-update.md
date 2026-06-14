@@ -4,7 +4,7 @@ Analyse the source codebase and output a JSON array of issue/asset entries for t
 `$ARGUMENTS` is the target repo name, e.g. `ts-back`.
 
 ## Derived values
-- Source repo: `toifood-dev/ts-toifood-{suffix}` where suffix = strip `ts-` from `$ARGUMENTS`
+- Source repo: `toifood-dev/ts-toifood-{suffix}` — suffix mapped per target (see step 2)
 - Categories: discovered at runtime from the output repo's `could/` directory (see step 3)
 
 ## Steps
@@ -35,7 +35,10 @@ echo "Branch: $latestBranch"
 Fetch the file tree, then read each relevant file — no download or local extraction:
 
 ```bash
-suffix="${ARGUMENTS#ts-}"
+case "$ARGUMENTS" in
+  ts-toifood) suffix="dev" ;;
+  *) suffix="${ARGUMENTS#ts-}" ;;
+esac
 
 # Get all blob paths
 gh api "repos/toifood-dev/ts-toifood-${suffix}/git/trees/${latestBranch}?recursive=1" \
