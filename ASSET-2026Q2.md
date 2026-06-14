@@ -10,6 +10,19 @@ REQUIRED FORMAT FOR EACH ASSET ENTRY:
 ## ASSET:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
 
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-14 → listener reads targets.json from GitHub — no pm2 restart on target changes
+
+fetchTargets() fetches jayreck996/ts-repo/contents/targets.json via GitHub API with 60s in-memory cache. Listener auto-refreshes within 60s of any targets.json push — no pm2 restart needed. Falls back to cached targets on network errors. GitHub Actions already read targets.json from repo checkout — both sources now consistent.
+
+## ASSET:ts-repo 2026-06-14 → targets updated to new repo names
+
+| target | outputRepo |
+|---|---|
+| ts-toifood-back | toifood/-ts-toifood-back |
+| ts-toifood-web | toifood/-ts-toifood-web |
+| ts-toifood | toifood/-ts-toifood-dev |
+
+
 ## ASSET:ts-repo 2026-06-14 -> would-update-md-test.js fixed and passing — 4/4 x 2 targets
 
 | Fix | Detail |
