@@ -5,15 +5,32 @@
 
 const http = require('http');
 const { execSync, execFile } = require('child_process');
-const path = require('path');
 
 let skillRunning = false;
 
 const PORT = 3456;
-const TARGETS = require(path.join(__dirname, 'targets.json'));
+let targetsCache = null;
+let targetsCacheAt = 0;
+const TARGETS_URL = 'https://api.github.com/repos/jayreck996/ts-repo/contents/targets.json';
+
+function fetchTargets() {
+  if (targetsCache && Date.now() - targetsCacheAt < 60_000) return targetsCache;
+  try {
+    const raw = execSync(`curl -sf "${TARGETS_URL}"`).toString();
+    const content = JSON.parse(raw).content;
+    targetsCache = JSON.parse(Buffer.from(content, 'base64').toString());
+    targetsCacheAt = Date.now();
+    console.log(`[${new Date().toISOString()}] targets refreshed — ${targetsCache.map(t => t.target).join(', ')}`);
+  } catch (e) {
+    if (!targetsCache) throw new Error(`Failed to fetch targets.json: ${e.message}`);
+    console.error(`[${new Date().toISOString()}] targets refresh failed (using cached): ${e.message}`);
+  }
+  return targetsCache;
+}
 
 function getTargetConfig(target) {
-  const config = TARGETS.find(t => t.target === target);
+  const targets = fetchTargets();
+  const config = targets.find(t => t.target === target);
   if (!config) throw new Error(`Unknown target: ${target}`);
   const token = process.env[config.tokenSecret];
   if (!token) throw new Error(`Missing env var: ${config.tokenSecret}`);
@@ -64,7 +81,14 @@ function runSkill(target, quarter_override) {
   skillRunning = true;
   console.log(`[${new Date().toISOString()}] skill starting — target: ${target}`);
 
-  const { outputRepo, token } = getTargetConfig(target);
+  let outputRepo, token;
+  try {
+    ({ outputRepo, token } = getTargetConfig(target));
+  } catch (e) {
+    console.error(`[${new Date().toISOString()}] skill error: ${e.message}`);
+    skillRunning = false;
+    return;
+  }
   const env = {
     ...process.env,
     GH_TOKEN: token,
@@ -133,5 +157,10 @@ function handle(req, res) {
 }
 
 http.createServer(handle).listen(PORT, () => {
-  console.log(`toigroup-listener ready on :${PORT} — targets: ${TARGETS.map(t => t.target).join(', ')}`);
+  try {
+    const targets = fetchTargets();
+    console.log(`toigroup-listener ready on :${PORT} — targets: ${targets.map(t => t.target).join(', ')}`);
+  } catch (e) {
+    console.error(`toigroup-listener ready on :${PORT} — targets: (fetch failed: ${e.message})`);
+  }
 });
