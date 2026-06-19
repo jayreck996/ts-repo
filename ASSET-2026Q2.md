@@ -2,6 +2,19 @@ ASSET LOG
 INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
+## ASSET:ts-repo 2026-06-19 → end-to-end run logging added to would/WOULD-UPDATE-MD-LOG.log
+
+Commits: `69a26e5` (workflow), `f3d065a` (listener)
+
+Two-layer logging — every run now leaves two entries in `would/WOULD-UPDATE-MD-LOG.log`:
+
+**Layer 1 — trigger (GitHub Actions → listener):** `would-update-md.yml` — `Log run outcome` step (`if: always()`) captures `http_code` from the curl and prepends a line after every run. Covers: 000 timeout, 1033 Cloudflare/Mac Mini off, 401/403 auth rejected, 202 accepted.
+
+**Layer 2 — write (listener → GitHub API):** `toigroup-listener.js` — `appendToRunLog()` prepends a line after `writeEntriesToGitHub` resolves. `writeEntriesToGitHub` now returns `{ ok, fail }` counts. Called at every exit point: config error, skill error, no JSON, parse fail, `WRITE_OK` / `WRITE_PARTIAL` / `WRITE_FAIL`.
+
+Log format: `{YYYY-MM-DD HH:MM UTC} | {target} | {status} | {http_code or ---} | {note}`
+
+**Requires:** `TSREPO_TOKEN` set in PM2 env on Mac Mini with write access to `jayreck996/ts-repo`.
 
 NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES.
 
