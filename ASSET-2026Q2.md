@@ -2,6 +2,15 @@ ASSET LOG
 INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
+## ASSET:ts-repo 2026-06-19 → toigroup-tunnel re-registered in PM2 — tunnel confirmed live
+
+Deleted stale PM2 id 3, re-registered as id 7 with explicit command:
+`pm2 start cloudflared --name toigroup-tunnel -- tunnel --config ~/.cloudflared/toigroup.yml run`
+
+4 connections registered (mel01, mel02, akl01 ×2). `workflow_dispatch` confirmed end-to-end:
+`2026-06-19 02:28 UTC | ts-toifood | success | 202 | listener accepted`
+
+PM2 state saved.
 ## ASSET:ts-repo 2026-06-19 → appendToRunLog refactored — uses TOIFOOD_CROSS_REPO_TOKEN directly
 
 Commit: `e05a3b2`
