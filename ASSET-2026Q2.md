@@ -45,6 +45,10 @@ REQUIRED FORMAT FOR EACH ASSET ENTRY:
 ## ASSET:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
 
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-19 → WOULD-UPDATE-MD-LOG.log live — trigger-layer outcome logged on every run
+
+Proposal implemented in jayreck996/ts-repo/would/WOULD-UPDATE-MD-LOG.log. Workflow updated: id:trigger captures http_code as step output; Log run outcome step (if:always()) prepends one-line record after every run. Two bugs fixed during test: permissions:contents:write added to workflow; HTTP 530 (not 1033) used for Cloudflare tunnel-down note. First confirmed log entry: 2026-06-19 01:40 UTC | ts-toifood | failure | 530. Write-layer logging (appendToRunLog in listener) pending token verification.
+
 ## ASSET:ts-repo 2026-06-14 → would-update step 4 fixed — explicitly constrained to N discovered categories only
 
 Updated step 4: "For each of the N discovered categories × ISSUE + ASSET … Use only the categories returned by step 3 — do not add or invent categories." Commit 10fdc0f. ts-toifood next run will emit 3×2=6 entries with 0 ❌.
