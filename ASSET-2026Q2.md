@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-19 → appendToRunLog deployed to correct path — write-layer logging now active
+
+Copied updated toigroup-listener.js to `/Users/jayreck/toifood/ts-repo/toigroup-listener.js` (actual PM2 script path confirmed via `pm2 show 6`). PM2 restarted. appendToRunLog with TOIFOOD_CROSS_REPO_TOKEN now live in the running process.
+
+**Hard rule:** Always verify PM2 script path via `pm2 show <id>` before copying updated files — cwd and script path are independent.
 ## ASSET:ts-repo 2026-06-19 → ISSUE-2026Q2.md + ASSET-2026Q2.md consolidated — anchor moved to top, dual insert zones eliminated
 
 Root cause: anchor marker sat below Mac Mini entries and a "NEVER DELETE/REQUIRED FORMAT" block. Mac Mini wrote above the block; Claude Code wrote below the anchor. Both wrote to ts-repo docs but into different file zones — neither could see the other's entries. Fix: anchor marker moved to directly after "ALWAYS ADD NEW ENTRIES AT THE TOP" header line. "NEVER DELETE/REQUIRED FORMAT" block removed. All entries now in one zone, newest-first. Commits e8027a3 (ISSUE) and 400ace50 (ASSET). Future inserts from both Mac Mini and Claude Code land at the same position.
