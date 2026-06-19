@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-19 → appendToRunLog confirmed working — first write-layer entry logged
+
+2026-06-19 04:13 UTC | ts-toifood | WRITE_PARTIAL | --- | 6 ok, 10 failed of 16
+
+Write-layer logging end-to-end confirmed. Both layers now writing to WOULD-UPDATE-MD-LOG.log on every run.
 ## ASSET:ts-repo 2026-06-19 → appendToRunLog deployed to correct path — write-layer logging now active
 
 Copied updated toigroup-listener.js to `/Users/jayreck/toifood/ts-repo/toigroup-listener.js` (actual PM2 script path confirmed via `pm2 show 6`). PM2 restarted. appendToRunLog with TOIFOOD_CROSS_REPO_TOKEN now live in the running process.
