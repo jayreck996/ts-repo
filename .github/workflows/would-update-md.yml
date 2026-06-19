@@ -14,6 +14,9 @@ on:
         type: string
         required: false
 
+permissions:
+  contents: write
+
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -69,7 +72,7 @@ jobs:
           TS=$(date -u '+%Y-%m-%d %H:%M UTC')
           NOTE=""
           if [ "$HTTP_CODE" = "000" ]; then NOTE="curl timeout or tunnel unreachable"; fi
-          if [ "$HTTP_CODE" = "1033" ]; then NOTE="Cloudflare tunnel unreachable — Mac Mini likely off"; fi
+          if [ "$HTTP_CODE" = "530" ]; then NOTE="Cloudflare error 530 — tunnel unreachable, Mac Mini likely off"; fi
           if [ "$HTTP_CODE" = "401" ] || [ "$HTTP_CODE" = "403" ]; then NOTE="auth rejected by listener"; fi
           if [ "$HTTP_CODE" = "202" ]; then NOTE="listener accepted — verify write via pm2 logs"; fi
           LINE="${TS} | ${TARGET} | ${STATUS} | ${HTTP_CODE:-???} | ${NOTE}"
