@@ -3,6 +3,9 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-19 → ISSUE-2026Q2.md + ASSET-2026Q2.md consolidated — anchor moved to top, dual insert zones eliminated
+
+Root cause: anchor marker sat below Mac Mini entries and a "NEVER DELETE/REQUIRED FORMAT" block. Mac Mini wrote above the block; Claude Code wrote below the anchor. Both wrote to ts-repo docs but into different file zones — neither could see the other's entries. Fix: anchor marker moved to directly after "ALWAYS ADD NEW ENTRIES AT THE TOP" header line. "NEVER DELETE/REQUIRED FORMAT" block removed. All entries now in one zone, newest-first. Commits e8027a3 (ISSUE) and 400ace50 (ASSET). Future inserts from both Mac Mini and Claude Code land at the same position.
 ## ASSET:ts-repo 2026-06-19 → WOULD-UPDATE-MD-LOG.log live — trigger-layer outcome logged on every run
 
 Proposal implemented in jayreck996/ts-repo/would/WOULD-UPDATE-MD-LOG.log. Workflow updated: id:trigger captures http_code as step output; Log run outcome step (if:always()) prepends one-line record after every run. Two bugs fixed during test: permissions:contents:write added to workflow; HTTP 530 (not 1033) used for Cloudflare tunnel-down note. First confirmed log entry: 2026-06-19 01:40 UTC | ts-toifood | failure | 530. Write-layer logging (appendToRunLog in listener) pending token verification.
