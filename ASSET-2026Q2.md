@@ -2,6 +2,14 @@ ASSET LOG
 INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
+## ASSET:ts-repo 2026-06-19 → toigroup-tunnel PM2 registration hardened — explicit cloudflared command survives reboot
+
+Old PM2 registration used an unclear command that silently failed to relaunch after reboot. Re-registered with explicit full command:
+`pm2 start cloudflared --name toigroup-tunnel -- tunnel --config ~/.cloudflared/toigroup.yml run`
+
+This command is now in `~/.pm2/dump.pm2` — will correctly relaunch cloudflared after every reboot. Confirmed: 4 connections registered on next start.
+
+**Hard rule:** After any PM2 re-registration, verify the process stays alive for >30s — PM2 "online" status does not confirm the underlying daemon is connected.
 ## ASSET:ts-repo 2026-06-19 → toigroup-tunnel re-registered in PM2 — tunnel confirmed live
 
 Deleted stale PM2 id 3, re-registered as id 7 with explicit command:
