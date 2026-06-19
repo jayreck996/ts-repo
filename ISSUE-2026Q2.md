@@ -2,6 +2,9 @@ ISSUE LOG
 INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
+## ISSUE:ts-repo 2026-06-19 → toigroup-tunnel exited at 15:00 UTC 2026-06-18 — PM2 showed online but cloudflared was dead
+
+PM2 reported toigroup-tunnel (id 3) as "online" but cloudflared had terminated at 15:00 UTC 2026-06-18 with a QUIC dial failure. All subsequent workflow runs returned 530. Root cause: PM2 was tracking a stale process slot, not the live cloudflared daemon. Manual `cloudflared tunnel run` confirmed the tunnel connects fine — PM2 re-registration fixed it.
 ## ISSUE:ts-repo 2026-06-19 → TSREPO_TOKEN unnecessary — TOIFOOD_CROSS_REPO_TOKEN already has write access to ts-repo
 
 appendToRunLog() was wired to a new TSREPO_TOKEN env var. TOIFOOD_CROSS_REPO_TOKEN (already in PM2 env) has admin+push access to jayreck996/ts-repo — no separate token needed. Extra env var adds maintenance overhead for no benefit.
