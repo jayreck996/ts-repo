@@ -3,6 +3,15 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-19 → dual insert zones in ISSUE/ASSET docs — Claude Code missed all Mac Mini entries
+
+ISSUE-2026Q2.md and ASSET-2026Q2.md had two conflicting insert points: Mac Mini added at the very top (below "ALWAYS ADD NEW ENTRIES AT THE TOP"), Claude Code added after the ANCHOR MARKER further down. Anchor marker was below the Mac Mini entries, between a "NEVER DELETE" block and the older entries. Claude Code read from anchor position only — all Mac Mini 2026-06-19 entries were invisible. Fixed by moving anchor marker to immediately after the instruction header, eliminating the split. Commits: e8027a3 (ISSUE), 400ace50 (ASSET).
+## ISSUE:ts-repo 2026-06-19 → 03:04 run got 202 but no could/ entries appeared — write layer silent
+
+02:28 run wrote 6 could/ entries at 02:43-02:44 UTC (PRICE, USAGE, ANALYSIS × ISSUE+ASSET). 03:04 run also got 202 but no new could/ commits appeared in toifood/-ts-toifood-dev after 02:44. Skill may have skipped writing (saw fresh same-session entries) or failed silently. Needs pm2 logs toigroup-listener check on Mac Mini.
+## ISSUE:ts-repo 2026-06-19 → appendToRunLog not writing to WOULD-UPDATE-MD-LOG.log — write-layer log still unconfirmed
+
+Two 202 success runs (02:28, 03:04) each triggered the listener and ran the skill. Log shows only trigger-layer entries ("listener accepted — verify write via pm2 logs"). No write-layer entries have appeared. appendToRunLog() should write after writeEntriesToGitHub resolves — but nothing is committed. Needs pm2 logs toigroup-listener to confirm whether appendToRunLog is being called and what error (if any) it returns.
 ## ISSUE:ts-repo 2026-06-19 → HTTP 530 persists even with Mac Mini on — cloudflared tunnel not running
 
 would-update-md returned 530 twice after Mac Mini was confirmed on. Root cause: machine on does not guarantee tunnel connected. toigroup-tunnel in PM2 must also be running and healthy. Fix: pm2 status — if toigroup-tunnel is stopped/errored, pm2 restart toigroup-tunnel. 530 = tunnel process down, not a machine power issue.
