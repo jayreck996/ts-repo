@@ -1,0 +1,83 @@
+# WOULD-UPDATE-MD-LOG — Proposal: Auto Update Docs
+
+## Problem
+
+`would-update-md` currently has no observable outcome beyond the GitHub Actions status badge.
+
+Two failure modes are invisible:
+1. Mac Mini off → Cloudflare 1033 → workflow fails, but no entry is written anywhere explaining why.
+2. Mac Mini on, listener gets 202, skill runs → writeEntriesToGitHub fails silently → workflow shows green, docs unchanged, no trace.
+
+Diagnosis requires manually checking `pm2 logs toigroup-listener` on the Mac Mini after every run — reactive and easy to miss.
+
+## Proposal: Auto-log each run outcome to this file
+
+Add a final step to `would-update-md.yml` that appends a one-line run record to `would/WOULD-UPDATE-MD-LOG.log` in `jayreck996/ts-repo` via GitHub API, regardless of whether the trigger step succeeded or failed.
+
+### Log entry format
+
+```
+{YYYY-MM-DD HH:MM UTC} | {target} | {status} | {http_code} | {note}
+```
+
+Examples:
+```
+2026-06-19 00:23 UTC | ts-toifood | FAIL    | 1033 | Cloudflare tunnel unreachable — Mac Mini likely off
+2026-06-19 06:00 UTC | ts-toifood | SUCCESS | 202  | Listener accepted — check pm2 logs to confirm write
+2026-06-13 06:05 UTC | ts-web     | FAIL    | 401  | Unauthorized — listener rejected credentials
+2026-06-13 20:30 UTC | ts-web     | FAIL    | 000  | curl timeout (exit 28) — max-time 30s exceeded
+```
+
+### Workflow changes
+
+Add `if: always()` step after `Trigger toigroup-listener` in `would-update-md.yml`:
+
+```yaml
+- name: Log run outcome
+  if: always()
+  env:
+    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    STATUS: ${{ job.status }}
+    HTTP_CODE: ${{ steps.trigger.outputs.http_code }}
+    TARGET: ${{ matrix.target }}
+  run: |
+    TS=$(date -u '+%Y-%m-%d %H:%M UTC')
+    NOTE=""
+    if [ "$HTTP_CODE" = "000" ]; then NOTE="curl timeout or tunnel unreachable"; fi
+    if [ "$HTTP_CODE" = "401" ] || [ "$HTTP_CODE" = "403" ]; then NOTE="auth rejected by listener"; fi
+    if [ "$HTTP_CODE" = "202" ]; then NOTE="listener accepted — verify write via pm2 logs"; fi
+    LINE="${TS} | ${TARGET} | ${STATUS} | ${HTTP_CODE:-???} | ${NOTE}"
+    CURRENT=$(gh api repos/jayreck996/ts-repo/contents/would/WOULD-UPDATE-MD-LOG.log \
+      --jq '{sha: .sha, content: .content}' 2>/dev/null || echo '{"sha":"","content":""}')
+    SHA=$(echo "$CURRENT" | jq -r '.sha')
+    BODY=$(echo "$CURRENT" | jq -r '.content' | base64 -d 2>/dev/null || echo "")
+    UPDATED=$(printf "%s\n%s" "$LINE" "$BODY")
+    ENCODED=$(printf "%s" "$UPDATED" | base64 -w 0)
+    if [ -n "$SHA" ]; then
+      gh api --method PUT repos/jayreck996/ts-repo/contents/would/WOULD-UPDATE-MD-LOG.log \
+        -f message="would-update-md: log ${TS} — ${TARGET}" \
+        -f sha="$SHA" -f content="$ENCODED"
+    else
+      gh api --method PUT repos/jayreck996/ts-repo/contents/would/WOULD-UPDATE-MD-LOG.log \
+        -f message="would-update-md: log ${TS} — ${TARGET}" \
+        -f content="$ENCODED"
+    fi
+```
+
+Also update the trigger step to capture http_code as an output:
+```yaml
+- name: Trigger toigroup-listener
+  id: trigger
+  run: |
+    STATUS=$(curl -s -o /tmp/response.txt -w "%{http_code}" ...)
+    echo "http_code=$STATUS" >> $GITHUB_OUTPUT
+    [ "$STATUS" = "202" ] || exit 1
+```
+
+## Benefit
+
+Every run — success or failure — leaves a trace in this file. No Mac Mini access needed to diagnose. The log is prepended (newest first) so the most recent outcome is always visible at the top.
+
+## Out of scope
+
+Confirming whether writeEntriesToGitHub actually committed entries — that still requires `pm2 logs toigroup-listener`. This proposal only covers the trigger layer (GitHub Actions → listener handoff), not the async write layer (listener → GitHub API).
