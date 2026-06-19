@@ -2,6 +2,11 @@ ASSET LOG
 INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
+## ASSET:ts-repo 2026-06-19 → appendToRunLog refactored — uses TOIFOOD_CROSS_REPO_TOKEN directly
+
+Commit: `e05a3b2`
+
+TOIFOOD_CROSS_REPO_TOKEN confirmed admin+push on jayreck996/ts-repo. Removed TSREPO_TOKEN from listener code and PM2 env. appendToRunLog() now reads TOIFOOD_CROSS_REPO_TOKEN — same token used for all GitHub API writes in the listener. No new secrets needed.
 ## ASSET:ts-repo 2026-06-19 → end-to-end run logging added to would/WOULD-UPDATE-MD-LOG.log
 
 Commits: `69a26e5` (workflow), `f3d065a` (listener)
