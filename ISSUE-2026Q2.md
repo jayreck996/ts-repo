@@ -3,6 +3,9 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-19 → ts-toifood skill outputs 16 entries but only 3 categories exist — 10 writes fail every run
+
+skill done — 16 entries but toifood/-ts-toifood-dev only has PRICE, USAGE, ANALYSIS in could/. MIGRATE, RECOVERY, INSTRUCTION, BUG, TEST (×2 = 10) 404 on write every run → WRITE_PARTIAL. Dynamic category discovery should limit output to N discovered categories only. Step 4 likely still generating hardcoded 8-category set for ts-toifood target.
 ## ISSUE:ts-repo 2026-06-19 → appendToRunLog never fired — listener deployed to wrong path
 
 PM2 runs toigroup-listener from `/Users/jayreck/toifood/ts-repo/toigroup-listener.js`. Updated file was copied to `~/toigroup-listener.js` (wrong path) — PM2 kept running the old code with no appendToRunLog. All restarts since f3d065a were no-ops. Fixed by copying to correct path and restarting.
