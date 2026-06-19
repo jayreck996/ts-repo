@@ -2,6 +2,10 @@ ASSET LOG
 INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
+####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-19 → WOULD-UPDATE-MD-LOG.log live — trigger-layer outcome logged on every run
+
+Proposal implemented in jayreck996/ts-repo/would/WOULD-UPDATE-MD-LOG.log. Workflow updated: id:trigger captures http_code as step output; Log run outcome step (if:always()) prepends one-line record after every run. Two bugs fixed during test: permissions:contents:write added to workflow; HTTP 530 (not 1033) used for Cloudflare tunnel-down note. First confirmed log entry: 2026-06-19 01:40 UTC | ts-toifood | failure | 530. Write-layer logging (appendToRunLog in listener) pending token verification.
 ## ASSET:ts-repo 2026-06-19 → toigroup-tunnel PM2 registration hardened — explicit cloudflared command survives reboot
 
 Old PM2 registration used an unclear command that silently failed to relaunch after reboot. Re-registered with explicit full command:
@@ -37,17 +41,6 @@ Two-layer logging — every run now leaves two entries in `would/WOULD-UPDATE-MD
 Log format: `{YYYY-MM-DD HH:MM UTC} | {target} | {status} | {http_code or ---} | {note}`
 
 **Requires:** `TSREPO_TOKEN` set in PM2 env on Mac Mini with write access to `jayreck996/ts-repo`.
-
-NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES.
-
-REQUIRED FORMAT FOR EACH ASSET ENTRY:
-
-## ASSET:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
-
-####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
-## ASSET:ts-repo 2026-06-19 → WOULD-UPDATE-MD-LOG.log live — trigger-layer outcome logged on every run
-
-Proposal implemented in jayreck996/ts-repo/would/WOULD-UPDATE-MD-LOG.log. Workflow updated: id:trigger captures http_code as step output; Log run outcome step (if:always()) prepends one-line record after every run. Two bugs fixed during test: permissions:contents:write added to workflow; HTTP 530 (not 1033) used for Cloudflare tunnel-down note. First confirmed log entry: 2026-06-19 01:40 UTC | ts-toifood | failure | 530. Write-layer logging (appendToRunLog in listener) pending token verification.
 
 ## ASSET:ts-repo 2026-06-14 → would-update step 4 fixed — explicitly constrained to N discovered categories only
 
