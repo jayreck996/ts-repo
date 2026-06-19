@@ -3,6 +3,12 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-19 → claude skill failed with "no stdin data received" — Claude Pro auth likely expired
+
+07:38 UTC run got 202, listener triggered skill, but claude --dangerously-skip-permissions --print /would-update ts-toifood failed immediately with: "Warning: no stdin data received". WRITE_FAIL logged. No could/ entries written. Root cause: Claude Pro OAuth token in ~/.claude/ expired or invalidated — claude CLI requires interactive re-auth. Fix: SSH into Mac Mini as jayreck, run claude interactively to trigger OAuth browser refresh, then re-test.
+## ISSUE:ts-repo 2026-06-19 → WRITE_PARTIAL persists — step 4 still generating 16 entries despite 10fdc0f fix
+
+04:46 and 04:57 UTC runs both logged WRITE_PARTIAL: 6 ok, 10 failed of 16. Fix at 10fdc0f constrained step 4 to N discovered categories, but skill is still outputting all 16 (8 categories × 2). ts-toifood-dev only has PRICE, USAGE, ANALYSIS — 10 writes 404. Possible causes: (1) skill file in ~/.claude/commands/ on Mac Mini is still the old version pre-10fdc0f, (2) git pull only updated toigroup-listener.js but not the skill file. Mac Mini needs to verify skill file matches current would-update.md in ts-repo.
 ## ISSUE:ts-repo 2026-06-19 → local repo blocked at 10fdc0f — uncommitted toigroup-listener.js changes prevented git pull
 
 Local /Users/jayreck/toifood/ts-repo had uncommitted appendToRunLog changes to toigroup-listener.js, blocking merge with remote (ff966fc). Listener was running stale code — likely cause of continued WRITE_PARTIAL despite skill fix at 10fdc0f. Fixed: git stash + git pull + pm2 restart toigroup-listener. Local repo now at ff966fc. Next run expected to emit 6 entries (3 discovered categories × ISSUE + ASSET).
