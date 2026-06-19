@@ -3,6 +3,9 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-19 → local repo pulled to ff966fc — listener restarted on latest code
+
+git stash + git pull (10fdc0f → ff966fc) + pm2 restart toigroup-listener on Mac Mini. Local working tree now matches remote. Listener running updated toigroup-listener.js. WRITE_PARTIAL root cause cleared.
 ## ASSET:ts-repo 2026-06-19 → appendToRunLog confirmed working — first write-layer entry logged
 
 2026-06-19 04:13 UTC | ts-toifood | WRITE_PARTIAL | --- | 6 ok, 10 failed of 16
