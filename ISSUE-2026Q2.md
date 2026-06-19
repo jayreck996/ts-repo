@@ -3,6 +3,9 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-19 → appendToRunLog never fired — listener deployed to wrong path
+
+PM2 runs toigroup-listener from `/Users/jayreck/toifood/ts-repo/toigroup-listener.js`. Updated file was copied to `~/toigroup-listener.js` (wrong path) — PM2 kept running the old code with no appendToRunLog. All restarts since f3d065a were no-ops. Fixed by copying to correct path and restarting.
 ## ISSUE:ts-repo 2026-06-19 → dual insert zones in ISSUE/ASSET docs — Claude Code missed all Mac Mini entries
 
 ISSUE-2026Q2.md and ASSET-2026Q2.md had two conflicting insert points: Mac Mini added at the very top (below "ALWAYS ADD NEW ENTRIES AT THE TOP"), Claude Code added after the ANCHOR MARKER further down. Anchor marker was below the Mac Mini entries, between a "NEVER DELETE" block and the older entries. Claude Code read from anchor position only — all Mac Mini 2026-06-19 entries were invisible. Fixed by moving anchor marker to immediately after the instruction header, eliminating the split. Commits: e8027a3 (ISSUE), 400ace50 (ASSET).
