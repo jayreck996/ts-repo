@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // toigroup-listener — responds 202 immediately, runs skill async, writes to GitHub
 // PM2: pm2 start toigroup-listener.js --name toigroup-listener
-// Env: MACMINI_TRIGGER_TOKEN, TSREPO_TOKEN, <ORG>_CROSS_REPO_TOKEN per target
+// Env: MACMINI_TRIGGER_TOKEN, <ORG>_CROSS_REPO_TOKEN per target
 
 const http = require('http');
 const { execSync, execFile } = require('child_process');
@@ -40,9 +40,9 @@ function getTargetConfig(target) {
 }
 
 function appendToRunLog(target, status, note) {
-  const token = process.env.TSREPO_TOKEN;
+  const token = process.env.TOIFOOD_CROSS_REPO_TOKEN;
   if (!token) {
-    console.error(`[${new Date().toISOString()}] appendToRunLog: TSREPO_TOKEN not set`);
+    console.error(`[${new Date().toISOString()}] appendToRunLog: TOIFOOD_CROSS_REPO_TOKEN not set`);
     return;
   }
   try {
