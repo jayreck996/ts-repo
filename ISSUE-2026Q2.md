@@ -30,6 +30,16 @@ REQUIRED FORMAT FOR EACH ISSUE ENTRY:
 ## ISSUE:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
 
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-19 → HTTP 530 persists even with Mac Mini on — cloudflared tunnel not running
+
+would-update-md returned 530 twice after Mac Mini was confirmed on. Root cause: machine on does not guarantee tunnel connected. toigroup-tunnel in PM2 must also be running and healthy. Fix: pm2 status — if toigroup-tunnel is stopped/errored, pm2 restart toigroup-tunnel. 530 = tunnel process down, not a machine power issue.
+## ISSUE:ts-repo 2026-06-19 → WOULD-UPDATE-MD-LOG step initially failed — GITHUB_TOKEN lacked contents:write + HTTP code was 530 not 1033
+
+Two bugs in initial implementation: (1) workflow GITHUB_TOKEN only had contents:read — log step got 403 on PUT. Fixed by adding permissions: contents: write to would-update-md.yml. (2) Log step checked HTTP_CODE = 1033 but Cloudflare returns 530 as the HTTP status; 1033 is in the response body only. Fixed note-matching to check for 530.
+## ISSUE:ts-repo 2026-06-19 → appendToRunLog write-layer logging unconfirmed — TOIFOOD_CROSS_REPO_TOKEN may lack access to jayreck996/ts-repo
+
+Listener appendToRunLog() uses TOIFOOD_CROSS_REPO_TOKEN to write back to jayreck996/ts-repo/would/WOULD-UPDATE-MD-LOG.log. Token was created for toifood org repos — may not have write access to jayreck996 personal repo. No write-layer entries appeared in log after 202 success at 02:28 UTC. Needs verification: pm2 env 10 on Mac Mini to check token is set, and confirm token has repo scope on jayreck996/ts-repo.
+
 ## ISSUE:ts-repo 2026-06-14 → would-update step 4 still hardcoded "16 combinations" — skill emitted 8 categories despite dynamic discovery
 
 Step 3 of would-update.md discovered categories dynamically from the output repo's could/ dir. But step 4 retained "For each of the 16 combinations (8 categories × ISSUE + ASSET)" — Claude followed the hardcoded number and emitted all 8 categories regardless. On ts-toifood (only 3 categories: ANALYSIS, PRICE, USAGE), this produced 10 ❌ failures per run for MIGRATE, RECOVERY, INSTRUCTION, BUG, TEST files that don't exist in -ts-toifood-dev.
