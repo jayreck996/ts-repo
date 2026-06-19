@@ -2,6 +2,13 @@ ISSUE LOG
 INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
+## ISSUE:ts-repo 2026-06-19 → would-update-md had no observable outcome — trigger and write layers both invisible
+
+Two failure modes were invisible to a remote team:
+1. Mac Mini off → Cloudflare 1033 → GitHub Actions fails, no record of why.
+2. Listener gets 202, skill runs → `writeEntriesToGitHub` fails silently → workflow green, docs unchanged, no trace.
+
+Diagnosing either required SSH into the Mac Mini and checking `pm2 logs toigroup-listener` — not accessible to a remote team.
 
 NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES.
 
