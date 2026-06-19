@@ -41,6 +41,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Trigger toigroup-listener
+        id: trigger
         run: |
           BODY=$(jq -n \
             --arg t "${{ matrix.target }}" \
@@ -53,5 +54,37 @@ jobs:
             -H "Content-Type: application/json" \
             --max-time 30 \
             -d "$BODY")
+          echo "http_code=$STATUS" >> $GITHUB_OUTPUT
           cat /tmp/response.txt
           [ "$STATUS" = "202" ] || exit 1
+
+      - name: Log run outcome
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STATUS: ${{ job.status }}
+          HTTP_CODE: ${{ steps.trigger.outputs.http_code }}
+          TARGET: ${{ matrix.target }}
+        run: |
+          TS=$(date -u '+%Y-%m-%d %H:%M UTC')
+          NOTE=""
+          if [ "$HTTP_CODE" = "000" ]; then NOTE="curl timeout or tunnel unreachable"; fi
+          if [ "$HTTP_CODE" = "1033" ]; then NOTE="Cloudflare tunnel unreachable — Mac Mini likely off"; fi
+          if [ "$HTTP_CODE" = "401" ] || [ "$HTTP_CODE" = "403" ]; then NOTE="auth rejected by listener"; fi
+          if [ "$HTTP_CODE" = "202" ]; then NOTE="listener accepted — verify write via pm2 logs"; fi
+          LINE="${TS} | ${TARGET} | ${STATUS} | ${HTTP_CODE:-???} | ${NOTE}"
+          CURRENT=$(gh api repos/jayreck996/ts-repo/contents/would/WOULD-UPDATE-MD-LOG.log \
+            --jq '{sha: .sha, content: .content}' 2>/dev/null || echo '{"sha":"","content":""}')
+          SHA=$(echo "$CURRENT" | jq -r '.sha')
+          BODY=$(echo "$CURRENT" | jq -r '.content' | base64 -d 2>/dev/null || echo "")
+          UPDATED=$(printf "%s\n%s" "$LINE" "$BODY")
+          ENCODED=$(printf "%s" "$UPDATED" | base64 -w 0)
+          if [ -n "$SHA" ] && [ "$SHA" != "null" ]; then
+            gh api --method PUT repos/jayreck996/ts-repo/contents/would/WOULD-UPDATE-MD-LOG.log \
+              -f message="would-update-md: log ${TS} — ${TARGET}" \
+              -f sha="$SHA" -f content="$ENCODED"
+          else
+            gh api --method PUT repos/jayreck996/ts-repo/contents/would/WOULD-UPDATE-MD-LOG.log \
+              -f message="would-update-md: log ${TS} — ${TARGET}" \
+              -f content="$ENCODED"
+          fi
