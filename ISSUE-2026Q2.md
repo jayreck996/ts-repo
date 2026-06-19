@@ -2,6 +2,9 @@ ISSUE LOG
 INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
+## ISSUE:ts-repo 2026-06-19 → TSREPO_TOKEN unnecessary — TOIFOOD_CROSS_REPO_TOKEN already has write access to ts-repo
+
+appendToRunLog() was wired to a new TSREPO_TOKEN env var. TOIFOOD_CROSS_REPO_TOKEN (already in PM2 env) has admin+push access to jayreck996/ts-repo — no separate token needed. Extra env var adds maintenance overhead for no benefit.
 ## ISSUE:ts-repo 2026-06-19 → would-update-md had no observable outcome — trigger and write layers both invisible
 
 Two failure modes were invisible to a remote team:
