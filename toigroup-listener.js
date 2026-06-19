@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // toigroup-listener — responds 202 immediately, runs skill async, writes to GitHub
 // PM2: pm2 start toigroup-listener.js --name toigroup-listener
-// Env: MACMINI_TRIGGER_TOKEN, <ORG>_CROSS_REPO_TOKEN per target
+// Env: MACMINI_TRIGGER_TOKEN, TSREPO_TOKEN, <ORG>_CROSS_REPO_TOKEN per target
 
 const http = require('http');
 const { execSync, execFile } = require('child_process');
@@ -12,6 +12,8 @@ const PORT = 3456;
 let targetsCache = null;
 let targetsCacheAt = 0;
 const TARGETS_URL = 'https://api.github.com/repos/jayreck996/ts-repo/contents/targets.json';
+const LOG_REPO = 'jayreck996/ts-repo';
+const LOG_PATH = 'would/WOULD-UPDATE-MD-LOG.log';
 
 function fetchTargets() {
   if (targetsCache && Date.now() - targetsCacheAt < 60_000) return targetsCache;
@@ -37,7 +39,53 @@ function getTargetConfig(target) {
   return { ...config, token };
 }
 
+function appendToRunLog(target, status, note) {
+  const token = process.env.TSREPO_TOKEN;
+  if (!token) {
+    console.error(`[${new Date().toISOString()}] appendToRunLog: TSREPO_TOKEN not set`);
+    return;
+  }
+  try {
+    const ts = new Date().toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
+    const line = `${ts} | ${target} | ${status.padEnd(14)} | --- | ${note}`;
+
+    let sha = '';
+    let current = '';
+    try {
+      const fileRaw = execSync(
+        `curl -sf -H "Authorization: Bearer ${token}" ` +
+        `"https://api.github.com/repos/${LOG_REPO}/contents/${LOG_PATH}"`
+      ).toString();
+      const file = JSON.parse(fileRaw);
+      sha = file.sha;
+      current = Buffer.from(file.content, 'base64').toString('utf8');
+    } catch (_) {
+      // file may not exist yet — start fresh
+    }
+
+    const updated = line + '\n' + current;
+    const payload = JSON.stringify({
+      message: `would-update-md: log ${ts} — ${target}`,
+      content: Buffer.from(updated).toString('base64'),
+      ...(sha ? { sha } : {}),
+      committer: { name: 'would-update', email: 'admin@toigroup.co.nz' },
+    });
+
+    execSync(
+      `curl -sf -X PUT -H "Authorization: Bearer ${token}" ` +
+      `-H "Content-Type: application/json" ` +
+      `"https://api.github.com/repos/${LOG_REPO}/contents/${LOG_PATH}" ` +
+      `--data-binary @-`,
+      { input: payload }
+    );
+    console.log(`[${new Date().toISOString()}] run log: ${line}`);
+  } catch (e) {
+    console.error(`[${new Date().toISOString()}] appendToRunLog error: ${e.message}`);
+  }
+}
+
 function writeEntriesToGitHub(entries, outputRepo, token) {
+  let ok = 0, fail = 0;
   for (const { path: filePath, entry } of entries) {
     try {
       const file = JSON.parse(execSync(
@@ -67,10 +115,13 @@ function writeEntriesToGitHub(entries, outputRepo, token) {
         { input: payload }
       );
       console.log(`✅ ${filePath}`);
+      ok++;
     } catch (e) {
       console.error(`❌ ${filePath}:`, e.message);
+      fail++;
     }
   }
+  return { ok, fail };
 }
 
 function runSkill(target, quarter_override) {
@@ -87,6 +138,7 @@ function runSkill(target, quarter_override) {
   } catch (e) {
     console.error(`[${new Date().toISOString()}] skill error: ${e.message}`);
     skillRunning = false;
+    appendToRunLog(target, 'WRITE_FAIL', `config error: ${e.message}`);
     return;
   }
   const env = {
@@ -96,8 +148,7 @@ function runSkill(target, quarter_override) {
     ...(quarter_override ? { QUARTER_OVERRIDE: quarter_override } : {}),
   };
 
-  let output = '';
-  const child = execFile('claude', ['--dangerously-skip-permissions', '--print', `/would-update ${target}`], {
+  execFile('claude', ['--dangerously-skip-permissions', '--print', `/would-update ${target}`], {
     env,
     maxBuffer: 10 * 1024 * 1024,
   }, (err, stdout, stderr) => {
@@ -105,6 +156,7 @@ function runSkill(target, quarter_override) {
     if (err) {
       console.error(`[${new Date().toISOString()}] skill error: ${err.message}`);
       if (stderr) console.error(`[${new Date().toISOString()}] stderr: ${stderr.slice(0, 1000)}`);
+      appendToRunLog(target, 'WRITE_FAIL', `skill error: ${err.message.slice(0, 120)}`);
       return;
     }
 
@@ -112,9 +164,10 @@ function runSkill(target, quarter_override) {
     if (!jsonMatch) {
       console.error(`[${new Date().toISOString()}] skill error: No JSON array in skill output`);
       console.error(`[${new Date().toISOString()}] raw output (first 2000 chars): ${stdout.slice(0, 2000)}`);
+      appendToRunLog(target, 'WRITE_FAIL', 'skill error: no JSON array in output');
       return;
     }
-    // Sanitize: replace raw newlines/tabs inside JSON string values
+
     const sanitized = jsonMatch[0].replace(/("(?:[^"\\]|\\.)*")/g, m =>
       m.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
     );
@@ -124,12 +177,19 @@ function runSkill(target, quarter_override) {
     } catch (parseErr) {
       console.error(`[${new Date().toISOString()}] skill error: ${parseErr.message}`);
       console.error(`[${new Date().toISOString()}] raw JSON match (first 3000 chars): ${jsonMatch[0].slice(0, 3000)}`);
+      appendToRunLog(target, 'WRITE_FAIL', `skill error: JSON parse failed — ${parseErr.message.slice(0, 80)}`);
       return;
     }
 
     console.log(`[${new Date().toISOString()}] skill done — ${entries.length} entries`);
-    writeEntriesToGitHub(entries, outputRepo, token);
+    const { ok, fail } = writeEntriesToGitHub(entries, outputRepo, token);
     console.log(`[${new Date().toISOString()}] all entries written`);
+
+    const status = fail === 0 ? 'WRITE_OK' : ok === 0 ? 'WRITE_FAIL' : 'WRITE_PARTIAL';
+    const note = fail === 0
+      ? `${ok}/${entries.length} entries committed`
+      : `${ok} ok, ${fail} failed of ${entries.length}`;
+    appendToRunLog(target, status, note);
   });
 }
 
