@@ -42,6 +42,7 @@ jobs:
       matrix:
         target: ${{ fromJson(needs.setup.outputs.matrix) }}
       fail-fast: false
+      max-parallel: 1
     steps:
       - name: Trigger toigroup-listener
         id: trigger
