@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-22 -> WOULD-UPDATE-MD-LOG.log still gets 409 after max-parallel fix -- two writers sharing one file with no coordination
+
+max-parallel: 1 fixed the between-jobs race but a second race remains. Two independent systems both write to WOULD-UPDATE-MD-LOG.log: (1) GitHub Actions trigger-layer log step, (2) Mac Mini appendToRunLog firing async after skill completes. When a skill finishes mid-run and appendToRunLog commits, the next GH Actions log step holds a stale SHA and gets 409. Confirmed on run 27920295890: ts-toifood-web and ts-toifood-back trigger jobs logged ok, Mac Mini appendToRunLog for ts-toifood-web fired between them, ts-toifood trigger job fetched stale SHA and failed with 409. Fix: split into two files -- would/TRIGGER-LOG.log for GH Actions, would/LISTENER-LOG.log for Mac Mini listener.
+
+
 ## ISSUE:ts-repo 2026-06-22 → global skill out of sync again — suffix fix not in ~/.claude/commands/would-update.md after repo update
 
 After Mac Mini committed suffix mapping fix (ts-toifood-back→back, ts-toifood-web→web) at 3e3c226, global skill at ~/.claude/commands/would-update.md was still at the previous version. Same stale-global-skill pattern as the 2026-06-20 WRITE_PARTIAL root cause. Fix: git pull + overwrite global skill from repo on every repo update.
