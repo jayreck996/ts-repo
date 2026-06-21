@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-22 -> TRIGGER-LOG.log and LISTENER-LOG.log not yet created -- Mac Mini has not pulled latest toigroup-listener.js
+
+Split log changes pushed at 23:15 UTC (would-update-md.yml -> TRIGGER-LOG.log, toigroup-listener.js -> LISTENER-LOG.log). As of check at 23:30 UTC neither file exists in would/ -- WOULD-UPDATE-MD-LOG.log top entry still 23:10 UTC, confirming listener has not restarted with new code. Mac Mini must git pull + pm2 restart toigroup-listener before LISTENER-LOG.log will be created. Until then listener keeps writing to WOULD-UPDATE-MD-LOG.log (old path) while GH Actions will write to TRIGGER-LOG.log (new path) on next run -- logs will be split across all three files temporarily.
+
+
 ## ISSUE:ts-repo 2026-06-22 → global skill stale after split-log commits — synced before next run
 
 Pull to 6f9fea5 brought toigroup-listener.js (LOG_PATH now would/LISTENER-LOG.log) and updated workflow (TRIGGER-LOG.log). Global ~/.claude/commands/would-update.md also needed resync to pick up any skill changes in the same pull.
