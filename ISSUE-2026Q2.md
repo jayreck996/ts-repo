@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-21 -> would-update-md failing daily -- 409 conflict on log file update caused by parallel matrix jobs
+
+Jun 20 and Jun 21 daily cron runs (06:00 UTC) both failed. The trigger job runs all targets from targets.json in parallel (matrix strategy). Each matrix job Log run outcome step independently GETs the current SHA of would/WOULD-UPDATE-MD-LOG.log, prepends its line, then PUTs with that SHA. When two jobs fetch the same SHA concurrently, the first to PUT succeeds and changes the file SHA -- all remaining jobs fail with HTTP 409. The trigger layer was healthy on both days (listener returned 202 for ts-toifood-web), but the log step race caused the entire workflow to fail. Fix: move Log run outcome to a new sequential log job (needs: [trigger]) that collects per-target status via matrix job outputs and writes entries serially.
+
+
 ## ISSUE:ts-repo 2026-06-19 → claude skill failed with "no stdin data received" — Claude Pro auth likely expired
 
 07:38 UTC run got 202, listener triggered skill, but claude --dangerously-skip-permissions --print /would-update ts-toifood failed immediately with: "Warning: no stdin data received". WRITE_FAIL logged. No could/ entries written. Root cause: Claude Pro OAuth token in ~/.claude/ expired or invalidated — claude CLI requires interactive re-auth. Fix: SSH into Mac Mini as jayreck, run claude interactively to trigger OAuth browser refresh, then re-test.
