@@ -13,7 +13,7 @@ let targetsCache = null;
 let targetsCacheAt = 0;
 const TARGETS_URL = 'https://api.github.com/repos/jayreck996/ts-repo/contents/targets.json';
 const LOG_REPO = 'jayreck996/ts-repo';
-const LOG_PATH = 'would/WOULD-UPDATE-MD-LOG.log';
+const LOG_PATH = 'would/LISTENER-LOG.log';
 
 function fetchTargets() {
   if (targetsCache && Date.now() - targetsCacheAt < 60_000) return targetsCache;
