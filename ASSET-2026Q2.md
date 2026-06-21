@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-22 -> two-writer race on WOULD-UPDATE-MD-LOG.log identified -- split into TRIGGER-LOG.log and LISTENER-LOG.log
+
+Root cause fully understood: GitHub Actions trigger jobs and Mac Mini appendToRunLog are independent async writers with no lock on the shared log file. max-parallel: 1 serialised GH Actions jobs but cannot control when the Mac Mini fires. Decision: split into two files -- would/TRIGGER-LOG.log (GH Actions only) and would/LISTENER-LOG.log (Mac Mini listener only). Each file has exactly one writer so SHA is always current -- 409 race eliminated permanently with no retry logic needed. Requires updating would-update-md.yml log step path and toigroup-listener.js appendToRunLog path.
+
+
 ## ASSET:ts-repo 2026-06-22 → local repo pulled to 3e3c226, global skill resynced with suffix fix
 
 git pull (b2b9ca0 → 3e3c226) on Mac Mini. ~/.claude/commands/would-update.md overwritten from repo — now includes explicit suffix cases: ts-toifood-back→back, ts-toifood-web→web, fallback changed to strip ts-toifood- prefix. ts-toifood-back should resolve to toifood-dev/ts-toifood-back correctly on next run.
