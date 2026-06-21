@@ -3,6 +3,9 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-22 → global skill stale after split-log commits — synced before next run
+
+Pull to 6f9fea5 brought toigroup-listener.js (LOG_PATH now would/LISTENER-LOG.log) and updated workflow (TRIGGER-LOG.log). Global ~/.claude/commands/would-update.md also needed resync to pick up any skill changes in the same pull.
 ## ISSUE:ts-repo 2026-06-22 -> WOULD-UPDATE-MD-LOG.log migration risk -- existing log entries will not appear in new split files
 
 Current WOULD-UPDATE-MD-LOG.log contains interleaved trigger-layer and write-layer entries going back to Jun 19. Splitting into TRIGGER-LOG.log and LISTENER-LOG.log means historical context is in neither new file -- the old file stays as archive only. Also requires two coordinated changes: (1) would-update-md.yml log step path update in ts-repo, (2) appendToRunLog path update in toigroup-listener.js on Mac Mini -- listener must git pull after both files land or it keeps writing to WOULD-UPDATE-MD-LOG.log while GH Actions writes to TRIGGER-LOG.log, leaving LISTENER-LOG.log empty.
