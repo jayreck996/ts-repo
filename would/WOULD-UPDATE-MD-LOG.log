@@ -1,3 +1,4 @@
+2026-06-21 22:22 UTC | ts-toifood-web | success | 202 | listener accepted — verify write via pm2 logs
 2026-06-21 22:22 UTC | ts-toifood-back | success | 202 | listener accepted — verify write via pm2 logs
 2026-06-21 07:48 UTC | ts-toifood | WRITE_OK       | --- | 6/6 entries committed
 2026-06-21 07:41 UTC | ts-toifood-back | success | 202 | listener accepted — verify write via pm2 logs
