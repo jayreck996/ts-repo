@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-22 -> GitHub Contents API 409 root cause confirmed -- optimistic lock, not a concurrency feature
+
+GitHub Contents API uses SHA as an optimistic lock: GET returns current SHA, PUT must include that SHA to prove the caller saw the latest version. If two writers GET simultaneously they both hold the same SHA -- whichever PUTs second gets 409 because the file moved on. GitHub has no merge, no queue, no retry -- it rejects and the caller must re-fetch. Identical to a git push conflict. No API-level primitive exists to coordinate concurrent writers -- serialisation must be enforced by the caller (max-parallel: 1 for GH Actions, skillRunning flag for Mac Mini listener). Split log files eliminate the cross-system race by giving each system its own file with a single writer.
+
+
 ## ASSET:ts-repo 2026-06-22 → split-log deployed — listener now writes to LISTENER-LOG.log, GH Actions to TRIGGER-LOG.log
 
 git pull (3e3c226 → 6f9fea5) + pm2 restart toigroup-listener on Mac Mini. toigroup-listener.js LOG_PATH updated to would/LISTENER-LOG.log. would-update-md.yml log step updated to would/TRIGGER-LOG.log. Two independent writers now have separate files — 409 race permanently eliminated. ~/.claude/commands/would-update.md resynced.
