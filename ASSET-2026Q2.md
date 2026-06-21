@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-22 -> split log implementation started -- TRIGGER-LOG.log in would-update-md.yml, LISTENER-LOG.log in toigroup-listener.js
+
+Implementing two-file split to eliminate 409 race permanently. Changes: (1) would-update-md.yml Log run outcome step -- update all WOULD-UPDATE-MD-LOG.log references to would/TRIGGER-LOG.log, (2) toigroup-listener.js appendToRunLog -- update LOG_PATH constant from would/WOULD-UPDATE-MD-LOG.log to would/LISTENER-LOG.log. WOULD-UPDATE-MD-LOG.log retained as archive. Mac Mini must git pull after both changes are pushed before next run.
+
+
 ## ASSET:ts-repo 2026-06-22 -> two-writer race on WOULD-UPDATE-MD-LOG.log identified -- split into TRIGGER-LOG.log and LISTENER-LOG.log
 
 Root cause fully understood: GitHub Actions trigger jobs and Mac Mini appendToRunLog are independent async writers with no lock on the shared log file. max-parallel: 1 serialised GH Actions jobs but cannot control when the Mac Mini fires. Decision: split into two files -- would/TRIGGER-LOG.log (GH Actions only) and would/LISTENER-LOG.log (Mac Mini listener only). Each file has exactly one writer so SHA is always current -- 409 race eliminated permanently with no retry logic needed. Requires updating would-update-md.yml log step path and toigroup-listener.js appendToRunLog path.
