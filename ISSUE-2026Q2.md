@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-22 -> would-update skill suffix mapping wrong for ts-toifood-back and ts-toifood-web -- source repo resolves to non-existent path
+
+Step 2 of would-update.md derives source repo suffix via ${ARGUMENTS#ts-}. For ts-toifood-back this strips only "ts-" giving suffix "toifood-back" -- source becomes toifood-dev/ts-toifood-toifood-back (does not exist). Same bug for ts-toifood-web -> toifood-dev/ts-toifood-toifood-web. Only ts-toifood has a correct special case (suffix="dev"). Confirmed by ts-toifood-back WRITE_FAIL "no JSON array in output" on 2026-06-21 22:29 UTC -- skill ran but Claude got no source files and produced no parseable JSON. ts-toifood-web has been writing successfully despite the bug (Claude likely generates content from could/ headers alone without source files). Fix: add explicit cases for ts-toifood-back (suffix="back") and ts-toifood-web (suffix="web").
+
+
 ## ISSUE:ts-repo 2026-06-20 → WRITE_PARTIAL root cause confirmed — ~/.claude/commands/would-update.md was stale pre-fix version
 
 Global skill at ~/.claude/commands/would-update.md contained the old hardcoded 8-category list ("Emit exactly 16 objects"), predating the 10fdc0f fix. Claude Code ran the global version instead of the fixed project version, causing every ts-toifood run to emit 16 entries with 10 WRITE_FAIL paths. Separate issue: 07:38 UTC WRITE_FAIL caused by Claude Pro OAuth invalidated after re-login to a different account on the same machine.
