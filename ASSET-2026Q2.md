@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-22 -> would-update-md fix approach decided -- log step moved to sequential job after matrix completes
+
+Fix for the Jun 20-21 409 race condition: remove Log run outcome from the parallel trigger matrix, add a new log job (needs: trigger, if: always()) that iterates all targets serially in a single shell loop. Each iteration re-fetches the SHA of WOULD-UPDATE-MD-LOG.log immediately before its PUT -- no two writes share a SHA. Trigger layer unchanged (still parallel, fail-fast: false). Known limitation: matrix job outputs use dynamic keys (result-<target>) which require static declaration -- may need artifact-based handoff if target count grows.
+
+
 ## ASSET:ts-repo 2026-06-22 -> would-update-md race condition root-caused -- two daily runs failed, trigger layer was healthy both days
 
 Jun 20 and Jun 21 cron runs both failed at the log step only. Trigger layer confirmed healthy: ts-toifood-web returned 202 on Jun 21. Root cause: parallel matrix jobs all fetch the same SHA for WOULD-UPDATE-MD-LOG.log and race to PUT -- first writer wins, rest get HTTP 409. Diagnosed from gh run view --log-failed on run 27897564824. No docs corruption, no listener issue. Fix pending: extract Log run outcome into a sequential log job after the matrix completes.
