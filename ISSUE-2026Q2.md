@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-22 -> would-update-md fix reconsidered -- sequential log job approach overcomplicated
+
+Proposed fix (separate sequential log job with matrix outputs) is unnecessarily complex. GitHub Actions matrix outputs with dynamic keys require static declarations -- adding a new target means updating the workflow. Simpler fix: add max-parallel: 1 to the trigger matrix strategy. Jobs run one at a time so log steps never race. Downside: triggers become sequential (~30s per target x 3 = ~90s worst case vs ~30s parallel). Acceptable tradeoff -- listener responds with 202 immediately, so the extra 60s has no functional impact.
+
+
 ## ISSUE:ts-repo 2026-06-22 -> would-update-md log job fix has dynamic output key limitation -- matrix targets must match declared outputs
 
 Proposed fix moves Log run outcome to a sequential log job using per-target matrix outputs (result-<target>). GitHub Actions requires all job-level output keys to be declared statically -- dynamic keys from matrix.target work at emit time but may not be readable by the downstream log job if targets.json grows or changes. If a new target is added to targets.json without a matching output declaration in the trigger job, its http_code is silently dropped and the log entry is missing. Workaround: pass all results as a single JSON artifact file (upload-artifact / download-artifact) instead of job outputs -- log job reads the artifact and iterates serially regardless of target count.
