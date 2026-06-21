@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-22 -> would-update skill suffix mapping fixed -- ts-toifood-back and ts-toifood-web now resolve to correct source repos
+
+Added explicit case entries to step 2 of would-update.md: ts-toifood-back -> suffix="back" -> toifood-dev/ts-toifood-back, ts-toifood-web -> suffix="web" -> toifood-dev/ts-toifood-web. Fallback changed from ${ARGUMENTS#ts-} to ${ARGUMENTS#ts-toifood-} so future targets following the ts-toifood-* naming pattern resolve correctly without needing an explicit case.
+
+
 ## ASSET:ts-repo 2026-06-22 -> would-update-md fix simplified -- max-parallel: 1 eliminates log race without restructuring jobs
 
 Root cause of Jun 20-21 409 failures: 3 parallel matrix jobs (ts-toifood-back, ts-toifood-web, ts-toifood) all fetch the same log file SHA simultaneously, first writer wins, rest get 409. Fix: add max-parallel: 1 to the trigger job matrix strategy -- jobs run serially, each log step sees the SHA the previous job just wrote. No new jobs, no artifact handoff, no dynamic output keys. Trigger time increases from ~30s to ~90s worst case -- acceptable since listener returns 202 immediately.
