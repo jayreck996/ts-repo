@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-22 -> would-update-md log job fix has dynamic output key limitation -- matrix targets must match declared outputs
+
+Proposed fix moves Log run outcome to a sequential log job using per-target matrix outputs (result-<target>). GitHub Actions requires all job-level output keys to be declared statically -- dynamic keys from matrix.target work at emit time but may not be readable by the downstream log job if targets.json grows or changes. If a new target is added to targets.json without a matching output declaration in the trigger job, its http_code is silently dropped and the log entry is missing. Workaround: pass all results as a single JSON artifact file (upload-artifact / download-artifact) instead of job outputs -- log job reads the artifact and iterates serially regardless of target count.
+
+
 ## ISSUE:ts-repo 2026-06-21 -> would-update-md failing daily -- 409 conflict on log file update caused by parallel matrix jobs
 
 Jun 20 and Jun 21 daily cron runs (06:00 UTC) both failed. The trigger job runs all targets from targets.json in parallel (matrix strategy). Each matrix job Log run outcome step independently GETs the current SHA of would/WOULD-UPDATE-MD-LOG.log, prepends its line, then PUTs with that SHA. When two jobs fetch the same SHA concurrently, the first to PUT succeeds and changes the file SHA -- all remaining jobs fail with HTTP 409. The trigger layer was healthy on both days (listener returned 202 for ts-toifood-web), but the log step race caused the entire workflow to fail. Fix: move Log run outcome to a new sequential log job (needs: [trigger]) that collects per-target status via matrix job outputs and writes entries serially.
