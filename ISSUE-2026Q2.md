@@ -3,6 +3,9 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-20 → WRITE_PARTIAL root cause confirmed — ~/.claude/commands/would-update.md was stale pre-fix version
+
+Global skill at ~/.claude/commands/would-update.md contained the old hardcoded 8-category list ("Emit exactly 16 objects"), predating the 10fdc0f fix. Claude Code ran the global version instead of the fixed project version, causing every ts-toifood run to emit 16 entries with 10 WRITE_FAIL paths. Separate issue: 07:38 UTC WRITE_FAIL caused by Claude Pro OAuth invalidated after re-login to a different account on the same machine.
 ## ISSUE:ts-repo 2026-06-22 -> would-update-md fix reconsidered -- sequential log job approach overcomplicated
 
 Proposed fix (separate sequential log job with matrix outputs) is unnecessarily complex. GitHub Actions matrix outputs with dynamic keys require static declarations -- adding a new target means updating the workflow. Simpler fix: add max-parallel: 1 to the trigger matrix strategy. Jobs run one at a time so log steps never race. Downside: triggers become sequential (~30s per target x 3 = ~90s worst case vs ~30s parallel). Acceptable tradeoff -- listener responds with 202 immediately, so the extra 60s has no functional impact.
