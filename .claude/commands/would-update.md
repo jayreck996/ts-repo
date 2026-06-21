@@ -37,7 +37,9 @@ Fetch the file tree, then read each relevant file — no download or local extra
 ```bash
 case "$ARGUMENTS" in
   ts-toifood) suffix="dev" ;;
-  *) suffix="${ARGUMENTS#ts-}" ;;
+  ts-toifood-back) suffix="back" ;;
+  ts-toifood-web) suffix="web" ;;
+  *) suffix="${ARGUMENTS#ts-toifood-}" ;;
 esac
 
 # Get all blob paths
