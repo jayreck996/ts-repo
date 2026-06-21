@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-22 -> would-update-md race condition root-caused -- two daily runs failed, trigger layer was healthy both days
+
+Jun 20 and Jun 21 cron runs both failed at the log step only. Trigger layer confirmed healthy: ts-toifood-web returned 202 on Jun 21. Root cause: parallel matrix jobs all fetch the same SHA for WOULD-UPDATE-MD-LOG.log and race to PUT -- first writer wins, rest get HTTP 409. Diagnosed from gh run view --log-failed on run 27897564824. No docs corruption, no listener issue. Fix pending: extract Log run outcome into a sequential log job after the matrix completes.
+
+
 ## ASSET:ts-repo 2026-06-19 → two-layer logging fully confirmed end-to-end — both trigger and write layers working
 
 Trigger layer (GitHub Actions → log): every run writes outcome to WOULD-UPDATE-MD-LOG.log regardless of result. Write layer (listener → log): appendToRunLog fires after writeEntriesToGitHub resolves, logging WRITE_OK / WRITE_PARTIAL / WRITE_FAIL with counts. Confirmed entries: 04:13 UTC WRITE_PARTIAL 6 ok 10 failed, 04:57 UTC WRITE_PARTIAL 6 ok 10 failed, 07:38 UTC WRITE_FAIL skill error. Log is now the single source of truth for diagnosing pipeline runs without SSH access to Mac Mini.
