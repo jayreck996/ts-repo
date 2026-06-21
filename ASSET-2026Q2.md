@@ -3,6 +3,9 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-20 → global skill synced, Claude re-auth completed, would-update-md set to daily
+
+~/.claude/commands/would-update.md overwritten from jayreck996/ts-repo via GitHub API — now matches repo: dynamic category discovery, no hardcoded list, emits N×2 objects. Claude Pro re-auth completed after account switch. would-update-md.yml cron changed from '0 6 * * 1' (weekly Monday) to '0 6 * * *' (daily 06:00 UTC = 18:00 NZST), commit 16b9b52.
 ## ASSET:ts-repo 2026-06-22 -> would-update skill suffix mapping fixed -- ts-toifood-back and ts-toifood-web now resolve to correct source repos
 
 Added explicit case entries to step 2 of would-update.md: ts-toifood-back -> suffix="back" -> toifood-dev/ts-toifood-back, ts-toifood-web -> suffix="web" -> toifood-dev/ts-toifood-web. Fallback changed from ${ARGUMENTS#ts-} to ${ARGUMENTS#ts-toifood-} so future targets following the ts-toifood-* naming pattern resolve correctly without needing an explicit case.
