@@ -3,6 +3,9 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-22 → split-log deployed — listener now writes to LISTENER-LOG.log, GH Actions to TRIGGER-LOG.log
+
+git pull (3e3c226 → 6f9fea5) + pm2 restart toigroup-listener on Mac Mini. toigroup-listener.js LOG_PATH updated to would/LISTENER-LOG.log. would-update-md.yml log step updated to would/TRIGGER-LOG.log. Two independent writers now have separate files — 409 race permanently eliminated. ~/.claude/commands/would-update.md resynced.
 ## ASSET:ts-repo 2026-06-22 -> split log implementation started -- TRIGGER-LOG.log in would-update-md.yml, LISTENER-LOG.log in toigroup-listener.js
 
 Implementing two-file split to eliminate 409 race permanently. Changes: (1) would-update-md.yml Log run outcome step -- update all WOULD-UPDATE-MD-LOG.log references to would/TRIGGER-LOG.log, (2) toigroup-listener.js appendToRunLog -- update LOG_PATH constant from would/WOULD-UPDATE-MD-LOG.log to would/LISTENER-LOG.log. WOULD-UPDATE-MD-LOG.log retained as archive. Mac Mini must git pull after both changes are pushed before next run.
