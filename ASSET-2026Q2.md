@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-22 -> would-update-md fix simplified -- max-parallel: 1 eliminates log race without restructuring jobs
+
+Root cause of Jun 20-21 409 failures: 3 parallel matrix jobs (ts-toifood-back, ts-toifood-web, ts-toifood) all fetch the same log file SHA simultaneously, first writer wins, rest get 409. Fix: add max-parallel: 1 to the trigger job matrix strategy -- jobs run serially, each log step sees the SHA the previous job just wrote. No new jobs, no artifact handoff, no dynamic output keys. Trigger time increases from ~30s to ~90s worst case -- acceptable since listener returns 202 immediately.
+
+
 ## ASSET:ts-repo 2026-06-22 -> would-update-md fix approach decided -- log step moved to sequential job after matrix completes
 
 Fix for the Jun 20-21 409 race condition: remove Log run outcome from the parallel trigger matrix, add a new log job (needs: trigger, if: always()) that iterates all targets serially in a single shell loop. Each iteration re-fetches the SHA of WOULD-UPDATE-MD-LOG.log immediately before its PUT -- no two writes share a SHA. Trigger layer unchanged (still parallel, fail-fast: false). Known limitation: matrix job outputs use dynamic keys (result-<target>) which require static declaration -- may need artifact-based handoff if target count grows.
