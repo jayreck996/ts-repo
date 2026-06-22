@@ -1,3 +1,7 @@
+2026-06-22 23:42 UTC | ts-toifood-web | WRITE_FAIL     | --- | skill error: JSON parse failed — Unexpected token '.', ..."."
+  },
+  ...
+]" is not valid JSON
 2026-06-22 23:30 UTC | ts-toifood-back | WRITE_OK       | --- | 16/16 entries committed
 2026-06-22 21:16 UTC | ts-toifood-back | WRITE_FAIL     | --- | skill error: JSON parse failed — Expected ',' or '}' after property value in JSON at position 283 (line 4 column 
 2026-06-22 08:14 UTC | ts-toifood-back | WRITE_OK       | --- | 14/14 entries committed
