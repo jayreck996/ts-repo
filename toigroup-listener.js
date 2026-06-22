@@ -6,7 +6,14 @@
 const http = require('http');
 const { execSync, execFile } = require('child_process');
 
+const skillQueue = [];
 let skillRunning = false;
+
+function processQueue() {
+  if (skillRunning || skillQueue.length === 0) return;
+  const { target, quarter_override } = skillQueue.shift();
+  runSkill(target, quarter_override);
+}
 
 const PORT = 3456;
 let targetsCache = null;
@@ -125,10 +132,6 @@ function writeEntriesToGitHub(entries, outputRepo, token) {
 }
 
 function runSkill(target, quarter_override) {
-  if (skillRunning) {
-    console.log(`[${new Date().toISOString()}] skill busy — dropping request for target: ${target}`);
-    return;
-  }
   skillRunning = true;
   console.log(`[${new Date().toISOString()}] skill starting — target: ${target}`);
 
@@ -165,6 +168,7 @@ function runSkill(target, quarter_override) {
       console.error(`[${new Date().toISOString()}] skill error: No JSON array in skill output`);
       console.error(`[${new Date().toISOString()}] raw output (first 2000 chars): ${stdout.slice(0, 2000)}`);
       appendToRunLog(target, 'WRITE_FAIL', 'skill error: no JSON array in output');
+      processQueue();
       return;
     }
 
@@ -190,6 +194,7 @@ function runSkill(target, quarter_override) {
       ? `${ok}/${entries.length} entries committed`
       : `${ok} ok, ${fail} failed of ${entries.length}`;
     appendToRunLog(target, status, note);
+    processQueue();
   });
 }
 
@@ -212,7 +217,8 @@ function handle(req, res) {
     console.log(`[${new Date().toISOString()}] /would-update accepted — target: ${target}${quarter_override ? ` quarter=${quarter_override}` : ''}`);
 
     res.writeHead(202).end('Accepted');
-    setImmediate(() => runSkill(target, quarter_override));
+    skillQueue.push({ target, quarter_override });
+    setImmediate(processQueue);
   });
 }
 
