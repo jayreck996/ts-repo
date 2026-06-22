@@ -3,6 +3,9 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-23 → skill renamed would-update → could/could-update-md — path and command aligned to could/ convention
+
+.claude/commands/would-update.md moved to .claude/commands/could/could-update-md.md. Listener updated: POST /would-update → /could/could-update-md, claude --print arg updated. Old file deleted. Global ~/.claude/commands/ synced: could/could-update-md.md created, would-update.md removed. Commits 4919c0d (new), f8b72c6 (delete), 3878d12 (listener). pm2 restart toigroup-listener done.
 ## ASSET:ts-repo 2026-06-23 → would-update tree filter expanded — .lock .d.ts .map .spec.ts .test.ts now excluded
 
 Updated select filter in Step 2 of would-update.md: added lock, d.ts, map, spec.ts, test.ts to the exclusion pattern alongside csv, log, md. Eliminates package-lock.json/yarn.lock (large generated files), TypeScript declaration files, source maps, and test files from the source tree read. README.md and package.json unaffected — fetched explicitly by path. Global ~/.claude/commands/would-update.md synced. Commit d06c294.
