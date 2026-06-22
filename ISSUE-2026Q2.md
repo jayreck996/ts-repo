@@ -3,6 +3,9 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-23 → global skill requires manual resync on every pull — no automated sync between repo and ~/.claude/commands/
+
+Every time a commit updates .claude/commands/would-update.md, the global skill at ~/.claude/commands/would-update.md must be manually overwritten. Has happened 3 times (2026-06-20, 2026-06-22, 2026-06-23). Fix: add a post-merge git hook in /Users/jayreck/toifood/ts-repo that auto-copies .claude/commands/would-update.md to ~/.claude/commands/ on every pull.
 ## ISSUE:ts-repo 2026-06-23 -> skillRunning boolean replaced with queue -- dropped requests were a design flaw not a safety net
 
 skillRunning=true drop pattern was originally added to prevent stale TCP connections (from the old execSync blocking loop) from spawning phantom skill runs. execFile fixed the root cause -- stale connections no longer queue. The boolean now only serves to drop legitimate sequential triggers. Replaced with a FIFO queue: incoming requests push to skillQueue, processQueue() runs the next entry when the current skill finishes. All targets process serially in arrival order with no drops.
