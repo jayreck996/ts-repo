@@ -142,6 +142,7 @@ function runSkill(target, quarter_override) {
     console.error(`[${new Date().toISOString()}] skill error: ${e.message}`);
     skillRunning = false;
     appendToRunLog(target, 'WRITE_FAIL', `config error: ${e.message}`);
+    processQueue();
     return;
   }
   const env = {
@@ -160,6 +161,7 @@ function runSkill(target, quarter_override) {
       console.error(`[${new Date().toISOString()}] skill error: ${err.message}`);
       if (stderr) console.error(`[${new Date().toISOString()}] stderr: ${stderr.slice(0, 1000)}`);
       appendToRunLog(target, 'WRITE_FAIL', `skill error: ${err.message.slice(0, 120)}`);
+      processQueue();
       return;
     }
 
@@ -182,6 +184,7 @@ function runSkill(target, quarter_override) {
       console.error(`[${new Date().toISOString()}] skill error: ${parseErr.message}`);
       console.error(`[${new Date().toISOString()}] raw JSON match (first 3000 chars): ${jsonMatch[0].slice(0, 3000)}`);
       appendToRunLog(target, 'WRITE_FAIL', `skill error: JSON parse failed — ${parseErr.message.slice(0, 80)}`);
+      processQueue();
       return;
     }
 
