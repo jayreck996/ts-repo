@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-23 -> skillRunning boolean replaced with queue -- dropped requests were a design flaw not a safety net
+
+skillRunning=true drop pattern was originally added to prevent stale TCP connections (from the old execSync blocking loop) from spawning phantom skill runs. execFile fixed the root cause -- stale connections no longer queue. The boolean now only serves to drop legitimate sequential triggers. Replaced with a FIFO queue: incoming requests push to skillQueue, processQueue() runs the next entry when the current skill finishes. All targets process serially in arrival order with no drops.
+
+
 ## ISSUE:ts-repo 2026-06-22 -> skillRunning flag drops ts-toifood-web and ts-toifood triggers -- only one skill runs per workflow dispatch
 
 max-parallel: 1 fires triggers sequentially (~8s apart) but each trigger returns 202 immediately. The Mac Mini skillRunning flag blocks concurrent requests -- when ts-toifood-back's skill is still running (~5-10 min), ts-toifood-web and ts-toifood triggers arrive, get 202, but are silently dropped. Only ts-toifood-back (first trigger) writes per run. Confirmed: LISTENER-LOG.log shows only one WRITE_OK entry per test run. skillRunning was designed to block stale TCP connections queueing up from a blocked event loop (fixed with execFile) -- it now over-blocks legitimate sequential triggers. Fix options: (A) remove skillRunning guard and rely on execFile async + natural serialisation, (B) queue incoming requests instead of dropping them, (C) trigger targets as separate workflow_dispatch runs with a delay between them.
