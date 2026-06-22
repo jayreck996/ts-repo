@@ -3,6 +3,9 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-23 → pulled to 5041bab, global skill synced, listener restarted with FIFO queue
+
+git pull (6f9fea5 → 5041bab) + cp .claude/commands/would-update.md ~/.claude/commands/ + pm2 restart toigroup-listener. Listener now running FIFO queue — all 3 targets queue on arrival instead of dropping. Next 06:00 UTC cron expected to show 3 WRITE_OK entries in LISTENER-LOG.log.
 ## ASSET:ts-repo 2026-06-23 -> toigroup-listener skillRunning replaced with FIFO queue -- all three targets now process per run
 
 Replaced boolean skillRunning guard with skillQueue array + processQueue() function in toigroup-listener.js. Incoming requests push {target, quarter_override} to queue and call processQueue(). processQueue() bails if skillRunning or queue empty, otherwise shifts next entry and calls runSkill(). runSkill() sets skillRunning=true on entry, calls processQueue() on exit (all code paths). max-parallel: 1 in workflow unchanged -- still needed to serialise TRIGGER-LOG.log writes.
