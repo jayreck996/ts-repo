@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-23 -> would-update skill Step 2 jq filter updated -- .csv .log .md files excluded from source tree read
+
+Added select(.path | test("\\.(csv|log|md)$") | not) to the git tree jq filter in Step 2 of .claude/commands/would-update.md. README.md unaffected -- fetched by explicit path outside the tree filter. Mac Mini requires git pull + manual skill sync after push. No pm2 restart needed.
+
+
 ## ASSET:ts-repo 2026-06-23 → pulled to 5041bab, global skill synced, listener restarted with FIFO queue
 
 git pull (6f9fea5 → 5041bab) + cp .claude/commands/would-update.md ~/.claude/commands/ + pm2 restart toigroup-listener. Listener now running FIFO queue — all 3 targets queue on arrival instead of dropping. Next 06:00 UTC cron expected to show 3 WRITE_OK entries in LISTENER-LOG.log.
