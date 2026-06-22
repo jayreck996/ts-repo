@@ -151,7 +151,7 @@ function runSkill(target, quarter_override) {
     ...(quarter_override ? { QUARTER_OVERRIDE: quarter_override } : {}),
   };
 
-  execFile('claude', ['--dangerously-skip-permissions', '--print', `/would-update ${target}`], {
+  execFile('claude', ['--dangerously-skip-permissions', '--print', `/could/could-update-md ${target}`], {
     env,
     maxBuffer: 10 * 1024 * 1024,
   }, (err, stdout, stderr) => {
@@ -199,7 +199,7 @@ function runSkill(target, quarter_override) {
 }
 
 function handle(req, res) {
-  if (req.method !== 'POST' || req.url !== '/would-update') {
+  if (req.method !== 'POST' || req.url !== '/could/could-update-md') {
     res.writeHead(404).end();
     return;
   }
@@ -214,7 +214,7 @@ function handle(req, res) {
   req.on('data', d => { body += d; });
   req.on('end', () => {
     const { target = 'ts-back', quarter_override } = body ? JSON.parse(body) : {};
-    console.log(`[${new Date().toISOString()}] /would-update accepted — target: ${target}${quarter_override ? ` quarter=${quarter_override}` : ''}`);
+    console.log(`[${new Date().toISOString()}] /could/could-update-md accepted — target: ${target}${quarter_override ? ` quarter=${quarter_override}` : ''}`);
 
     res.writeHead(202).end('Accepted');
     skillQueue.push({ target, quarter_override });
