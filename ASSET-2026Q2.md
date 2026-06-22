@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-22 -> split log confirmed working -- TRIGGER-LOG.log and LISTENER-LOG.log both created, no 409
+
+Test run 27921457566: all three trigger jobs passed (success), no 409 errors. TRIGGER-LOG.log created with 3 entries (one per target). LISTENER-LOG.log created with 1 entry (ts-toifood-back WRITE_OK 14/14). Log race permanently eliminated. Remaining issue: skillRunning flag drops the 2nd and 3rd triggers -- only one target writes per run.
+
+
 ## ASSET:ts-repo 2026-06-22 -> GitHub Contents API 409 root cause confirmed -- optimistic lock, not a concurrency feature
 
 GitHub Contents API uses SHA as an optimistic lock: GET returns current SHA, PUT must include that SHA to prove the caller saw the latest version. If two writers GET simultaneously they both hold the same SHA -- whichever PUTs second gets 409 because the file moved on. GitHub has no merge, no queue, no retry -- it rejects and the caller must re-fetch. Identical to a git push conflict. No API-level primitive exists to coordinate concurrent writers -- serialisation must be enforced by the caller (max-parallel: 1 for GH Actions, skillRunning flag for Mac Mini listener). Split log files eliminate the cross-system race by giving each system its own file with a single writer.
