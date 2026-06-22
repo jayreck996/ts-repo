@@ -52,7 +52,7 @@ jobs:
             --arg q "${{ inputs.quarter_override }}" \
             '{"target": $t, "quarter_override": $q}')
           STATUS=$(curl -s -o /tmp/response.txt -w "%{http_code}" \
-            -X POST https://local.toigroup.co.nz/would-update \
+            -X POST https://local.toigroup.co.nz/could/could-update-md \
             -H "x-secret: ${{ secrets.TOIGROUP_SECRET }}" \
             -H "X-Token: ${{ secrets.MACMINI_TRIGGER_TOKEN }}" \
             -H "Content-Type: application/json" \
