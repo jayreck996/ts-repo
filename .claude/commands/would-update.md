@@ -44,7 +44,7 @@ esac
 
 # Get all blob paths
 gh api "repos/toifood-dev/ts-toifood-${suffix}/git/trees/${latestBranch}?recursive=1" \
-  --jq '.tree[] | select(.type=="blob") | select(.path | test("\\\\.(csv|log|md)$") | not) | .path'
+  --jq '.tree[] | select(.type=="blob") | select(.path | test("\\.(csv|log|md)$") | not) | .path'
 ```
 
 From the tree, fetch and decode these files via GitHub API:
