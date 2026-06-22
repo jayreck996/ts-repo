@@ -3,6 +3,9 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-23 → would-update tree filter expanded — .lock .d.ts .map .spec.ts .test.ts now excluded
+
+Updated select filter in Step 2 of would-update.md: added lock, d.ts, map, spec.ts, test.ts to the exclusion pattern alongside csv, log, md. Eliminates package-lock.json/yarn.lock (large generated files), TypeScript declaration files, source maps, and test files from the source tree read. README.md and package.json unaffected — fetched explicitly by path. Global ~/.claude/commands/would-update.md synced. Commit d06c294.
 ## ASSET:ts-repo 2026-06-23 -> would-update skill Step 2 jq filter updated -- .csv .log .md files excluded from source tree read
 
 Added select(.path | test("\\.(csv|log|md)$") | not) to the git tree jq filter in Step 2 of .claude/commands/would-update.md. README.md unaffected -- fetched by explicit path outside the tree filter. Mac Mini requires git pull + manual skill sync after push. No pm2 restart needed.
