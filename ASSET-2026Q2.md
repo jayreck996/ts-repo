@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-23 -> toigroup-listener skillRunning replaced with FIFO queue -- all three targets now process per run
+
+Replaced boolean skillRunning guard with skillQueue array + processQueue() function in toigroup-listener.js. Incoming requests push {target, quarter_override} to queue and call processQueue(). processQueue() bails if skillRunning or queue empty, otherwise shifts next entry and calls runSkill(). runSkill() sets skillRunning=true on entry, calls processQueue() on exit (all code paths). max-parallel: 1 in workflow unchanged -- still needed to serialise TRIGGER-LOG.log writes.
+
+
 ## ASSET:ts-repo 2026-06-22 -> split log confirmed working -- TRIGGER-LOG.log and LISTENER-LOG.log both created, no 409
 
 Test run 27921457566: all three trigger jobs passed (success), no 409 errors. TRIGGER-LOG.log created with 3 entries (one per target). LISTENER-LOG.log created with 1 entry (ts-toifood-back WRITE_OK 14/14). Log race permanently eliminated. Remaining issue: skillRunning flag drops the 2nd and 3rd triggers -- only one target writes per run.
