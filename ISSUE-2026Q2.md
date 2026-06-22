@@ -3,6 +3,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-22 -> skillRunning flag drops ts-toifood-web and ts-toifood triggers -- only one skill runs per workflow dispatch
+
+max-parallel: 1 fires triggers sequentially (~8s apart) but each trigger returns 202 immediately. The Mac Mini skillRunning flag blocks concurrent requests -- when ts-toifood-back's skill is still running (~5-10 min), ts-toifood-web and ts-toifood triggers arrive, get 202, but are silently dropped. Only ts-toifood-back (first trigger) writes per run. Confirmed: LISTENER-LOG.log shows only one WRITE_OK entry per test run. skillRunning was designed to block stale TCP connections queueing up from a blocked event loop (fixed with execFile) -- it now over-blocks legitimate sequential triggers. Fix options: (A) remove skillRunning guard and rely on execFile async + natural serialisation, (B) queue incoming requests instead of dropping them, (C) trigger targets as separate workflow_dispatch runs with a delay between them.
+
+
 ## ISSUE:ts-repo 2026-06-22 -> TRIGGER-LOG.log and LISTENER-LOG.log not yet created -- Mac Mini has not pulled latest toigroup-listener.js
 
 Split log changes pushed at 23:15 UTC (would-update-md.yml -> TRIGGER-LOG.log, toigroup-listener.js -> LISTENER-LOG.log). As of check at 23:30 UTC neither file exists in would/ -- WOULD-UPDATE-MD-LOG.log top entry still 23:10 UTC, confirming listener has not restarted with new code. Mac Mini must git pull + pm2 restart toigroup-listener before LISTENER-LOG.log will be created. Until then listener keeps writing to WOULD-UPDATE-MD-LOG.log (old path) while GH Actions will write to TRIGGER-LOG.log (new path) on next run -- logs will be split across all three files temporarily.
