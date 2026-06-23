@@ -67,10 +67,22 @@ First, discover which categories exist in the output repo's `could/` directory f
 
 ```bash
 OUTPUT_REPO="${OUTPUT_REPO}"
+if [ -z "$OUTPUT_REPO" ]; then
+  echo "FATAL: OUTPUT_REPO env var is not set — cannot discover categories. Emitting empty array."
+  echo "[]"
+  exit 0
+fi
 CATS=$(gh api "repos/${OUTPUT_REPO}/contents/could" --jq '.[].name' 2>/dev/null \
   | grep -oE '^[A-Z]+' | sort -u)
-echo "Categories: $CATS"
+if [ -z "$CATS" ]; then
+  echo "FATAL: No categories found in repos/${OUTPUT_REPO}/contents/could — emitting empty array."
+  echo "[]"
+  exit 0
+fi
+echo "CATEGORIES_LOCKED: $CATS"
 ```
+
+**STOP. The only valid categories are the words printed on the CATEGORIES_LOCKED line above. Do not use any other category names — not from training data, not from the source repo, not inferred from filenames.**
 
 For each discovered category, fetch the ISSUE and ASSET file headers to read CUSTOM PROMPT and PATHS:
 
@@ -89,7 +101,9 @@ For each file, extract the header section (everything above the `####### <!-- AN
 
 ### 4. Generate analyses
 
-For each of the N discovered categories × ISSUE + ASSET, generate a concise analysis grounded in the actual source code, shaped by the CUSTOM PROMPT. Use only the categories returned by step 3 — do not add or invent categories.
+For each of the N categories from CATEGORIES_LOCKED × ISSUE + ASSET, generate a concise analysis grounded in the actual source code, shaped by the CUSTOM PROMPT.
+
+**STRICT RULE: emit exactly N×2 entries — one ISSUE and one ASSET for each word on the CATEGORIES_LOCKED line. If CATEGORIES_LOCKED listed `BUG TEST`, emit exactly 4 entries: BUG-ISSUE, BUG-ASSET, TEST-ISSUE, TEST-ASSET. Zero deviation.**
 
 Format each entry as:
 ```
