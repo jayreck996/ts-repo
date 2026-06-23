@@ -1,3 +1,9 @@
+### Manual test run 28016985329 confirmed WRITE_OK both targets (2026-06-23)
+- Triggered would-update-md workflow manually via workflow_dispatch
+- ts-toifood-back: WRITE_OK 4/4 at 10:01 UTC
+- ts-toifood-web: WRITE_OK 4/4 at 10:07 UTC
+- Confirms CATS guard fix (29e7dae) working correctly -- 4 entries = BUG + TEST x ISSUE + ASSET
+
 ### Non-BUG/TEST categories removed from could/ in both output repos (2026-06-23)
 - Deleted ANALYSIS, INSTRUCTION, MIGRATE, PRICE, RECOVERY, USAGE from -ts-toifood-back (24 files) and -ts-toifood-web (6 files)
 - Skill discovers categories at runtime by reading could/ directory -- deleted categories will not be recreated on next run
