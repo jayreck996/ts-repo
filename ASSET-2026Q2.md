@@ -1,3 +1,9 @@
+### ts-toifood-web run 27998129619 confirmed FIFO queue intact (2026-06-23)
+- ts-toifood-back: WRITE_OK 14/14 at 02:39 UTC
+- ts-toifood-web: WRITE_FAIL (bad escaped char in JSON) at 02:48 UTC -- queue continued, no stall
+- Confirms processQueue() fix from aa86c15 is holding across all WRITE_FAIL exit paths
+- Node_modules filter (f2235af) not yet synced to Mac Mini; ts-toifood-web still fails until Mac Mini pulls
+
 ASSET LOG
 INSTRUCTION FOR AI MODEL:
 
