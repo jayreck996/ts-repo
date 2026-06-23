@@ -52,6 +52,14 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-24 -> could-update-md Log outcome step HTTP 403 -- GITHUB_TOKEN missing contents:write
+
+- "run" job used GITHUB_TOKEN to PUT would/TRIGGER-LOG.log without permissions: contents: write in workflow
+- Both matrix targets failed on Log outcome step with Resource not accessible by integration
+- Trigger step was OK (HTTP 202 from listener); only the post-trigger logging step failed
+- Fix: added permissions: contents: write to the run job -- commit 32e4d28
+
+
 ### CATS hallucination fixed — skill guard + post-merge hook deployed (2026-06-23)
 - 07:18 UTC both targets WRITE_FAIL: `no stdin data received` — Claude auth expired again (3rd expiry today); re-authed
 - ts-toifood-back 08:59 UTC: `no JSON array in output` — Claude output prose describing 8 wrong categories instead of JSON
