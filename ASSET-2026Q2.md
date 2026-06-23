@@ -1,3 +1,9 @@
+### Non-BUG/TEST categories removed from could/ in both output repos (2026-06-23)
+- Deleted ANALYSIS, INSTRUCTION, MIGRATE, PRICE, RECOVERY, USAGE from -ts-toifood-back (24 files) and -ts-toifood-web (6 files)
+- Skill discovers categories at runtime by reading could/ directory -- deleted categories will not be recreated on next run
+- -ts-toifood-back could/: BUG + TEST (Q2 + Q3); -ts-toifood-web could/: BUG + TEST (Q2 only)
+- would/: LOG-METRIC-2026Q2.csv in -ts-toifood-back only; -ts-toifood-web would/ is empty
+
 ### ts-toifood-web run 27998129619 confirmed FIFO queue intact (2026-06-23)
 - ts-toifood-back: WRITE_OK 14/14 at 02:39 UTC
 - ts-toifood-web: WRITE_FAIL (bad escaped char in JSON) at 02:48 UTC -- queue continued, no stall
