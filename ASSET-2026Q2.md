@@ -29,6 +29,14 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-24 -> SHA chaining in log job deployed -- CDN cache fix -- 59a6016
+
+- Problem: re-fetching SHA inside loop hit GitHub CDN cache returning stale SHA immediately after a write
+- Fix: read file ONCE before loop, then carry SHA forward from each PUT response body (response.content.sha)
+- Each iteration uses SHA from the previous PUT -- no GET inside loop, no cache, no collision possible
+- Run 28061517556: setup + both run targets + log job all green
+
+
 ## ASSET:ts-repo 2026-06-24 -> Option 2 sequential log job deployed — scales to N targets — 8a15c66
 
 Problem with retry loop at scale:
