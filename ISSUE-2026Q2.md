@@ -1,3 +1,8 @@
+### Mac Mini pm2 restart pending after toigroup-listener.js update (2026-06-23)
+- toigroup-listener.js commit messages renamed would-update → could-update (b58201c)
+- Mac Mini still running old version in pm2 until restarted
+- Fix: SSH into Mac Mini as jayreck, run `pm2 restart toigroup-listener`
+
 ### Workflow names inconsistent with skill/endpoint naming (2026-06-23)
 - Workflows named `would-update-md` and `would-update-timing` but listener endpoint and Claude skill already use `could-update-md`
 - `toigroup-listener.js` commit messages and committer name still say `would-update`
