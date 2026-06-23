@@ -52,6 +52,15 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-24 -> Mac Mini Claude skill WRITE_FAIL since 22:32 UTC -- no stdin detected
+
+- All skill runs failing: claude --dangerously-skip-permissions --print /could/could-update-md ... Warning: no stdin detected
+- Last WRITE_OK was 22:28 UTC; failed consistently from 22:32 UTC across all subsequent runs
+- GH Action side working correctly (HTTP 202 from listener); failure is in Claude skill invocation on Mac Mini
+- Likely cause: expired Claude auth session or Claude CLI auto-update changed non-TTY behavior
+- Fix: SSH in as jayreck -> test claude --dangerously-skip-permissions --print "hello" -> re-auth if needed -> git pull -> pm2 restart toigroup-listener
+
+
 ## ISSUE:ts-repo 2026-06-24 -> sequential log job second iteration 409 -- GitHub CDN cached pre-write SHA
 
 - Log job re-fetched TRIGGER-LOG.log SHA inside the loop but GitHub CDN returned stale cached response
