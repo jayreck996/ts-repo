@@ -29,6 +29,33 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-24 -> SHA retry loop shape -- TRIGGER-LOG.log parallel write flow
+
+TRIGGER-LOG.log current state: SHA=abc, content="old log lines"
+
+-- Attempt i=1 --------------------------------------------------
+  GET  TRIGGER-LOG.log  ->  SHA=abc, content=<base64>
+  decode content        ->  LOGBODY="old log lines"
+  build UPDATED         ->  "new line\nold log lines"
+  base64 encode         ->  ENCODED=<base64>
+  PUT  sha=abc  content=ENCODED
+        |
+        +- GitHub: "abc matches current" -> writes, file now SHA=xyz  OK  break
+        |
+        +- GitHub: "abc != current (xyz)" -> 409                       FAIL  fall through
+
+-- Attempt i=2 (only reached on 409) ----------------------------
+  GET  TRIGGER-LOG.log  ->  SHA=xyz, content=<base64>   <- fresh fetch
+  decode content        ->  LOGBODY="winner's line\nold log lines"
+  build UPDATED         ->  "new line\nwinner's line\nold log lines"
+  base64 encode         ->  ENCODED=<base64>
+  PUT  sha=xyz  content=ENCODED
+        |
+        +- GitHub: "xyz matches current" -> writes               OK  break
+
+Key: fetch is inside the loop -- every retry reads the file as it actually is now.
+Both entries end up in the log correctly. With 2 parallel jobs, i=2 always succeeds. i=3 is safety net.
+
 ## ASSET:ts-repo 2026-06-24 -> GitHub Contents API SHA -- optimistic locking across 3-repo write pattern
 
 - Every file has a SHA (git blob hash); PUT must include the SHA you last read -- GitHub rejects with 409 if SHA changed since
