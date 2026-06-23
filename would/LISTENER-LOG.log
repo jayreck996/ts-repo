@@ -1,3 +1,4 @@
+2026-06-23 08:59 UTC | ts-toifood-back | WRITE_FAIL     | --- | skill error: no JSON array in output
 2026-06-23 07:18 UTC | ts-toifood-web | WRITE_FAIL     | --- | skill error: Command failed: claude --dangerously-skip-permissions --print /could/could-update-md ts-toifood-web
 Warning: no stdin da
 2026-06-23 07:18 UTC | ts-toifood-back | WRITE_FAIL     | --- | skill error: Command failed: claude --dangerously-skip-permissions --print /could/could-update-md ts-toifood-back
