@@ -1,4 +1,4 @@
-name: could-update-md
+﻿name: could-update-md
 
 on:
   schedule:
@@ -10,12 +10,9 @@ on:
         type: string
         required: false
       target:
-        description: 'Single target to run (e.g. ts-toifood-web). Leave empty to run all.'
+        description: 'Single target to run (e.g. ts-back). Leave empty to run all.'
         type: string
         required: false
-
-permissions:
-  contents: write
 
 jobs:
   setup:
@@ -28,7 +25,7 @@ jobs:
         id: load
         run: |
           if [ -n "${{ inputs.target }}" ]; then
-            matrix=$(jq -c '[.[] | select(.target == "${{ inputs.target }}") | {target: .target, outputRepo: .outputRepo, tokenSecret: .tokenSecret}]' targets.json)
+            matrix=$(jq -c '[.[] | select(.target == "${{ inputs.target }}")] | map({target: .target, outputRepo: .outputRepo, tokenSecret: .tokenSecret})' targets.json)
           else
             matrix=$(jq -c '[.[] | {target: .target, outputRepo: .outputRepo, tokenSecret: .tokenSecret}]' targets.json)
           fi
@@ -42,7 +39,6 @@ jobs:
       matrix:
         include: ${{ fromJson(needs.setup.outputs.matrix) }}
       fail-fast: false
-      max-parallel: 1
     steps:
       - uses: actions/checkout@v4
         with:
@@ -63,73 +59,64 @@ jobs:
           echo "value=$QUARTER" >> $GITHUB_OUTPUT
           echo "Quarter: $QUARTER"
 
-      - name: Ensure quarterly files
+      - name: Discover categories from could/
+        id: categories
+        run: |
+          QUARTER="${{ steps.quarter.outputs.value }}"
+          # Find categories from any existing quarter's could/ files
+          CATS=$(ls could/ 2>/dev/null | grep -oE '^[A-Z]+' | sort -u | tr '\n' ',' | sed 's/,$//')
+          echo "cats=$CATS" >> $GITHUB_OUTPUT
+          echo "Categories: $CATS"
+
+      - name: Create quarterly files
+        id: create
         env:
           QUARTER: ${{ steps.quarter.outputs.value }}
+          CATEGORIES: ${{ steps.categories.outputs.cats }}
         run: |
-          ANCHOR_ASSET="####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->"
-          ANCHOR_ISSUE="####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->"
-          ASSET_HEADER=$(printf 'ASSET LOG
-INSTRUCTION FOR AI MODEL:
-
-ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
-
-NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES.
-
-REQUIRED FORMAT FOR EACH ASSET ENTRY:
-
-## ASSET:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
-
-%s' "$ANCHOR_ASSET")
-          ISSUE_HEADER=$(printf 'ISSUE LOG
-INSTRUCTION FOR AI MODEL:
-
-ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
-
-NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES.
-
-REQUIRED FORMAT FOR EACH ISSUE ENTRY:
-
-## ISSUE:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
-
-%s' "$ANCHOR_ISSUE")
+          CREATED=false
+          ANCHOR="####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->"
+          IANCHOR="####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->"
+          ASSET_HEADER="$(printf 'ASSET LOG\nINSTRUCTION FOR AI MODEL:\n\nALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.\n\nNEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES.\n\nREQUIRED FORMAT FOR EACH ASSET ENTRY:\n\n## ASSET:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}\n\n%s' "$ANCHOR")"
+          ISSUE_HEADER="$(printf 'ISSUE LOG\nINSTRUCTION FOR AI MODEL:\n\nALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.\n\nNEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES.\n\nREQUIRED FORMAT FOR EACH ISSUE ENTRY:\n\n## ISSUE:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}\n\n%s' "$IANCHOR")"
 
           create_file() {
             local path="$1" content="$2"
             if [ ! -f "$path" ]; then
               mkdir -p "$(dirname "$path")"
-              printf '%s' "$content" > "$path"
-              echo "created: $path"
+              printf "%s" "$content" > "$path"
+              echo "✅ Created: $path"
+              CREATED=true
+            else
+              echo "— Exists:  $path"
             fi
           }
 
-          CATS=$(ls could/ 2>/dev/null | grep -oE '^[A-Z]+' | sort -u | tr '
-' ' ')
-          echo "Categories: $CATS"
-
-          create_file "ISSUE-${QUARTER}.md" "$ISSUE_HEADER"
           create_file "ASSET-${QUARTER}.md" "$ASSET_HEADER"
+          create_file "ISSUE-${QUARTER}.md" "$ISSUE_HEADER"
 
-          for CAT in $CATS; do
-            create_file "could/${CAT}-ISSUE-${QUARTER}.md" "$ISSUE_HEADER"
+          IFS=',' read -ra CATS <<< "$CATEGORIES"
+          for CAT in "${CATS[@]}"; do
+            CAT=$(echo "$CAT" | xargs)
+            [ -z "$CAT" ] && continue
             create_file "could/${CAT}-ASSET-${QUARTER}.md" "$ASSET_HEADER"
+            create_file "could/${CAT}-ISSUE-${QUARTER}.md" "$ISSUE_HEADER"
           done
 
           mkdir -p would
           create_file "would/ISSUE-${QUARTER}.md" "$ISSUE_HEADER"
           create_file "would/ASSET-${QUARTER}.md" "$ASSET_HEADER"
 
+          echo "created=$CREATED" >> $GITHUB_OUTPUT
+
       - name: Commit new files
+        if: steps.create.outputs.created == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          if git diff --cached --quiet; then
-            echo "Nothing to commit"
-          else
-            git commit -m "could-update-title: ensure ${{ steps.quarter.outputs.value }} files — ${{ matrix.target }}"
-            git push
-          fi
+          git commit -m "could-update-title: init ${{ steps.quarter.outputs.value }} files — ${{ matrix.target }}"
+          git push
 
       - name: Trigger toigroup-listener
         id: trigger
@@ -158,9 +145,8 @@ REQUIRED FORMAT FOR EACH ISSUE ENTRY:
           CURRENT=$(gh api repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log --jq '{sha: .sha, content: .content}' 2>/dev/null || echo '{"sha":"","content":""}')
           SHA=$(echo "$CURRENT" | jq -r '.sha')
           LOGBODY=$(echo "$CURRENT" | jq -r '.content' | base64 -d 2>/dev/null || echo "")
-          UPDATED=$(printf '%s
-%s' "$LINE" "$LOGBODY")
-          ENCODED=$(printf '%s' "$UPDATED" | base64 -w 0)
+          UPDATED=$(echo "$LINE"; echo "$LOGBODY")
+          ENCODED=$(echo "$UPDATED" | base64 -w 0)
           if [ -n "$SHA" ] && [ "$SHA" != "null" ]; then
             gh api --method PUT repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log -f message="could-update-md: log ${TS} — ${TARGET}" -f sha="$SHA" -f content="$ENCODED"
           else
