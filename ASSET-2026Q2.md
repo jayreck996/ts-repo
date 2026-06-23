@@ -29,6 +29,13 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-24 -> could-update-md permissions fix deployed -- 32e4d28
+
+- Added permissions: contents: write to run job in .github/workflows/could-update-md.yml
+- Root cause of run 28055615844 failure: GITHUB_TOKEN 403 on would/TRIGGER-LOG.log PUT
+- Trigger (HTTP 202) was already working; logging step now has write access
+
+
 ## ASSET:ts-repo 2026-06-23 → CATS guard + post-merge hook deployed — 29e7dae
 
 Skill updated with OUTPUT_REPO/CATS empty guards (fail-fast with `[]`), CATEGORIES_LOCKED echo replacing generic 'Categories:', and STRICT RULE in step 4 requiring exactly N×2 entries. Post-merge git hook installed at .git/hooks/post-merge to auto-sync global skill on every pull. Pushed 29e7dae, global skill synced.
