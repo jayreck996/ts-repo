@@ -1,3 +1,9 @@
+### Mac Mini node_modules filter sync unconfirmed -- ts-toifood-web still WRITE_FAIL (2026-06-23)
+- Checked LISTENER-LOG after runs 27998129619 and 27999596586 -- both ts-toifood-web entries are WRITE_FAIL (ellipsis / bad escape char)
+- f2235af (node_modules/dist/ jq exclusion) not applied to Mac Mini global skill in either run
+- No ts-toifood-web WRITE_OK in any run since filter was committed
+- Pending: git pull + cp skill + pm2 restart on Mac Mini
+
 ### Mac Mini has not pulled node_modules filter fix (2026-06-23)
 - Commit f2235af (jq filter excludes node_modules/ and dist/) not yet synced to Mac Mini
 - ts-toifood-web will keep WRITE_FAIL until Mac Mini runs: git pull && cp .claude/commands/could/could-update-md.md ~/.claude/commands/could/could-update-md.md && pm2 restart toigroup-listener
