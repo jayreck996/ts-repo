@@ -29,6 +29,29 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-24 -> Option 2 sequential log job deployed — scales to N targets — 8a15c66
+
+Problem with retry loop at scale:
+  N parallel jobs need up to N-1 retry rounds
+  All losers retry simultaneously creating new collision waves
+  3-attempt loop breaks at 5+ targets
+
+Fix: remove Log outcome step from run job entirely, add sequential log job after all matrix jobs complete
+
+How it works:
+  run job (parallel, per target):
+    - triggers listener as before
+    - uploads small artifact: target|status|http_code  <- no shared file, no SHA conflict
+
+  log job (sequential, runs after ALL matrix jobs finish):
+    - downloads all artifacts
+    - iterates targets one by one
+    - each iteration: GET current SHA -> PUT entry -> move to next
+    - single writer at all times -> no collision possible -> no retry needed
+
+Scaled testing approach: duplicate entries in targets.json pointing to same outputRepo
+to simulate 5+ parallel jobs — would expose retry loop failure, verifies sequential log job holds
+
 ## ASSET:ts-repo 2026-06-24 -> SHA retry loop shape -- TRIGGER-LOG.log parallel write flow
 
 TRIGGER-LOG.log current state: SHA=abc, content="old log lines"
