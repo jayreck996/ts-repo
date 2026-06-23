@@ -52,6 +52,13 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-24 -> sequential log job second iteration 409 -- GitHub CDN cached pre-write SHA
+
+- Log job re-fetched TRIGGER-LOG.log SHA inside the loop but GitHub CDN returned stale cached response
+- First iteration wrote successfully (file moved to new SHA), second iteration GET still returned old SHA -> 409
+- Fix: read file once before the loop, chain SHA from each PUT response to next iteration -- never re-fetches
+
+
 ## ISSUE:ts-repo 2026-06-24 -> Mac Mini pm2 restart still pending -- toigroup-listener.js would->could rename not yet live
 
 - toigroup-listener.js commit b58201c (would->could rename in commit messages/committer name) not yet running on Mac Mini
