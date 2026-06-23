@@ -1,3 +1,9 @@
+### ts-toifood-web WRITE_FAIL: bad escape character in JSON output (2026-06-23)
+- Skill ran with ~1,900-path tree (node_modules filter not yet synced to Mac Mini)
+- Claude produced invalid JSON: Bad escaped character at position 1389 (line 4 col 1338)
+- Previous run produced ellipsis truncation; this run produced escape corruption -- same root cause (overloaded context), different symptom
+- Fix: Mac Mini must pull f2235af and sync skill to exclude node_modules/ and dist/
+
 ISSUE LOG
 INSTRUCTION FOR AI MODEL:
 
