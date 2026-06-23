@@ -69,7 +69,7 @@ jobs:
         run: |
           ANCHOR_ASSET="####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->"
           ANCHOR_ISSUE="####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->"
-          ASSET_HEADER="$(printf 'ASSET LOG
+          ASSET_HEADER=$(printf 'ASSET LOG
 INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
@@ -80,8 +80,8 @@ REQUIRED FORMAT FOR EACH ASSET ENTRY:
 
 ## ASSET:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
 
-%s' "$ANCHOR_ASSET")"
-          ISSUE_HEADER="$(printf 'ISSUE LOG
+%s' "$ANCHOR_ASSET")
+          ISSUE_HEADER=$(printf 'ISSUE LOG
 INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
@@ -92,13 +92,13 @@ REQUIRED FORMAT FOR EACH ISSUE ENTRY:
 
 ## ISSUE:{NAME OF ENVIRONMENT} {YYYY-MM-DD HH:MM} → {CONTENT}
 
-%s' "$ANCHOR_ISSUE")"
+%s' "$ANCHOR_ISSUE")
 
           create_file() {
             local path="$1" content="$2"
             if [ ! -f "$path" ]; then
               mkdir -p "$(dirname "$path")"
-              printf "%s" "$content" > "$path"
+              printf '%s' "$content" > "$path"
               echo "created: $path"
             fi
           }
@@ -135,7 +135,7 @@ REQUIRED FORMAT FOR EACH ISSUE ENTRY:
         id: trigger
         run: |
           BODY=$(jq -n --arg t "${{ matrix.target }}" --arg q "${{ inputs.quarter_override }}" '{"target": $t, "quarter_override": $q}')
-          STATUS=$(curl -s -o /tmp/response.txt -w "%{http_code}"             -X POST https://local.toigroup.co.nz/could/could-update-md             -H "x-secret: ${{ secrets.TOIGROUP_SECRET }}"             -H "X-Token: ${{ secrets.MACMINI_TRIGGER_TOKEN }}"             -H "Content-Type: application/json"             --max-time 30             -d "$BODY")
+          STATUS=$(curl -s -o /tmp/response.txt -w "%{http_code}" -X POST https://local.toigroup.co.nz/could/could-update-md -H "x-secret: ${{ secrets.TOIGROUP_SECRET }}" -H "X-Token: ${{ secrets.MACMINI_TRIGGER_TOKEN }}" -H "Content-Type: application/json" --max-time 30 -d "$BODY")
           echo "http_code=$STATUS" >> $GITHUB_OUTPUT
           cat /tmp/response.txt
           [ "$STATUS" = "202" ] || exit 1
@@ -155,14 +155,14 @@ REQUIRED FORMAT FOR EACH ISSUE ENTRY:
           if [ "$HTTP_CODE" = "401" ] || [ "$HTTP_CODE" = "403" ]; then NOTE="auth rejected by listener"; fi
           if [ "$HTTP_CODE" = "202" ]; then NOTE="listener accepted — verify write via pm2 logs"; fi
           LINE="${TS} | ${TARGET} | ${STATUS} | ${HTTP_CODE:-???} | ${NOTE}"
-          CURRENT=$(gh api repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log             --jq '{sha: .sha, content: .content}' 2>/dev/null || echo '{"sha":"","content":""}')
+          CURRENT=$(gh api repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log --jq '{sha: .sha, content: .content}' 2>/dev/null || echo '{"sha":"","content":""}')
           SHA=$(echo "$CURRENT" | jq -r '.sha')
-          BODY=$(echo "$CURRENT" | jq -r '.content' | base64 -d 2>/dev/null || echo "")
-          UPDATED=$(printf "%s
-%s" "$LINE" "$BODY")
-          ENCODED=$(printf "%s" "$UPDATED" | base64 -w 0)
+          LOGBODY=$(echo "$CURRENT" | jq -r '.content' | base64 -d 2>/dev/null || echo "")
+          UPDATED=$(printf '%s
+%s' "$LINE" "$LOGBODY")
+          ENCODED=$(printf '%s' "$UPDATED" | base64 -w 0)
           if [ -n "$SHA" ] && [ "$SHA" != "null" ]; then
-            gh api --method PUT repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log               -f message="could-update-md: log ${TS} — ${TARGET}"               -f sha="$SHA" -f content="$ENCODED"
+            gh api --method PUT repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log -f message="could-update-md: log ${TS} — ${TARGET}" -f sha="$SHA" -f content="$ENCODED"
           else
-            gh api --method PUT repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log               -f message="could-update-md: log ${TS} — ${TARGET}"               -f content="$ENCODED"
+            gh api --method PUT repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log -f message="could-update-md: log ${TS} — ${TARGET}" -f content="$ENCODED"
           fi
