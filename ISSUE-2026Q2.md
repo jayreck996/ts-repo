@@ -1,3 +1,8 @@
+### Mac Mini has not pulled node_modules filter fix (2026-06-23)
+- Commit f2235af (jq filter excludes node_modules/ and dist/) not yet synced to Mac Mini
+- ts-toifood-web will keep WRITE_FAIL until Mac Mini runs: git pull && cp .claude/commands/could/could-update-md.md ~/.claude/commands/could/could-update-md.md && pm2 restart toigroup-listener
+- Root cause of all ts-toifood-web JSON failures in runs 27998129619 and 27999596586
+
 ### ts-toifood-back run 27999596586 WRITE_PARTIAL: 1 of 14 entries failed (2026-06-23)
 - 13/14 committed; 1 file write failed (likely 409 SHA conflict during concurrent access)
 - ts-toifood-web still WRITE_FAIL (ellipsis truncation) -- Mac Mini has not pulled node_modules filter (f2235af)
