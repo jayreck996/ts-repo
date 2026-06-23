@@ -1,3 +1,5 @@
+2026-06-23 22:32 UTC | ts-toifood-web | WRITE_FAIL     | --- | skill error: Command failed: claude --dangerously-skip-permissions --print /could/could-update-md ts-toifood-web
+Warning: no stdin da
 2026-06-23 22:28 UTC | ts-toifood-back | WRITE_OK       | --- | 4/4 entries committed
 2026-06-23 21:35 UTC | ts-toifood-web | WRITE_OK       | --- | 4/4 entries committed
 2026-06-23 21:32 UTC | ts-toifood-back | WRITE_OK       | --- | 4/4 entries committed
