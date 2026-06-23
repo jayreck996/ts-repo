@@ -1,3 +1,7 @@
+### ts-toifood-back run 27999596586 WRITE_PARTIAL: 1 of 14 entries failed (2026-06-23)
+- 13/14 committed; 1 file write failed (likely 409 SHA conflict during concurrent access)
+- ts-toifood-web still WRITE_FAIL (ellipsis truncation) -- Mac Mini has not pulled node_modules filter (f2235af)
+
 ### ts-toifood-web WRITE_FAIL: bad escape character in JSON output (2026-06-23)
 - Skill ran with ~1,900-path tree (node_modules filter not yet synced to Mac Mini)
 - Claude produced invalid JSON: Bad escaped character at position 1389 (line 4 col 1338)
