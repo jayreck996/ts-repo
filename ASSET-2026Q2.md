@@ -29,6 +29,13 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-24 -> could-update-md retry loop deployed + run 28056646547 confirmed green -- d15588c
+
+- Added 3-attempt retry loop in Log outcome step to handle 409 SHA conflict from parallel matrix jobs
+- Run 28056646547: setup + both matrix targets (ts-toifood-back, ts-toifood-web) all green
+- Two bugs total fixed today: HTTP 403 permissions (32e4d28) + HTTP 409 SHA race (d15588c)
+
+
 ## ASSET:ts-repo 2026-06-24 -> could-update-md permissions fix deployed -- 32e4d28
 
 - Added permissions: contents: write to run job in .github/workflows/could-update-md.yml
