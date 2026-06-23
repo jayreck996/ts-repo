@@ -1,3 +1,14 @@
+### ts-toifood-web WRITE_FAIL run 28002547181: Claude auth expired on Mac Mini (2026-06-23)
+- skill error: `Command failed: claude --dangerously-skip-permissions --print ... Warning: no stdin data received`
+- Claude Pro OAuth token expired or invalidated on Mac Mini
+- Fix: SSH into Mac Mini as jayreck, run `claude` interactively to trigger OAuth browser refresh
+
+### ts-toifood-back WRITE_PARTIAL 2/14 run 28002547181: wrong skill version synced (2026-06-23)
+- Expected 4 entries (BUG + TEST x ISSUE + ASSET) -- skill generated 14 (7 categories x 2)
+- could/ confirmed has only BUG and TEST files; 14 entries means category discovery not running
+- Suggests Mac Mini synced an old skill version without runtime CATS discovery (pre-10fdc0f pattern)
+- Fix: verify ~/.claude/commands/could/could-update-md.md has step 3 CATS= discovery; re-copy from repo if stale
+
 ### Mac Mini node_modules filter sync unconfirmed -- ts-toifood-web still WRITE_FAIL (2026-06-23)
 - Checked LISTENER-LOG after runs 27998129619 and 27999596586 -- both ts-toifood-web entries are WRITE_FAIL (ellipsis / bad escape char)
 - f2235af (node_modules/dist/ jq exclusion) not applied to Mac Mini global skill in either run
