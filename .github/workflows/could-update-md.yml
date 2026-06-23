@@ -144,13 +144,17 @@ jobs:
           if [ "$HTTP_CODE" = "401" ] || [ "$HTTP_CODE" = "403" ]; then NOTE="auth rejected by listener"; fi
           if [ "$HTTP_CODE" = "202" ]; then NOTE="listener accepted — verify write via pm2 logs"; fi
           LINE="${TS} | ${TARGET} | ${STATUS} | ${HTTP_CODE:-???} | ${NOTE}"
-          CURRENT=$(gh api repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log --jq '{sha: .sha, content: .content}' 2>/dev/null || echo '{"sha":"","content":""}')
-          SHA=$(echo "$CURRENT" | jq -r '.sha')
-          LOGBODY=$(echo "$CURRENT" | jq -r '.content' | base64 -d 2>/dev/null || echo "")
-          UPDATED=$(echo "$LINE"; echo "$LOGBODY")
-          ENCODED=$(echo "$UPDATED" | base64 -w 0)
-          if [ -n "$SHA" ] && [ "$SHA" != "null" ]; then
-            gh api --method PUT repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log -f message="could-update-md: log ${TS} — ${TARGET}" -f sha="$SHA" -f content="$ENCODED"
-          else
-            gh api --method PUT repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log -f message="could-update-md: log ${TS} — ${TARGET}" -f content="$ENCODED"
-          fi
+          for i in 1 2 3; do
+            CURRENT=$(gh api repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log --jq '{sha: .sha, content: .content}' 2>/dev/null || echo '{"sha":"","content":""}')
+            SHA=$(echo "$CURRENT" | jq -r '.sha')
+            LOGBODY=$(echo "$CURRENT" | jq -r '.content' | base64 -d 2>/dev/null || echo "")
+            UPDATED=$(echo "$LINE"; echo "$LOGBODY")
+            ENCODED=$(echo "$UPDATED" | base64 -w 0)
+            if [ -n "$SHA" ] && [ "$SHA" != "null" ]; then
+              gh api --method PUT repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log -f message="could-update-md: log ${TS} — ${TARGET}" -f sha="$SHA" -f content="$ENCODED" && break
+            else
+              gh api --method PUT repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log -f message="could-update-md: log ${TS} — ${TARGET}" -f content="$ENCODED" && break
+            fi
+            echo "SHA conflict, retry $i..."
+            sleep 2
+          done
