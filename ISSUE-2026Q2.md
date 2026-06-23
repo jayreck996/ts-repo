@@ -1,3 +1,9 @@
+### Run 28014344394: wrong skill version confirmed on Mac Mini -- both targets affected (2026-06-23)
+- ts-toifood-back: WRITE_FAIL `no JSON array in output` -- Claude ran but produced prose (no category headers to read)
+- ts-toifood-web: WRITE_PARTIAL 2 ok, 14 failed of 16 -- skill emitting 8 categories x 2 = 16 entries; only BUG-ISSUE/ASSET-2026Q2 exist (2 ok), rest 404
+- Root cause: ~/.claude/commands/could/could-update-md.md on Mac Mini is stale -- missing step 3 runtime CATS discovery
+- Fix: cp ~/toifood/ts-repo/.claude/commands/could/could-update-md.md ~/.claude/commands/could/could-update-md.md
+
 ### ts-toifood-web WRITE_FAIL run 28002547181: Claude auth expired on Mac Mini (2026-06-23)
 - skill error: `Command failed: claude --dangerously-skip-permissions --print ... Warning: no stdin data received`
 - Claude Pro OAuth token expired or invalidated on Mac Mini
