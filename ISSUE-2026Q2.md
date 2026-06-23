@@ -52,6 +52,14 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-24 -> Mac Mini pm2 restart still pending -- toigroup-listener.js would->could rename not yet live
+
+- toigroup-listener.js commit b58201c (would->could rename in commit messages/committer name) not yet running on Mac Mini
+- All workflow fixes today (32e4d28, d15588c) are GH Action only -- Mac Mini not involved, no sync needed for those
+- To fix: SSH in as jayreck -> cd ~/toifood/ts-repo && git pull -> pm2 restart toigroup-listener
+- Non-urgent: listener still accepts requests and writes correctly; only cosmetic (log entries still say would-update)
+
+
 ## ISSUE:ts-repo 2026-06-24 -> could-update-md Log outcome step HTTP 409 -- parallel matrix jobs race on TRIGGER-LOG.log SHA
 
 - Both matrix targets fetch the same SHA for would/TRIGGER-LOG.log simultaneously
