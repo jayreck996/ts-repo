@@ -64,8 +64,6 @@ jobs:
       - name: Discover categories from could/
         id: categories
         run: |
-          QUARTER="${{ steps.quarter.outputs.value }}"
-          # Find categories from any existing quarter's could/ files
           CATS=$(ls could/ 2>/dev/null | grep -oE '^[A-Z]+' | sort -u | tr '\n' ',' | sed 's/,$//')
           echo "cats=$CATS" >> $GITHUB_OUTPUT
           echo "Categories: $CATS"
@@ -129,32 +127,53 @@ jobs:
           cat /tmp/response.txt
           [ "$STATUS" = "202" ] || exit 1
 
-      - name: Log run outcome
+      - name: Save trigger result
         if: always()
+        run: |
+          mkdir -p /tmp/trigger-results
+          echo "${{ matrix.target }}|${{ job.status }}|${{ steps.trigger.outputs.http_code }}" > /tmp/trigger-results/${{ matrix.target }}.txt
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trigger-result-${{ matrix.target }}
+          path: /tmp/trigger-results/${{ matrix.target }}.txt
+
+  log:
+    needs: [setup, run]
+    runs-on: ubuntu-latest
+    if: always()
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: trigger-result-*
+          merge-multiple: true
+          path: /tmp/trigger-results
+
+      - name: Write log entries
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          STATUS: ${{ job.status }}
-          HTTP_CODE: ${{ steps.trigger.outputs.http_code }}
-          TARGET: ${{ matrix.target }}
         run: |
           TS=$(date -u '+%Y-%m-%d %H:%M UTC')
-          NOTE=""
-          if [ "$HTTP_CODE" = "000" ]; then NOTE="curl timeout or tunnel unreachable"; fi
-          if [ "$HTTP_CODE" = "530" ]; then NOTE="Cloudflare error 530 — tunnel unreachable, Mac Mini likely off"; fi
-          if [ "$HTTP_CODE" = "401" ] || [ "$HTTP_CODE" = "403" ]; then NOTE="auth rejected by listener"; fi
-          if [ "$HTTP_CODE" = "202" ]; then NOTE="listener accepted — verify write via pm2 logs"; fi
-          LINE="${TS} | ${TARGET} | ${STATUS} | ${HTTP_CODE:-???} | ${NOTE}"
-          for i in 1 2 3; do
+          for file in /tmp/trigger-results/*.txt; do
+            IFS='|' read -r TARGET STATUS HTTP_CODE < "$file"
+            NOTE=""
+            if [ "$HTTP_CODE" = "000" ]; then NOTE="curl timeout or tunnel unreachable"; fi
+            if [ "$HTTP_CODE" = "530" ]; then NOTE="Cloudflare error 530 — tunnel unreachable, Mac Mini likely off"; fi
+            if [ "$HTTP_CODE" = "401" ] || [ "$HTTP_CODE" = "403" ]; then NOTE="auth rejected by listener"; fi
+            if [ "$HTTP_CODE" = "202" ]; then NOTE="listener accepted — verify write via pm2 logs"; fi
+            LINE="${TS} | ${TARGET} | ${STATUS} | ${HTTP_CODE:-???} | ${NOTE}"
             CURRENT=$(gh api repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log --jq '{sha: .sha, content: .content}' 2>/dev/null || echo '{"sha":"","content":""}')
             SHA=$(echo "$CURRENT" | jq -r '.sha')
             LOGBODY=$(echo "$CURRENT" | jq -r '.content' | base64 -d 2>/dev/null || echo "")
             UPDATED=$(echo "$LINE"; echo "$LOGBODY")
             ENCODED=$(echo "$UPDATED" | base64 -w 0)
             if [ -n "$SHA" ] && [ "$SHA" != "null" ]; then
-              gh api --method PUT repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log -f message="could-update-md: log ${TS} — ${TARGET}" -f sha="$SHA" -f content="$ENCODED" && break
+              gh api --method PUT repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log -f message="could-update-md: log ${TS} — ${TARGET}" -f sha="$SHA" -f content="$ENCODED"
             else
-              gh api --method PUT repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log -f message="could-update-md: log ${TS} — ${TARGET}" -f content="$ENCODED" && break
+              gh api --method PUT repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log -f message="could-update-md: log ${TS} — ${TARGET}" -f content="$ENCODED"
             fi
-            echo "SHA conflict, retry $i..."
-            sleep 2
+            echo "Logged: $LINE"
           done
