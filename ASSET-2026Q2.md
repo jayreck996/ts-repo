@@ -15,6 +15,10 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-23 → CATS guard + post-merge hook deployed — 29e7dae
+
+Skill updated with OUTPUT_REPO/CATS empty guards (fail-fast with `[]`), CATEGORIES_LOCKED echo replacing generic 'Categories:', and STRICT RULE in step 4 requiring exactly N×2 entries. Post-merge git hook installed at .git/hooks/post-merge to auto-sync global skill on every pull. Pushed 29e7dae, global skill synced.
+
 ## ASSET:ts-repo 2026-06-23 → pulled to 8ad6671, processQueue fix deployed — listener restarted
 
 git pull (3878d12 → 8ad6671) + pm2 restart toigroup-listener. processQueue() now called on all three WRITE_FAIL return paths in runSkill() — queue can no longer stall on error. Global skill synced.
