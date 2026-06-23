@@ -41,6 +41,16 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### CATS hallucination fixed — skill guard + post-merge hook deployed (2026-06-23)
+- 07:18 UTC both targets WRITE_FAIL: `no stdin data received` — Claude auth expired again (3rd expiry today); re-authed
+- ts-toifood-back 08:59 UTC: `no JSON array in output` — Claude output prose describing 8 wrong categories instead of JSON
+- ts-toifood-web 09:09 UTC: WRITE_PARTIAL 2/14 — Claude hallucinated 8 categories (ANALYSIS, CONTENT, INSTRUCTION, MIGRATE, PRICE, RECOVERY, USAGE + BUG) instead of just BUG and TEST; 14 of 16 files don't exist in web repo
+- Root cause: when CATS discovery silently fails (OUTPUT_REPO empty or API 404), Claude invents categories from training data
+- Fix 1: skill now checks OUTPUT_REPO and CATS; emits `[]` and exits immediately on either being empty
+- Fix 2: renamed echo to `CATEGORIES_LOCKED` + added STRICT RULE in step 4 — Claude must emit exactly N×2 entries matching the locked list
+- Fix 3: post-merge git hook at .git/hooks/post-merge auto-syncs ~/.claude/commands/could/could-update-md.md on every git pull
+- Pushed: 29e7dae
+
 ## ISSUE:ts-repo 2026-06-23 -> would-update.md skill file path does not follow could/ naming convention -- command name mismatches pipeline structure
 
 .claude/commands/would-update.md invoked as /would-update. Pipeline output goes to could/ directories but the skill command name references would/. Moving to .claude/commands/could/could-update-md.md would invoke as /could:could-update-md matching the could/ convention. Requires: file rename in repo, listener command string update, Mac Mini mkdir plus file copy plus remove old, pm2 restart toigroup-listener. Risk: Claude Code --print mode subdirectory namespace syntax unverified -- test on Mac Mini before full switch.
