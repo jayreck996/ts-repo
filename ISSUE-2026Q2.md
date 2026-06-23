@@ -1,3 +1,9 @@
+### Workflow names inconsistent with skill/endpoint naming (2026-06-23)
+- Workflows named `would-update-md` and `would-update-timing` but listener endpoint and Claude skill already use `could-update-md`
+- `toigroup-listener.js` commit messages and committer name still say `would-update`
+- `would-update-md-test.js` filename and internals also mismatched
+- Plan: rename both workflows, update ~6 strings in listener + test file, optionally rename `would/` dir
+
 ### Run 28014344394: wrong skill version confirmed on Mac Mini -- both targets affected (2026-06-23)
 - ts-toifood-back: WRITE_FAIL `no JSON array in output` -- Claude ran but produced prose (no category headers to read)
 - ts-toifood-web: WRITE_PARTIAL 2 ok, 14 failed of 16 -- skill emitting 8 categories x 2 = 16 entries; only BUG-ISSUE/ASSET-2026Q2 exist (2 ok), rest 404
