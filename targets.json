@@ -1,12 +1,6 @@
 [
-  {
-    "target": "ts-toifood-back",
-    "outputRepo": "toifood/-ts-toifood-back",
-    "tokenSecret": "TOIFOOD_CROSS_REPO_TOKEN"
-  },
-  {
-    "target": "ts-toifood-web",
-    "outputRepo": "toifood/-ts-toifood-web",
-    "tokenSecret": "TOIFOOD_CROSS_REPO_TOKEN"
-  }
+  {"target":"ts-toifood-back",  "outputRepo":"toifood/-ts-toifood-back",  "tokenSecret":"TOIFOOD_CROSS_REPO_TOKEN", "env":"prod"},
+  {"target":"ts-toifood-web",   "outputRepo":"toifood/-ts-toifood-web",   "tokenSecret":"TOIFOOD_CROSS_REPO_TOKEN", "env":"prod"},
+  {"target":"ts-test-front",    "outputRepo":"jayreck996/-ts-test-front", "tokenSecret":"JAYRECK_TEST_TOKEN",       "env":"test"},
+  {"target":"ts-test-back",     "outputRepo":"jayreck996/-ts-test-back",  "tokenSecret":"JAYRECK_TEST_TOKEN",       "env":"test"}
 ]
