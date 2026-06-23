@@ -5,12 +5,17 @@ on:
     - cron: '0 6 * * *'  # Daily 06:00 UTC = 18:00 NZST
   workflow_dispatch:
     inputs:
+      env:
+        description: 'Which env to run (prod | test | all)'
+        type: choice
+        options: [prod, test, all]
+        default: prod
       quarter_override:
         description: 'Override quarter (e.g. 2026Q3)'
         type: string
         required: false
       target:
-        description: 'Single target to run (e.g. ts-back). Leave empty to run all.'
+        description: 'Single target override (e.g. ts-test-front). Leave empty to use env filter.'
         type: string
         required: false
 
@@ -23,11 +28,16 @@ jobs:
       - uses: actions/checkout@v4
       - name: Load targets
         id: load
+        env:
+          ENV_FILTER: ${{ inputs.env || 'prod' }}
+          TARGET_OVERRIDE: ${{ inputs.target }}
         run: |
-          if [ -n "${{ inputs.target }}" ]; then
-            matrix=$(jq -c '[.[] | select(.target == "${{ inputs.target }}")] | map({target: .target, outputRepo: .outputRepo, tokenSecret: .tokenSecret})' targets.json)
+          if [ -n "$TARGET_OVERRIDE" ]; then
+            matrix=$(jq -c --arg t "$TARGET_OVERRIDE" '[.[] | select(.target == $t)] | map({target,outputRepo,tokenSecret})' targets.json)
+          elif [ "$ENV_FILTER" = "all" ]; then
+            matrix=$(jq -c '[.[] | {target,outputRepo,tokenSecret}]' targets.json)
           else
-            matrix=$(jq -c '[.[] | {target: .target, outputRepo: .outputRepo, tokenSecret: .tokenSecret}]' targets.json)
+            matrix=$(jq -c --arg e "$ENV_FILTER" '[.[] | select(.env == $e)] | map({target,outputRepo,tokenSecret})' targets.json)
           fi
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
           echo "Targets: $matrix"
