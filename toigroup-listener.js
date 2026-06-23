@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 // toigroup-listener — responds 202 immediately, runs skill async, writes to GitHub
 // PM2: pm2 start toigroup-listener.js --name toigroup-listener
 // Env: MACMINI_TRIGGER_TOKEN, <ORG>_CROSS_REPO_TOKEN per target
@@ -72,10 +72,10 @@ function appendToRunLog(target, status, note) {
 
     const updated = line + '\n' + current;
     const payload = JSON.stringify({
-      message: `would-update-md: log ${ts} — ${target}`,
+      message: `could-update-md: log ${ts} — ${target}`,
       content: Buffer.from(updated).toString('base64'),
       ...(sha ? { sha } : {}),
-      committer: { name: 'would-update', email: 'admin@toigroup.co.nz' },
+      committer: { name: 'could-update', email: 'admin@toigroup.co.nz' },
     });
 
     execSync(
@@ -108,10 +108,10 @@ function writeEntriesToGitHub(entries, outputRepo, token) {
       const updated = current.slice(0, insertAt) + entry + '\n' + current.slice(insertAt);
 
       const payload = JSON.stringify({
-        message: `would-update: ${filePath}`,
+        message: `could-update: ${filePath}`,
         content: Buffer.from(updated).toString('base64'),
         sha: file.sha,
-        committer: { name: 'would-update', email: 'admin@toigroup.co.nz' },
+        committer: { name: 'could-update', email: 'admin@toigroup.co.nz' },
       });
 
       execSync(
@@ -233,3 +233,4 @@ http.createServer(handle).listen(PORT, () => {
     console.error(`toigroup-listener ready on :${PORT} — targets: (fetch failed: ${e.message})`);
   }
 });
+
