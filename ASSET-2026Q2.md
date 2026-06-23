@@ -15,6 +15,12 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-23 → pulled to 8ad6671, processQueue fix deployed — listener restarted
+
+git pull (3878d12 → 8ad6671) + pm2 restart toigroup-listener. processQueue() now called on all three WRITE_FAIL return paths in runSkill() — queue can no longer stall on error. Global skill synced.
+## ASSET:ts-repo 2026-06-23 → pulled to d09f6e2 — node_modules/dist/ filter active, ts-toifood removed
+
+git pull (8ad6671 → d09f6e2). Skill filter now excludes node_modules/ and dist/ alongside existing type exclusions — ts-toifood-web tree drops from ~1900 to ~20 paths. ts-toifood removed from targets.json (no real source code, 404s on trigger). Global could/could-update-md.md resynced. No pm2 restart needed.
 ## ASSET:ts-repo 2026-06-23 -> ts-toifood removed from targets.json -- pipeline now two targets only
 
 Removed ts-toifood entry from targets.json (commit c5459e8). Listener refreshes targets within 60s -- no pm2 restart needed. Active targets: ts-toifood-back (106 files, WRITE_OK consistently) and ts-toifood-web (node_modules filter fix pending Mac Mini sync). ts-toifood can be re-added when toifood-dev/ts-toifood-dev has real application source code.
