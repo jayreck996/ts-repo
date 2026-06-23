@@ -1,4 +1,4 @@
-﻿name: could-update-md
+name: could-update-md
 
 on:
   schedule:
@@ -35,6 +35,8 @@ jobs:
   run:
     needs: setup
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     strategy:
       matrix:
         include: ${{ fromJson(needs.setup.outputs.matrix) }}
