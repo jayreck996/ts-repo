@@ -1,3 +1,4 @@
+2026-06-23 03:23 UTC | ts-toifood-back | WRITE_PARTIAL  | --- | 13 ok, 1 failed of 14
 2026-06-23 02:48 UTC | ts-toifood-web | WRITE_FAIL     | --- | skill error: JSON parse failed — Bad escaped character in JSON at position 1389 (line 4 column 1338)
 2026-06-23 02:39 UTC | ts-toifood-back | WRITE_OK       | --- | 14/14 entries committed
 2026-06-22 23:49 UTC | ts-toifood | WRITE_FAIL     | --- | skill error: no JSON array in output
