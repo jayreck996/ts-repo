@@ -29,6 +29,18 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-24 -> GitHub Contents API SHA -- optimistic locking across 3-repo write pattern
+
+- Every file has a SHA (git blob hash); PUT must include the SHA you last read -- GitHub rejects with 409 if SHA changed since
+- Prevents silent overwrites: last writer doesn't blindly win
+- 3-repo write pattern:
+  - ts-repo/would/TRIGGER-LOG.log -> written by GH Action (GITHUB_TOKEN, 2 parallel matrix jobs -> SHA race -> retry loop needed)
+  - toifood/-ts-toifood-back ISSUE/ASSET/could/*.md -> listener -> Claude skill (TOIFOOD_CROSS_REPO_TOKEN)
+  - toifood/-ts-toifood-web ISSUE/ASSET/could/*.md -> listener -> Claude skill (TOIFOOD_CROSS_REPO_TOKEN)
+- Output repos have no SHA race: FIFO queue in toigroup-listener.js ensures only one skill runs at a time; each output repo only ever touched by one target's run
+- Retry loop in Log outcome step is only needed on TRIGGER-LOG.log -- the single shared file two parallel GH Action jobs both write
+
+
 ## ASSET:ts-repo 2026-06-24 -> could-update-md retry loop deployed + run 28056646547 confirmed green -- d15588c
 
 - Added 3-attempt retry loop in Log outcome step to handle 409 SHA conflict from parallel matrix jobs
