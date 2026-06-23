@@ -1,3 +1,11 @@
+### Full workflow rename completed — would → could (2026-06-23)
+- could-update-md.yml: replaces would-update-md.yml — expanded matrix with outputRepo/tokenSecret + ensureQuarterFiles preflight step
+- could-update-title.yml: replaces would-update-timing.yml — name update only
+- toigroup-listener.js: all commit messages and committer name updated to could-update
+- could-update-md-test.js: replaces would-update-md-test.js
+- ensureQuarterFiles now runs in GH Action before listener trigger — creates missing ISSUE/ASSET in root, could/, and would/ for current quarter
+- Race condition on quarter rollover eliminated by construction (preflight runs before HTTP trigger)
+
 ### Manual test run 28016985329 confirmed WRITE_OK both targets (2026-06-23)
 - Triggered would-update-md workflow manually via workflow_dispatch
 - ts-toifood-back: WRITE_OK 4/4 at 10:01 UTC
