@@ -52,6 +52,13 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-24 -> could-update-md Log outcome step HTTP 409 -- parallel matrix jobs race on TRIGGER-LOG.log SHA
+
+- Both matrix targets fetch the same SHA for would/TRIGGER-LOG.log simultaneously
+- First target to PUT wins; second gets 409 "is at <new-sha> but expected <old-sha>"
+- Fix: wrapped gh api PUT in a 3-attempt retry loop that re-fetches SHA on each attempt -- commit d15588c
+
+
 ## ISSUE:ts-repo 2026-06-24 -> could-update-md Log outcome step HTTP 403 -- GITHUB_TOKEN missing contents:write
 
 - "run" job used GITHUB_TOKEN to PUT would/TRIGGER-LOG.log without permissions: contents: write in workflow
