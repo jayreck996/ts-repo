@@ -29,6 +29,14 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### toigroup-listener.js routing confirmed — token sync requirement identified (2026-06-25)
+- All targets (prod + test) use same path: getTargetConfig() reads tokenSecret from targets.json then looks up process.env[tokenSecret]
+- Skill command: claude --dangerously-skip-permissions --print /could/could-update-md {target}
+- Queue: single FIFO via skillQueue - one skill run at a time, processQueue() called after each completion
+- appendToRunLog() hardcodes TOIFOOD_CROSS_REPO_TOKEN for LISTENER-LOG writes - separate from tokenSecret
+- Token must exist in two places with the same value: GitHub Actions secret (checkout/push) and Mac Mini pm2 env (listener curl writes to GitHub API) - mismatch between the two causes silent write failure
+- Fix for test targets: set TSREPO_TOKEN in pm2 env on Mac Mini, restart with pm2 restart toigroup-listener --update-env
+
 ## ASSET:ts-repo 2026-06-25 → BOM stripped from toigroup-listener.js — fba3d1d
 
 UTF-8 BOM removed from line 1 of toigroup-listener.js. Listener restarted and online. No logic changes — cosmetic commit b58201c introduced the BOM during would→could rename.
