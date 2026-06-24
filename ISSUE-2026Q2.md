@@ -52,6 +52,13 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### 502 and 202-no-write are separate failure layers — root cause is missing env var on Mac Mini (2026-06-25)
+- 502 = Cloudflare bad gateway — listener process was down (BOM crash), Cloudflare got no response from Mac Mini
+- 202-no-write = listener up and accepted, but runSkill() threw: Missing env var: JAYRECK_TEST_TOKEN (before consolidation) / TSREPO_TOKEN (after)
+- toigroup-listener.js has no special routing for test vs prod — all targets go through getTargetConfig() which reads tokenSecret from targets.json then checks process.env
+- Fix: ensure TSREPO_TOKEN is set in pm2 env on Mac Mini (pm2 restart toigroup-listener --update-env)
+- Also: appendToRunLog() hardcodes TOIFOOD_CROSS_REPO_TOKEN — LISTENER-LOG writes will silently fail if that var is missing from pm2 env
+
 ### toigroup-listener.js BOM crash — listener errored ~2 hours, all triggers 502 (2026-06-25)
 - Listener errored (pm2 status: errored, restart count 54) since pull of b58201c; all triggers returned 502 Bad Gateway
 - Error: `SyntaxError: Invalid or unexpected token` at line 1 — UTF-8 BOM (0xEFBBBF) prepended to file in b58201c
