@@ -52,6 +52,13 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### toigroup-listener.js BOM crash — listener errored ~2 hours, all triggers 502 (2026-06-25)
+- Listener errored (pm2 status: errored, restart count 54) since pull of b58201c; all triggers returned 502 Bad Gateway
+- Error: `SyntaxError: Invalid or unexpected token` at line 1 — UTF-8 BOM (0xEFBBBF) prepended to file in b58201c
+- Node.js cannot parse BOM in .js files; caused listener to crash on every PM2 restart attempt
+- Affected: ts-test-front + ts-test-back at 22:03 UTC (???) and 22:39 UTC (502); prod targets not triggered during window
+- Fix: stripped BOM via Node.js, committed fba3d1d, restarted listener — back online
+
 ### Run 28134224374: listener 502 for both test targets (2026-06-25)
 - ts-test-front and ts-test-back: checkout passed (TSREPO_TOKEN confirmed working), but Trigger toigroup-listener failed with 502
 - 502 = Cloudflare bad gateway - Mac Mini tunnel up but listener process threw or crashed on the request
