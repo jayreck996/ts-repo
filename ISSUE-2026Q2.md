@@ -52,6 +52,12 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### Run 28134224374: listener 502 for both test targets (2026-06-25)
+- ts-test-front and ts-test-back: checkout passed (TSREPO_TOKEN confirmed working), but Trigger toigroup-listener failed with 502
+- 502 = Cloudflare bad gateway - Mac Mini tunnel up but listener process threw or crashed on the request
+- Suspected: toigroup-listener.js has no handler or errors on could/could-update-md with test targets
+- Next: read toigroup-listener.js routing logic to confirm
+
 ### TSREPO_TOKEN not set as GitHub Actions secret — test targets workflow failure (2026-06-25)
 - ts-test-front + ts-test-back GH Actions job failure at 22:03 UTC; TRIGGER-LOG shows `failure | ???`
 - New could-update-md.yml uses `${{ secrets[matrix.tokenSecret] }}` — tokenSecret must be a GitHub Secret
