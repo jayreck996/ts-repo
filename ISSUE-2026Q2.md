@@ -52,6 +52,13 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### TSREPO_TOKEN not set as GitHub Actions secret — test targets workflow failure (2026-06-25)
+- ts-test-front + ts-test-back GH Actions job failure at 22:03 UTC; TRIGGER-LOG shows `failure | ???`
+- New could-update-md.yml uses `${{ secrets[matrix.tokenSecret] }}` — tokenSecret must be a GitHub Secret
+- Consolidated targets.json to TSREPO_TOKEN (3164ae4) but TSREPO_TOKEN only existed in PM2 env, not GitHub Secrets
+- TOIFOOD_CROSS_REPO_TOKEN and JAYRECK_TEST_TOKEN were valid GitHub Secrets; TSREPO_TOKEN was not
+- Fix: added TSREPO_TOKEN as GitHub Actions secret via `gh secret set` — same value as TOIFOOD_CROSS_REPO_TOKEN
+
 ### Run 28132553164: TSREPO_TOKEN consolidation broke checkout for test targets (2026-06-25)
 - ts-test-front and ts-test-back: both failed at actions/checkout@v4 - TSREPO_TOKEN does not cover jayreck996 personal repos
 - Regression introduced by 3164ae4 (token consolidation)
