@@ -29,6 +29,10 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-25 → BOM stripped from toigroup-listener.js — fba3d1d
+
+UTF-8 BOM removed from line 1 of toigroup-listener.js. Listener restarted and online. No logic changes — cosmetic commit b58201c introduced the BOM during would→could rename.
+
 ## ASSET:ts-repo 2026-06-25 → TSREPO_TOKEN added as GitHub Actions secret
 
 gh secret set TSREPO_TOKEN on jayreck996/ts-repo — value matches TOIFOOD_CROSS_REPO_TOKEN. All 4 targets now resolvable via secrets[matrix.tokenSecret] in could-update-md.yml. No code changes required.
