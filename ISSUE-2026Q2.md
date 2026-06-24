@@ -52,6 +52,12 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### Test targets not yet confirmed WRITE_OK — token sync complete, awaiting next trigger (2026-06-25)
+- TSREPO_TOKEN now set in both required locations: GitHub Actions secret (gh secret set) and Mac Mini PM2 env (pm2 save)
+- Listener back online after BOM crash (fba3d1d); no new test target triggers since fix
+- appendToRunLog() still hardcodes TOIFOOD_CROSS_REPO_TOKEN — LISTENER-LOG writes use that token regardless of target
+- Next test trigger will confirm end-to-end: GH Actions checkout → listener → skill → could/ write
+
 ### 502 and 202-no-write are separate failure layers — root cause is missing env var on Mac Mini (2026-06-25)
 - 502 = Cloudflare bad gateway — listener process was down (BOM crash), Cloudflare got no response from Mac Mini
 - 202-no-write = listener up and accepted, but runSkill() threw: Missing env var: JAYRECK_TEST_TOKEN (before consolidation) / TSREPO_TOKEN (after)
