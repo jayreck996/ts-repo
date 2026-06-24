@@ -29,6 +29,10 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-25 → targets.json token consolidated to TSREPO_TOKEN — 3164ae4
+
+All 4 targets (ts-toifood-back, ts-toifood-web, ts-test-front, ts-test-back) now use TSREPO_TOKEN. TOIFOOD_CROSS_REPO_TOKEN and JAYRECK_TEST_TOKEN remain in PM2 env but are no longer referenced. JAYRECK_TEST_TOKEN also added to PM2 env and saved to dump.pm2 as interim fix before consolidation.
+
 ### could-update-md test pipeline routing issue identified (2026-06-25)
 - Two consecutive manual test runs confirmed consistent write-side failure for ts-test-front and ts-test-back
 - Trigger layer (GH Actions to listener) confirmed working: 202 both targets both runs
