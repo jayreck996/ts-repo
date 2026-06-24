@@ -29,6 +29,15 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-24 → manual dispatch default flipped to test — prod requires explicit opt-in
+
+- could-update-md.yml setup job: ENV_FILTER now checks github.event_name == 'schedule' && 'prod' first
+  - Cron schedule: always prod, no human input required
+  - Manual dispatch without selecting env: defaults to test
+  - Manual dispatch with explicit prod: requires deliberate dropdown choice
+- workflow_dispatch env input default changed from prod to test
+- Result: Claude Code or any automation triggering the workflow without --field env=prod lands on test
+
 ## ASSET:ts-repo 2026-06-24 → test target isolation deployed — targets.json c03d14f + workflow 0f50a6e
 
 - Created isolated test repos to prevent Claude API rate exhaustion from test runs
