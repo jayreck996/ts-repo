@@ -52,6 +52,12 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### Test runs 28126253458 + 28127957838: write-side silent for both test targets (2026-06-25)
+- ts-test-front and ts-test-back: listener returned 202 on both runs, no commits appeared in either output repo after 5 minutes each
+- Last commits on both test repos: `could-update-md-test: .would-update-test.md` - written by old could-update-md-test.js, not the current could-update-md skill
+- Root cause suspected: toigroup-listener.js still routes test targets through old could-update-md-test path, not could-update-md
+- Next: read toigroup-listener.js routing logic to confirm and patch
+
 ## ISSUE:ts-repo 2026-06-24 → accidental prod trigger risk from manual dispatch default
 
 - could-update-md.yml manual dispatch `env` input defaults to prod
