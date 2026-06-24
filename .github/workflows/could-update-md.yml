@@ -9,7 +9,7 @@ on:
         description: 'Which env to run (prod | test | all)'
         type: choice
         options: [prod, test, all]
-        default: prod
+        default: test
       quarter_override:
         description: 'Override quarter (e.g. 2026Q3)'
         type: string
@@ -29,7 +29,7 @@ jobs:
       - name: Load targets
         id: load
         env:
-          ENV_FILTER: ${{ inputs.env || 'prod' }}
+          ENV_FILTER: ${{ github.event_name == 'schedule' && 'prod' || inputs.env || 'test' }}
           TARGET_OVERRIDE: ${{ inputs.target }}
         run: |
           if [ -n "$TARGET_OVERRIDE" ]; then
