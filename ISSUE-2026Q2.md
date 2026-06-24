@@ -52,6 +52,12 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### Run 28132553164: TSREPO_TOKEN consolidation broke checkout for test targets (2026-06-25)
+- ts-test-front and ts-test-back: both failed at actions/checkout@v4 - TSREPO_TOKEN does not cover jayreck996 personal repos
+- Regression introduced by 3164ae4 (token consolidation)
+- Previous JAYRECK_TEST_TOKEN was working for checkout; write-side failure was a separate unresolved issue
+- Fix: revert test targets in targets.json back to JAYRECK_TEST_TOKEN
+
 ### JAYRECK_TEST_TOKEN missing — test targets WRITE_FAIL config error (2026-06-25)
 - ts-test-front + ts-test-back WRITE_FAIL at 20:05/20:36 UTC: `config error: Missing env var: JAYRECK_TEST_TOKEN`
 - JAYRECK_TEST_TOKEN not set in PM2 env on Mac Mini; test targets added in c03d14f used a new token name
