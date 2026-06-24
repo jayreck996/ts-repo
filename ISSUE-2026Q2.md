@@ -52,6 +52,13 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+## ISSUE:ts-repo 2026-06-24 → accidental prod trigger risk from manual dispatch default
+
+- could-update-md.yml manual dispatch `env` input defaults to prod
+- Any trigger without explicitly choosing env (including Claude Code automation) hits prod targets
+- Risk: test runs triggering toifood listener, consuming Claude API quota on prod repos
+- Fix: flip dispatch default to test; cron hardcoded to prod via event_name check
+
 ## ISSUE:ts-repo 2026-06-24 -> Mac Mini Claude skill WRITE_FAIL since 22:32 UTC -- no stdin detected
 
 - All skill runs failing: claude --dangerously-skip-permissions --print /could/could-update-md ... Warning: no stdin detected
