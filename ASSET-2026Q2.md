@@ -29,6 +29,12 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### could-update-md test pipeline routing issue identified (2026-06-25)
+- Two consecutive manual test runs confirmed consistent write-side failure for ts-test-front and ts-test-back
+- Trigger layer (GH Actions to listener) confirmed working: 202 both targets both runs
+- Write-side routing suspected stale: test targets likely still mapped to could-update-md-test in toigroup-listener.js
+- could-update-md-test.js to be removed once listener routing is updated
+
 ## ASSET:ts-repo 2026-06-24 → manual dispatch default flipped to test — prod requires explicit opt-in
 
 - could-update-md.yml setup job: ENV_FILTER now checks github.event_name == 'schedule' && 'prod' first
