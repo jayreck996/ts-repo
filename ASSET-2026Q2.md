@@ -29,6 +29,10 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+## ASSET:ts-repo 2026-06-25 → TSREPO_TOKEN token sync confirmed complete on both sides
+
+GitHub Actions secret set via gh secret set. PM2 env updated via pm2 restart --update-env + pm2 save. Both prod and test targets use TSREPO_TOKEN in targets.json. Listener online and ready for next trigger.
+
 ### toigroup-listener.js routing confirmed — token sync requirement identified (2026-06-25)
 - All targets (prod + test) use same path: getTargetConfig() reads tokenSecret from targets.json then looks up process.env[tokenSecret]
 - Skill command: claude --dangerously-skip-permissions --print /could/could-update-md {target}
