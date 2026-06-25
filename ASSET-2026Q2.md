@@ -29,6 +29,19 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### Tunnel config state — toifood vs toigroup (2026-06-26)
+
+| | toifood | toigroup |
+|---|---|---|
+| Hostnames | api.toifood.co.nz, toifood.co.nz | local.toigroup.co.nz |
+| Routes to | localhost:3000 (toifood-back) | 127.0.0.1:3456 (toigroup-listener) |
+| Process manager | launchd (com.cloudflare.cloudflared) | PM2 id 6 |
+| no-autoupdate | ✓ added 2026-06-26 | ✓ added 2026-06-26 |
+| PM2 restart-delay | N/A (launchd handles restarts) | 5000ms added 2026-06-26 |
+
+- Both tunnels now have no-autoupdate: true — prevents self-update restarts
+- toigroup-tunnel has PM2 restart-delay 5000ms — recovers from clean exits (DNS blips) without manual intervention
+
 ### toigroup-tunnel vs toifood-tunnel — process management audit (2026-06-26)
 - toifood-tunnel: managed by launchd (com.cloudflare.cloudflared, PID 2685) — survives reboots and clean exits
 - toigroup-tunnel: managed by PM2 only (id 6, script ~/.cloudflared/toigroup.yml) — no launchd backup
