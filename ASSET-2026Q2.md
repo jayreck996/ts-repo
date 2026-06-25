@@ -29,6 +29,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### skill suffix mapping corrected for test targets — 7169619 (2026-06-25)
+- ts-test-front: suffix=test-front -> jayreck996/-ts-test-front (confirmed exists, private)
+- ts-test-back: suffix=test-back -> jayreck996/-ts-test-back (confirmed exists, private)
+- Previous suffixes (front, back) pointed to non-existent repos; Claude behaviour was non-deterministic — sometimes hallucinated entries, sometimes emitted []
+
 ### could-update-md skill: test target mapping + JSON fallback guard added (2026-06-25) — 779e8a5
 - Step 2: explicit org/suffix mapping for ts-test-front (jayreck996/-ts-front) and ts-test-back (jayreck996/-ts-back); unreachable repo now emits [] and exits cleanly
 - Top of file: OUTPUT RULE hard constraint — entire response must be JSON array, no prose, no preamble
