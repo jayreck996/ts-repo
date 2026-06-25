@@ -1,3 +1,5 @@
+**OUTPUT RULE: Your entire response must be a single JSON array. No prose, no explanation, no markdown, no preamble. If you cannot produce valid entries for any reason, output `[]` and nothing else.**
+
 Analyse the source codebase and output a JSON array of issue/asset entries for the target repo's could/ directory. Do not write any files — print only the JSON array to stdout.
 
 ## Arguments
@@ -36,14 +38,17 @@ Fetch the file tree, then read each relevant file — no download or local extra
 
 ```bash
 case "$ARGUMENTS" in
-  ts-toifood) suffix="dev" ;;
-  ts-toifood-back) suffix="back" ;;
-  ts-toifood-web) suffix="web" ;;
-  *) suffix="${ARGUMENTS#ts-toifood-}" ;;
+  ts-toifood)      suffix="dev";   org="toifood-dev" ;;
+  ts-toifood-back) suffix="back";  org="toifood-dev" ;;
+  ts-toifood-web)  suffix="web";   org="toifood-dev" ;;
+  ts-test-front)   suffix="front"; org="jayreck996"  ;;
+  ts-test-back)    suffix="back";  org="jayreck996"  ;;
+  *)               suffix="${ARGUMENTS#ts-}"; org="jayreck996" ;;
 esac
 
-# Get all blob paths
-gh api "repos/toifood-dev/ts-toifood-${suffix}/git/trees/${latestBranch}?recursive=1" \
+# Get all blob paths (guard if source repo unreachable)
+tree=$(gh api "repos/${org}/-ts-${suffix}/git/trees/${latestBranch}?recursive=1" 2>/dev/null) || { echo "[]"; exit 0; }
+gh api "repos/${org}/-ts-${suffix}/git/trees/${latestBranch}?recursive=1" \
   --jq '.tree[] | select(.type=="blob") | select(.path | test("\\.(csv|log|md|lock|d\\.ts|map|spec\\.ts|test\\.ts)$") | not) | select(.path | test("(^|/)node_modules/|(^|/)dist/") | not) | .path'
 ```
 
@@ -126,6 +131,8 @@ Print a single JSON array — nothing else before or after it:
 ```
 
 Use the computed `$QUARTER` value in each path. Emit exactly N×2 objects — one ISSUE and one ASSET per discovered category.
+
+**If anything went wrong at any step — source repo unreachable, no categories found, skill error — output `[]` and nothing else. Never output prose.**
 
 ### 6. Clean up
 
