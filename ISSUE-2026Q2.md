@@ -52,6 +52,12 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### Run 28137615904: ts-test-back WRITE_OK but ts-test-front still silent (2026-06-25)
+- ts-test-back: 4 entries committed (BUG-ISSUE, BUG-ASSET, TEST-ISSUE, TEST-ASSET) - token sync fix confirmed working
+- ts-test-front: 202 from listener, no commits after 5+ minutes - skill likely erroring on this target specifically
+- Both targets queued via FIFO - back ran first and succeeded; front ran second and produced nothing
+- Next: check could/ structure difference between -ts-test-front and -ts-test-back, or check pm2 logs for skill error on ts-test-front
+
 ### Test targets not yet confirmed WRITE_OK — token sync complete, awaiting next trigger (2026-06-25)
 - TSREPO_TOKEN now set in both required locations: GitHub Actions secret (gh secret set) and Mac Mini PM2 env (pm2 save)
 - Listener back online after BOM crash (fba3d1d); no new test target triggers since fix
