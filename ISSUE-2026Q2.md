@@ -52,6 +52,13 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### ts-test-front WRITE_FAIL root cause: wrong source repo mapping in skill step 2 (2026-06-25)
+- Skill step 2 maps target to source repo via suffix stripping: suffix=${ARGUMENTS#ts-toifood-}`
+- ts-test-front does not start with ts-toifood- so suffix stays ts-test-front — tries to read toifood-dev/ts-toifood-ts-test-front (does not exist)
+- Claude gets no source code, produces prose instead of JSON — WRITE_FAIL: no JSON array in output
+- Fix: add explicit test target mapping with org variable (jayreck996/-ts-front, jayreck996/-ts-back) + unreachable repo guard emitting []
+- Systemic JSON issue: step 5 has no fallback — Claude produces prose when confused; fix adds: if anything went wrong output [] and nothing else
+
 ### Run 28137615904: ts-test-back WRITE_OK but ts-test-front still silent (2026-06-25)
 - ts-test-back: 4 entries committed (BUG-ISSUE, BUG-ASSET, TEST-ISSUE, TEST-ASSET) - token sync fix confirmed working
 - ts-test-front: 202 from listener, no commits after 5+ minutes - skill likely erroring on this target specifically
