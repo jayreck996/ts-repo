@@ -60,7 +60,7 @@ From the tree, fetch and decode these files via GitHub API:
 
 For each path:
 ```bash
-gh api "repos/toifood-dev/ts-toifood-${suffix}/contents/${path}?ref=${latestBranch}" \
+gh api "repos/${org}/-ts-${suffix}/contents/${path}?ref=${latestBranch}" \
   --jq '.content' | base64 -d
 ```
 
