@@ -52,6 +52,13 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### skill suffix mapping wrong for test targets — [] guard not reliable (2026-06-25)
+- ts-test-front mapped to suffix=front -> jayreck996/-ts-front (404); ts-test-back to suffix=back -> jayreck996/-ts-back (404) — neither repo exists
+- ts-test-front still returned WRITE_OK 4/4: Claude bypassed the [] guard and hallucinated entries without real source code
+- ts-test-back returned WRITE_OK 0/0: Claude happened to follow the [] guard this run
+- Guard (|| echo [] exit 0) is a bash instruction Claude interprets, not executes — non-deterministic when source repo is missing
+- Fix 7169619: corrected suffixes to test-front and test-back so both map to actual repos jayreck996/-ts-test-front and jayreck996/-ts-test-back
+
 ### ts-test-front WRITE_FAIL root cause: wrong source repo mapping in skill step 2 (2026-06-25)
 - Skill step 2 maps target to source repo via suffix stripping: suffix=${ARGUMENTS#ts-toifood-}`
 - ts-test-front does not start with ts-toifood- so suffix stays ts-test-front — tries to read toifood-dev/ts-toifood-ts-test-front (does not exist)
