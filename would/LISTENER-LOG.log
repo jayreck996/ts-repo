@@ -1,3 +1,5 @@
+2026-06-25 01:57 UTC | ts-test-front | WRITE_FAIL     | --- | skill error: Command failed: claude --dangerously-skip-permissions --print /could/could-update-md ts-test-front
+Warning: no stdin dat
 2026-06-25 01:29 UTC | ts-test-back | WRITE_OK       | --- | 0/0 entries committed
 2026-06-25 01:27 UTC | ts-test-front | WRITE_OK       | --- | 4/4 entries committed
 2026-06-25 00:12 UTC | ts-test-front | WRITE_FAIL     | --- | skill error: no JSON array in output
