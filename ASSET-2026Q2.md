@@ -29,6 +29,12 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### could-update-md skill: test target mapping + JSON fallback guard added (2026-06-25) — 779e8a5
+- Step 2: explicit org/suffix mapping for ts-test-front (jayreck996/-ts-front) and ts-test-back (jayreck996/-ts-back); unreachable repo now emits [] and exits cleanly
+- Top of file: OUTPUT RULE hard constraint — entire response must be JSON array, no prose, no preamble
+- Step 5: added fallback — if anything went wrong at any step, output [] and nothing else, never prose
+- Fixes ts-test-front WRITE_FAIL and reduces systemic no-JSON-array failures
+
 ### ts-test-back WRITE_OK confirmed — token sync fix validated (2026-06-25)
 - Run 28137615904: ts-test-back wrote 4 entries (BUG-ISSUE, BUG-ASSET, TEST-ISSUE, TEST-ASSET via could-update commits)
 - Confirms TSREPO_TOKEN in pm2 env resolves write-side silent failure for back target
