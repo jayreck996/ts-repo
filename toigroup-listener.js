@@ -155,6 +155,7 @@ function runSkill(target, quarter_override) {
   execFile('claude', ['--dangerously-skip-permissions', '--print', `/could/could-update-md ${target}`], {
     env,
     maxBuffer: 10 * 1024 * 1024,
+    stdio: ['ignore', 'pipe', 'pipe'],
   }, (err, stdout, stderr) => {
     skillRunning = false;
     if (err) {
