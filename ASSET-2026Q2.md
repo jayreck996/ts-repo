@@ -29,6 +29,12 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### toigroup-tunnel vs toifood-tunnel — process management audit (2026-06-26)
+- toifood-tunnel: managed by launchd (com.cloudflare.cloudflared, PID 2685) — survives reboots and clean exits
+- toigroup-tunnel: managed by PM2 only (id 6, script ~/.cloudflared/toigroup.yml) — no launchd backup
+- PM2 restarts: 0 for toigroup-tunnel; was manually restarted after the 530 incident
+- Gap closed: DNS fallback + PM2 restart policy fix applied 2026-06-26
+
 ### skill suffix mapping corrected for test targets — 7169619 (2026-06-25)
 - ts-test-front: suffix=test-front -> jayreck996/-ts-test-front (confirmed exists, private)
 - ts-test-back: suffix=test-back -> jayreck996/-ts-test-back (confirmed exists, private)
