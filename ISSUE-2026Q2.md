@@ -52,6 +52,13 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### toigroup-tunnel 530 — ts-test-front + ts-test-back (2026-06-25)
+- Workflow run at 21:22 UTC got HTTP 530 for both ts-test targets — Cloudflare tunnel unreachable
+- Root cause: toigroup-tunnel crashed at 15:00 UTC due to DNS failure (ISP DNS 202.180.64.11 unreachable, could not resolve argotunnel.com SRV records)
+- cloudflared performed a graceful shutdown (signal interrupt), so PM2 treated it as a clean exit and did not auto-restart
+- Tunnel was dead from 15:00 → 21:22 UTC (6+ hours); listener never received the request
+- Fix: DNS fallback (1.1.1.1) added to toigroup.yml; PM2 restart policy updated for graceful exits
+
 ### skill suffix mapping wrong for test targets — [] guard not reliable (2026-06-25)
 - ts-test-front mapped to suffix=front -> jayreck996/-ts-front (404); ts-test-back to suffix=back -> jayreck996/-ts-back (404) — neither repo exists
 - ts-test-front still returned WRITE_OK 4/4: Claude bypassed the [] guard and hallucinated entries without real source code
