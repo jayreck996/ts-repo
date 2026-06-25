@@ -29,6 +29,11 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### ts-test-back WRITE_OK confirmed — token sync fix validated (2026-06-25)
+- Run 28137615904: ts-test-back wrote 4 entries (BUG-ISSUE, BUG-ASSET, TEST-ISSUE, TEST-ASSET via could-update commits)
+- Confirms TSREPO_TOKEN in pm2 env resolves write-side silent failure for back target
+- ts-test-front remains unresolved - same token, different outcome, suggests repo structure difference
+
 ## ASSET:ts-repo 2026-06-25 → TSREPO_TOKEN token sync confirmed complete on both sides
 
 GitHub Actions secret set via gh secret set. PM2 env updated via pm2 restart --update-env + pm2 save. Both prod and test targets use TSREPO_TOKEN in targets.json. Listener online and ready for next trigger.
