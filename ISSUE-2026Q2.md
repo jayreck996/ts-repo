@@ -52,6 +52,18 @@ INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### 530 root cause — toigroup-tunnel DNS failure + PM2 clean-exit gap (2026-06-25)
+- Mac Mini ISP DNS (202.180.64.11) became unreachable at 15:00 UTC; cloudflared could not resolve argotunnel.com SRV records
+- cloudflared performed a graceful shutdown (signal interrupt / clean exit) — not a crash
+- PM2 saw a clean exit and did not auto-restart; tunnel stayed dead 15:00 → 21:22 UTC (6h+)
+- GitHub Actions workflow triggered at 21:22 UTC; Cloudflare had no live connection to Mac Mini → returned 530
+- Fixes applied 2026-06-26: PM2 restart-delay 5000ms on toigroup-tunnel (now retries on any exit); no-autoupdate: true added to toigroup.yml; toifood.yml brought to parity
+
+### toifood-tunnel missing no-autoupdate — config parity gap (2026-06-26)
+- toifood.yml had no no-autoupdate flag; cloudflared could self-update mid-run and silently restart the tunnel
+- Identified during 530 investigation when toigroup.yml received no-autoupdate: true but toifood was missed
+- Fix: added no-autoupdate: true to toifood.yml, restarted launchd service (new PID 28230)
+
 ### toigroup-tunnel 530 — ts-test-front + ts-test-back (2026-06-25)
 - Workflow run at 21:22 UTC got HTTP 530 for both ts-test targets — Cloudflare tunnel unreachable
 - Root cause: toigroup-tunnel crashed at 15:00 UTC due to DNS failure (ISP DNS 202.180.64.11 unreachable, could not resolve argotunnel.com SRV records)
