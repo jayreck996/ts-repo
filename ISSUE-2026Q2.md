@@ -1,3 +1,11 @@
+### ts-toifood-web WRITE_FAIL — literal newlines in JSON entry strings (2026-06-26)
+- Claude outputs `entry` values with literal newline characters inside JSON string values
+- JSON spec disallows literal newlines in strings — must be `\n` (backslash + n)
+- Sanitizer regex in toigroup-listener.js line 178 catches some cases but fails on longer content (position 1260 in latest run)
+- ts-test and ts-toifood-back not affected — shorter content stays under the threshold where the regex breaks
+- Fix: updated could-update-md skill step 5 — added JSON ENCODING RULES section and concrete placeholder example showing `\n` for line breaks, `\"` for quotes
+- No hardcoded paths in example — uses {CAT}/{QUARTER}/{TS} placeholders; commit 137cb9a
+
 ### ts-toifood-back/ts-toifood-web: listener silently fails after 202 -- prod writes broken (2026-06-26)
 - Workflow triggers succeed (HTTP 202) but listener logs no entry -- not even WRITE_FAIL
 - Last successful prod write was Jun 24 07:24 UTC (4/4 entries committed)
@@ -579,3 +587,4 @@ Confirmed: Claude skills run in the interactive Claude Code CLI session covered 
 ## ISSUE:toifood 2026-06-07 → Claude skills (Claude Code) are CLI-only — not callable from GitHub Actions
 
 Confirmed: skills run in the interactive CLI session, covered by Claude Pro subscription. Cannot be invoked from GitHub Actions workflows. Rules out using Claude Code/skills as the pipeline LLM backend — `api.anthropic.com` is used instead (`ANTHROPIC_API_KEY` org secret).
+
