@@ -1,3 +1,19 @@
+### Both Cloudflare tunnels migrated to launchd — PM2 toigroup-tunnel removed (2026-06-26)
+- toigroup-tunnel: new plist ~/Library/LaunchAgents/com.cloudflared.toigroup.plist, KeepAlive: true + ThrottleInterval: 5
+- toifood-tunnel: fixed existing plist — KeepAlive: {SuccessfulExit: false} → KeepAlive: true
+- Both now restart unconditionally on any exit (clean or crash) with 5s throttle
+- toigroup-tunnel removed from PM2 (pm2 delete 7, pm2 save); PM2 no longer manages any tunnel
+- Verified: PID 50949 (toifood, com.cloudflare.cloudflared), PID 50951 (toigroup, com.cloudflared.toigroup)
+- Fix if stuck: launchctl kickstart -k gui/$(id -u)/com.cloudflare.cloudflared or com.cloudflared.toigroup
+
+### toigroup-tunnel PM2 ghost process — 530 persisted after restart-delay fix (2026-06-26)
+- pm2 restart 6 --restart-delay 5000 updated PM2 state but never spawned a new cloudflared binary
+- PM2 showed "online" / 2h uptime — PID 29744 confirmed dead (kill -0 failed), port 20241 held by toifood-tunnel
+- Root cause: PM2 fork_mode ghost — cloudflared clean exit (code 0 on DNS failure) left PM2 tracking dead PID
+- Confirmed by running cloudflared directly: connected to 4 edge servers (akl01 x2, mel02 x2) in under 3s
+- Interim fix: pm2 delete 6 + pm2 start → new PID 49097, tunnel returned HTTP 403 (CF Access, correct)
+- Permanent fix: migrated both tunnels to launchd (see entry above)
+
 ### ts-test-front/ts-test-back WRITE_FAIL: Mac Mini offline / tunnel down (2026-06-26)
 - Two manual test runs (28201345769, 28208431297) both failed with HTTP 530, Cloudflare error 1033
 - local.toigroup.co.nz tunnel unreachable -- Mac Mini likely off or Cloudflare tunnel not running
