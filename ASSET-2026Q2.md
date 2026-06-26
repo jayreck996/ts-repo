@@ -1,3 +1,12 @@
+### could-update-md skill — JSON encoding rules added to step 5 (2026-06-26)
+- Added explicit JSON ENCODING RULES before the output example:
+  - Use `\n` (backslash + n) for line breaks inside entry strings — never literal newlines
+  - Escape double-quotes as `\"`
+  - No trailing commas, no prose outside the array
+- Replaced hardcoded path example with placeholder structure: `could/{CAT}-ISSUE-{QUARTER}.md`
+- Entry value in example shows multi-paragraph content using `\n\n` so Claude has a concrete model to follow
+- Synced to ~/.claude/commands/could/could-update-md.md; pushed as 137cb9a to jayreck996/ts-repo
+
 ### Tunnel fix verified -- test targets passing, prod listener investigation pending (2026-06-26)
 - launchd migration confirmed working: ts-test-front and ts-test-back both WRITE_OK (4/4 entries)
 - Prod targets (ts-toifood-back/web) trigger accepted (202) but writes not landing -- needs investigation
@@ -959,3 +968,4 @@ Follows the same pattern as `toiflow` org. Key deltas:
 - Guard: exits 1 if response is empty or null
 - Same interface as `toiflow/-toiflow/must-update-content.yml` (Ollama equivalent)
 - `ANTHROPIC_API_KEY` required as `toifood` org secret
+
