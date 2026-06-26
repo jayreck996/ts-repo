@@ -1,3 +1,19 @@
+### ts-repo logs diagnosed via GitHub API - no local clone needed (2026-06-27)
+- Confirmed GitHub Contents API as reliable read path for LISTENER-LOG.log, TRIGGER-LOG.log, WOULD-UPDATE-MD-LOG.log
+- Fetched and decoded all three log files via WebFetch against api.github.com/repos/jayreck996/ts-repo/contents/would/
+- No local clone or gh CLI required - useful for remote diagnostics from any context
+
+### ts-test-front/ts-test-back confirmed working after run #30 blip (2026-06-27)
+- Run #30 (~00:06 UTC) failed for both ts-test targets with exit code 1 - cause unknown (no log access)
+- Runs #31 (01:22 UTC) and #32 (01:44 UTC) both WRITE_OK (4/4 entries) on same targets
+- No intervention needed - self-resolved; TSREPO_TOKEN confirmed valid
+
+### Scheduled run silence root-caused to Cloudflare 530 tunnel down (2026-06-27)
+- GitHub Actions run #33 (06:00 UTC schedule, fired ~07:16 UTC) completed success in 32s
+- Zero entries in all three logs - consistent with HTTP 530 tunnel unreachable pattern seen Jun 25-26
+- Mac Mini likely asleep/off; workflow exits gracefully on 530 without writing to logs
+- Distinction clarified: schedule IS triggering at 06:00 UTC (= 6 PM NZT), not 6 AM NZT
+
 ### could-update-md skill — JSON encoding rules added to step 5 (2026-06-26)
 - Added explicit JSON ENCODING RULES before the output example:
   - Use `\n` (backslash + n) for line breaks inside entry strings — never literal newlines
