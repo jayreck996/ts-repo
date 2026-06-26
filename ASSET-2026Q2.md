@@ -1,3 +1,18 @@
+### Both tunnels migrated to launchd — final tunnel process manager state (2026-06-26)
+
+| | toifood-tunnel | toigroup-tunnel |
+|---|---|---|
+| launchd label | com.cloudflare.cloudflared | com.cloudflared.toigroup |
+| Plist path | ~/Library/LaunchAgents/com.cloudflare.cloudflared.plist | ~/Library/LaunchAgents/com.cloudflared.toigroup.plist |
+| KeepAlive | true (fixed from SuccessfulExit: false) | true |
+| ThrottleInterval | 5s | 5s |
+| Logs | ~/Library/Logs/com.cloudflare.cloudflared.{out,err}.log | ~/Library/Logs/cloudflared-toigroup.{out,err}.log |
+| PM2 | Removed (id 4 ghost still in list, inactive) | Removed (pm2 delete 7) |
+| PID post-migration | 50949 | 50951 |
+
+- If stuck: launchctl kickstart -k gui/$(id -u)/<label> to force restart
+- Both start at jayreck login (RunAtLoad: true) and survive reboots via launchd
+
 ### Full workflow rename completed — would → could (2026-06-23)
 - could-update-md.yml: replaces would-update-md.yml — expanded matrix with outputRepo/tokenSecret + ensureQuarterFiles preflight step
 - could-update-title.yml: replaces would-update-timing.yml — name update only
