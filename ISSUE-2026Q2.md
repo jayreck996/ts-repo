@@ -1,3 +1,8 @@
+### ts-repo: cron schedule wrong timezone - runs at 6 PM NZT not 6 AM NZT (2026-06-27) [RESOLVED]
+- Schedule was set to '0 6 * * *' (06:00 UTC = 18:00 NZST) - Mac Mini asleep at that time
+- Diagnosed from run #33: workflow succeeded but zero entries in all three logs (530 tunnel down)
+- Fixed: updated cron to '0 18 * * *' (18:00 UTC = 06:00 NZST) - commit c3c65b0
+
 ### ts-repo: scheduled 06:00 UTC run silently skipped - Mac Mini tunnel unreachable (2026-06-27)
 - GitHub Actions run #33 (Scheduled) completed in 32s at ~07:16 UTC with no errors
 - Zero entries written to TRIGGER-LOG.log, LISTENER-LOG.log, or any output repo for Jun 27
