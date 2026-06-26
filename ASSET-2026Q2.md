@@ -1,3 +1,8 @@
+### Tunnel fix verified -- test targets passing, prod listener investigation pending (2026-06-26)
+- launchd migration confirmed working: ts-test-front and ts-test-back both WRITE_OK (4/4 entries)
+- Prod targets (ts-toifood-back/web) trigger accepted (202) but writes not landing -- needs investigation
+- TRIGGER-LOG.log and LISTENER-LOG.log in would/ are source of truth for run status
+
 ### Both tunnels migrated to launchd — final tunnel process manager state (2026-06-26)
 
 | | toifood-tunnel | toigroup-tunnel |
