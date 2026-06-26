@@ -1,3 +1,15 @@
+### could-update-md.yml: cron rescheduled to 06:00 NZST (2026-06-27)
+- Changed cron from '0 6 * * *' (06:00 UTC = 6 PM NZT) to '0 18 * * *' (18:00 UTC = 6 AM NZT)
+- Root cause: Mac Mini was asleep during evening NZT runs, causing silent 530 failures
+- Commit c3c65b0 to jayreck996/ts-repo .github/workflows/could-update-md.yml
+- Next scheduled run: 2026-06-28 06:00 NZST (~18:00 UTC)
+
+### Manual prod run #34 confirmed working (2026-06-27)
+- Triggered via GitHub API (workflow_dispatch, env=prod) at 22:49 UTC
+- Both prod targets succeeded: ts-toifood-back and ts-toifood-web - 202 accepted by listener
+- TRIGGER-LOG.log updated with success entries at 22:49 UTC
+- Confirms Mac Mini and Cloudflare tunnel live during NZT business hours
+
 ### ts-repo logs diagnosed via GitHub API - no local clone needed (2026-06-27)
 - Confirmed GitHub Contents API as reliable read path for LISTENER-LOG.log, TRIGGER-LOG.log, WOULD-UPDATE-MD-LOG.log
 - Fetched and decoded all three log files via WebFetch against api.github.com/repos/jayreck996/ts-repo/contents/would/
