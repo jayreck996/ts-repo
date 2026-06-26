@@ -120,17 +120,29 @@ Format each entry as:
 
 ### 5. Output JSON to stdout
 
-Print a single JSON array — nothing else before or after it:
+Print a single JSON array — nothing else before or after it.
+
+**JSON ENCODING RULES:**
+- Every `entry` value is a single JSON string. Use `\n` (backslash + n) for line breaks — never a literal newline character inside a string value.
+- Escape all double-quotes inside entry content as `\"`.
+- No trailing commas. No comments. No prose outside the array.
+
+Structure (where `{CAT}` = each word from CATEGORIES_LOCKED, `{QUARTER}` = computed quarter, `{TS}` = computed timestamp):
 
 ```json
 [
-  { "path": "could/MIGRATE-ISSUE-2026Q2.md", "entry": "## ISSUE:migrate {TS} → ..." },
-  { "path": "could/MIGRATE-ASSET-2026Q2.md", "entry": "## ASSET:migrate {TS} → ..." },
-  ...
+  {
+    "path": "could/{CAT}-ISSUE-{QUARTER}.md",
+    "entry": "## ISSUE:{cat} {TS} → one-line summary\n\n**Finding — `File.jsx`**\nExplanation. Second paragraph.\n\n**Finding 2**\nMore detail."
+  },
+  {
+    "path": "could/{CAT}-ASSET-{QUARTER}.md",
+    "entry": "## ASSET:{cat} {TS} → one-line summary\n\nContent here. All line breaks as \\n, never literal newlines."
+  }
 ]
 ```
 
-Use the computed `$QUARTER` value in each path. Emit exactly N×2 objects — one ISSUE and one ASSET per discovered category.
+Emit exactly N×2 objects — one ISSUE and one ASSET per discovered category.
 
 **If anything went wrong at any step — source repo unreachable, no categories found, skill error — output `[]` and nothing else. Never output prose.**
 
