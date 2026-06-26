@@ -1,3 +1,9 @@
+### ts-test-front/ts-test-back WRITE_FAIL: Mac Mini offline / tunnel down (2026-06-26)
+- Two manual test runs (28201345769, 28208431297) both failed with HTTP 530, Cloudflare error 1033
+- local.toigroup.co.nz tunnel unreachable -- Mac Mini likely off or Cloudflare tunnel not running
+- Jun 25 morning schedule (07:10 UTC) also hit WRITE_FAIL for toifood targets (no stdin data)
+- Fix: ensure Mac Mini is on, pm2 toigroup-listener is running, and Cloudflare tunnel is active
+
 ### Mac Mini pm2 restart pending after toigroup-listener.js update (2026-06-23)
 - toigroup-listener.js commit messages renamed would-update → could-update (b58201c)
 - Mac Mini still running old version in pm2 until restarted
