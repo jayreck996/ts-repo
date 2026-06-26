@@ -1,3 +1,4 @@
+2026-06-26 01:22 UTC | ts-test-back | success | 202 | listener accepted — verify write via pm2 logs
 2026-06-26 00:07 UTC | ts-test-front | failure | 530 | Cloudflare error 530 — tunnel unreachable, Mac Mini likely off
 2026-06-26 00:07 UTC | ts-test-back | failure | 530 | Cloudflare error 530 — tunnel unreachable, Mac Mini likely off
 2026-06-25 21:22 UTC | ts-test-front | failure | 530 | Cloudflare error 530 — tunnel unreachable, Mac Mini likely off
