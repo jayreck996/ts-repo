@@ -1,3 +1,12 @@
+### ts-toifood-back/ts-toifood-web: listener silently fails after 202 -- prod writes broken (2026-06-26)
+- Workflow triggers succeed (HTTP 202) but listener logs no entry -- not even WRITE_FAIL
+- Last successful prod write was Jun 24 07:24 UTC (4/4 entries committed)
+- Jun 25 07:11 UTC: both targets hit WRITE_FAIL `no stdin data` (Claude auth issue)
+- Jun 26: two manual prod runs (28211821926) -- 202 accepted, zero listener activity logged
+- Test targets (ts-test-front/ts-test-back) writing fine on same Mac Mini -- issue is prod-specific
+- Investigate: SSH into Mac Mini, run `pm2 logs toigroup-listener --lines 50` during a prod trigger
+- Possible causes: Claude session expired for prod context, listener crashing silently on toifood repo access
+
 ### Both Cloudflare tunnels migrated to launchd — PM2 toigroup-tunnel removed (2026-06-26)
 - toigroup-tunnel: new plist ~/Library/LaunchAgents/com.cloudflared.toigroup.plist, KeepAlive: true + ThrottleInterval: 5
 - toifood-tunnel: fixed existing plist — KeepAlive: {SuccessfulExit: false} → KeepAlive: true
