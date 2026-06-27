@@ -1,3 +1,12 @@
+### should-update-md: listener route, workflow, and skill added (2026-06-28)
+- toigroup-listener.js updated with /should/should-update-md route, shouldQueue, runShouldSkill()
+- Listener log: should/SHOULD-LISTENER-LOG.log
+- .github/workflows/should-update-md.yml created - weekly cron 0 18 * * 0 (Mon 06:00 NZST)
+- Trigger log: should/SHOULD-UPDATE-MD-TRIGGER-LOG.log
+- Skill added at .claude/commands/should/should-update-md.md (pending Mac Mini pm2 reload)
+- Same anchor pattern as could/; header allows agent modification of existing entries
+- Schedule: every Monday 6 AM NZST - prod on scheduled runs, test on manual dispatch
+
 ### could-update-md.yml: cron rescheduled to 06:00 NZST (2026-06-27)
 - Changed cron from '0 6 * * *' (06:00 UTC = 6 PM NZT) to '0 18 * * *' (18:00 UTC = 6 AM NZT)
 - Root cause: Mac Mini was asleep during evening NZT runs, causing silent 530 failures
