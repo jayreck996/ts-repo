@@ -202,8 +202,121 @@ function runSkill(target, quarter_override) {
   });
 }
 
+
+// === SHOULD-UPDATE-MD ===
+const shouldQueue = [];
+let shouldRunning = false;
+const SHOULD_LOG_PATH = 'should/SHOULD-LISTENER-LOG.log';
+
+function processShouldQueue() {
+  if (shouldRunning || shouldQueue.length === 0) return;
+  const { target, quarter_override } = shouldQueue.shift();
+  runShouldSkill(target, quarter_override);
+}
+
+function appendToShouldLog(target, status, note) {
+  const token = process.env.TOIFOOD_CROSS_REPO_TOKEN;
+  if (!token) {
+    console.error(`[${new Date().toISOString()}] appendToShouldLog: TOIFOOD_CROSS_REPO_TOKEN not set`);
+    return;
+  }
+  try {
+    const ts = new Date().toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
+    const line = `${ts} | ${target} | ${status.padEnd(14)} | --- | ${note}`;
+    let sha = '';
+    let current = '';
+    try {
+      const fileRaw = execSync(
+        `curl -sf -H "Authorization: Bearer ${token}" ` +
+        `"https://api.github.com/repos/${LOG_REPO}/contents/${SHOULD_LOG_PATH}"`
+      ).toString();
+      const file = JSON.parse(fileRaw);
+      sha = file.sha;
+      current = Buffer.from(file.content, 'base64').toString('utf8');
+    } catch (_) {}
+    const updated = line + '\n' + current;
+    const payload = JSON.stringify({
+      message: `should-update-md: log ${ts} — ${target}`,
+      content: Buffer.from(updated).toString('base64'),
+      ...(sha ? { sha } : {}),
+      committer: { name: 'should-update', email: 'admin@toigroup.co.nz' },
+    });
+    execSync(
+      `curl -sf -X PUT -H "Authorization: Bearer ${token}" ` +
+      `-H "Content-Type: application/json" ` +
+      `"https://api.github.com/repos/${LOG_REPO}/contents/${SHOULD_LOG_PATH}" ` +
+      `--data-binary @-`,
+      { input: payload }
+    );
+    console.log(`[${new Date().toISOString()}] should log: ${line}`);
+  } catch (e) {
+    console.error(`[${new Date().toISOString()}] appendToShouldLog error: ${e.message}`);
+  }
+}
+
+function runShouldSkill(target, quarter_override) {
+  shouldRunning = true;
+  console.log(`[${new Date().toISOString()}] should-skill starting — target: ${target}`);
+  let outputRepo, token;
+  try {
+    ({ outputRepo, token } = getTargetConfig(target));
+  } catch (e) {
+    console.error(`[${new Date().toISOString()}] should-skill error: ${e.message}`);
+    shouldRunning = false;
+    appendToShouldLog(target, 'WRITE_FAIL', `config error: ${e.message}`);
+    processShouldQueue();
+    return;
+  }
+  const env = {
+    ...process.env,
+    GH_TOKEN: token,
+    OUTPUT_REPO: outputRepo,
+    ...(quarter_override ? { QUARTER_OVERRIDE: quarter_override } : {}),
+  };
+  execFile('claude', ['--dangerously-skip-permissions', '--print', `/should/should-update-md ${target}`], {
+    env,
+    maxBuffer: 10 * 1024 * 1024,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  }, (err, stdout, stderr) => {
+    shouldRunning = false;
+    if (err) {
+      console.error(`[${new Date().toISOString()}] should-skill error: ${err.message}`);
+      if (stderr) console.error(`[${new Date().toISOString()}] stderr: ${stderr.slice(0, 1000)}`);
+      appendToShouldLog(target, 'WRITE_FAIL', `skill error: ${err.message.slice(0, 120)}`);
+      processShouldQueue();
+      return;
+    }
+    const jsonMatch = stdout.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) {
+      console.error(`[${new Date().toISOString()}] should-skill error: No JSON array in skill output`);
+      console.error(`[${new Date().toISOString()}] raw output (first 2000 chars): ${stdout.slice(0, 2000)}`);
+      appendToShouldLog(target, 'WRITE_FAIL', 'skill error: no JSON array in output');
+      processShouldQueue();
+      return;
+    }
+    const sanitized = jsonMatch[0].replace(/("(?:[^"\\]|\\.)*")/g, m =>
+      m.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
+    );
+    let entries;
+    try {
+      entries = JSON.parse(sanitized);
+    } catch (parseErr) {
+      console.error(`[${new Date().toISOString()}] should-skill error: ${parseErr.message}`);
+      console.error(`[${new Date().toISOString()}] raw JSON match (first 3000 chars): ${jsonMatch[0].slice(0, 3000)}`);
+      appendToShouldLog(target, 'WRITE_FAIL', `skill error: JSON parse failed — ${parseErr.message.slice(0, 80)}`);
+      processShouldQueue();
+      return;
+    }
+    console.log(`[${new Date().toISOString()}] should-skill done — ${entries.length} entries`);
+    const { ok, fail } = writeEntriesToGitHub(entries, outputRepo, token);
+    const status = fail === 0 ? 'WRITE_OK' : ok === 0 ? 'WRITE_FAIL' : 'WRITE_PARTIAL';
+    const note = fail === 0 ? `${ok}/${entries.length} entries committed` : `${ok} ok, ${fail} failed of ${entries.length}`;
+    appendToShouldLog(target, status, note);
+    processShouldQueue();
+  });
+}
 function handle(req, res) {
-  if (req.method !== 'POST' || req.url !== '/could/could-update-md') {
+  if (req.method !== 'POST') {
     res.writeHead(404).end();
     return;
   }
@@ -214,16 +327,29 @@ function handle(req, res) {
     return;
   }
 
-  let body = '';
-  req.on('data', d => { body += d; });
-  req.on('end', () => {
-    const { target = 'ts-back', quarter_override } = body ? JSON.parse(body) : {};
-    console.log(`[${new Date().toISOString()}] /could/could-update-md accepted — target: ${target}${quarter_override ? ` quarter=${quarter_override}` : ''}`);
-
-    res.writeHead(202).end('Accepted');
-    skillQueue.push({ target, quarter_override });
-    setImmediate(processQueue);
-  });
+  if (req.url === '/could/could-update-md') {
+    let body = '';
+    req.on('data', d => { body += d; });
+    req.on('end', () => {
+      const { target = 'ts-back', quarter_override } = body ? JSON.parse(body) : {};
+      console.log(`[${new Date().toISOString()}] /could/could-update-md accepted — target: ${target}${quarter_override ? ` quarter=${quarter_override}` : ''}`);
+      res.writeHead(202).end('Accepted');
+      skillQueue.push({ target, quarter_override });
+      setImmediate(processQueue);
+    });
+  } else if (req.url === '/should/should-update-md') {
+    let body = '';
+    req.on('data', d => { body += d; });
+    req.on('end', () => {
+      const { target = 'ts-back', quarter_override } = body ? JSON.parse(body) : {};
+      console.log(`[${new Date().toISOString()}] /should/should-update-md accepted — target: ${target}${quarter_override ? ` quarter=${quarter_override}` : ''}`);
+      res.writeHead(202).end('Accepted');
+      shouldQueue.push({ target, quarter_override });
+      setImmediate(processShouldQueue);
+    });
+  } else {
+    res.writeHead(404).end();
+  }
 }
 
 http.createServer(handle).listen(PORT, () => {
