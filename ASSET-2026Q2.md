@@ -1,3 +1,9 @@
+### could-update-md: log job SHA conflict fixed + log file renamed to COULD-UPDATE-MD-TRIGGER-LOG.log (2026-06-29)
+- Write-log loop now re-fetches SHA from GitHub API at start of each iteration with 3-attempt retry — matches must/should pattern
+- Eliminates HTTP 409 conflicts on multi-target runs where 2+ artifacts are processed in the same log job
+- would/TRIGGER-LOG.log renamed to would/COULD-UPDATE-MD-TRIGGER-LOG.log — now consistent with must/MUST-UPDATE-MD-TRIGGER-LOG.log and should/SHOULD-UPDATE-MD-TRIGGER-LOG.log
+- Historical log data migrated to new filename; old would/TRIGGER-LOG.log deleted
+
 ### Listener restarted — must/should routes active, PM2 cleaned up (2026-06-28)
 - git pull brought in 985-line changeset: toigroup-listener.js (must/should queues + routes), two new skills, two new workflows
 - ~/.claude/commands/must/must-update-md.md and ~/.claude/commands/should/should-update-md.md synced manually (post-merge hook only covers could/)
@@ -1047,4 +1053,3 @@ Follows the same pattern as `toiflow` org. Key deltas:
 - Guard: exits 1 if response is empty or null
 - Same interface as `toiflow/-toiflow/must-update-content.yml` (Ollama equivalent)
 - `ANTHROPIC_API_KEY` required as `toifood` org secret
-
