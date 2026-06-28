@@ -1,3 +1,10 @@
+### Listener restarted — must/should routes active, PM2 cleaned up (2026-06-28)
+- git pull brought in 985-line changeset: toigroup-listener.js (must/should queues + routes), two new skills, two new workflows
+- ~/.claude/commands/must/must-update-md.md and ~/.claude/commands/should/should-update-md.md synced manually (post-merge hook only covers could/)
+- pm2 restart toigroup-listener → PID 78101; /must/must-update-md and /should/should-update-md routes confirmed wired (POST + x-token required)
+- PM2 ghost toifood-tunnel (id 4) removed — pm2 delete 4 + pm2 save; PM2 now only manages toigroup-listener (id 5)
+- Pending: bump actions/checkout, upload-artifact, download-artifact from @v4 → @v5 across all three workflows
+
 ### must-update-md: full pipeline added – TC, PRIVACY, PRICE, USAGE, ROADMAP (2026-06-28)
 - toigroup-listener.js updated with /must/must-update-md route, mustQueue, runMustSkill()
 - Listener log: must/MUST-LISTENER-LOG.log
