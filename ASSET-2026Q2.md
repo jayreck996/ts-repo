@@ -1,3 +1,13 @@
+### must-update-md: full pipeline added – TC, PRIVACY, PRICE, USAGE, ROADMAP (2026-06-28)
+- toigroup-listener.js updated with /must/must-update-md route, mustQueue, runMustSkill()
+- Listener log: must/MUST-LISTENER-LOG.log
+- .github/workflows/must-update-md.yml created - weekly cron 0 18 * * 0 (Mon 06:00 NZST)
+- Trigger log: must/MUST-UPDATE-MD-TRIGGER-LOG.log
+- Skill added at .claude/commands/must/must-update-md.md (pending Mac Mini pm2 reload)
+- must/ category files seeded in all 4 output repos (TC, PRIVACY, PRICE, USAGE, ROADMAP × ISSUE + ASSET)
+- Agents may read and update existing entries; prompts tailored per category
+- Completes three-tier pipeline: could/ daily + should/ + must/ weekly Mon
+
 ### should-update-md: listener route, workflow, and skill added (2026-06-28)
 - toigroup-listener.js updated with /should/should-update-md route, shouldQueue, runShouldSkill()
 - Listener log: should/SHOULD-LISTENER-LOG.log
