@@ -111,6 +111,13 @@ ASSET LOG
 INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
+### should/ + must/ files corrected across all 4 output repos (2026-06-28)
+- Deleted spurious must/ASSET-2026Q2.md + must/ISSUE-2026Q2.md from ts-toifood-back + ts-toifood-web (created by broken init step)
+- Deleted spurious should/ASSET-2026Q2.md + should/ISSUE-2026Q2.md from ts-toifood-back + ts-toifood-web
+- Seeded correct should/ARCH/MIGRATE/RECOVERY ISSUE+ASSET files in all 4 repos (24 files)
+- Fixed should-update-md.yml: removed generic file creation; hardcoded ARCH,MIGRATE,RECOVERY as category fallback
+- Fixed must-update-md.yml: removed generic file creation; hardcoded TC,PRIVACY,PRICE,USAGE,ROADMAP as category fallback
+- Root cause: init step always created generic ASSET/ISSUE before category loop; should/must have fixed categories unlike could/
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
 ### Tunnel config state — toifood vs toigroup (2026-06-26)
 
