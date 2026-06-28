@@ -130,6 +130,13 @@ ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 - could/ remains fully dynamic — no preset list, reads folder and analyzes per file header/prompt
 - would/ creation retained in could-update-md init but parked — placeholder for future would-update-md workflow
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### must/should log step: 3-attempt retry loop on 409 — concurrent Sunday run fix (2026-06-28)
+- must-update-md.yml + should-update-md.yml log steps: added `for attempt in 1 2 3` retry loop around gh api PUT
+- On each failed attempt: re-fetches current blob SHA via gh api GET, rebuilds UPDATED content, re-encodes
+- SHA chaining from PUT response preserved between targets within the same log job run
+- Mirrors pattern used in the Jun 24 could-update-md retry fix (d15588c)
+- must/MUST-UPDATE-MD-TRIGGER-LOG.log will be created on next scheduled or manual run
+- commit 4ca9454
 ### Tunnel config state — toifood vs toigroup (2026-06-26)
 
 | | toifood | toigroup |
