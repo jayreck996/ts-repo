@@ -203,6 +203,117 @@ function runSkill(target, quarter_override) {
 }
 
 
+
+// === MUST-UPDATE-MD ===
+const mustQueue = [];
+let mustRunning = false;
+const MUST_LOG_PATH = 'must/MUST-LISTENER-LOG.log';
+
+function processMustQueue() {
+  if (mustRunning || mustQueue.length === 0) return;
+  const { target, quarter_override } = mustQueue.shift();
+  runMustSkill(target, quarter_override);
+}
+
+function appendToMustLog(target, status, note) {
+  const token = process.env.TOIFOOD_CROSS_REPO_TOKEN;
+  if (!token) {
+    console.error(`[${new Date().toISOString()}] appendToMustLog: TOIFOOD_CROSS_REPO_TOKEN not set`);
+    return;
+  }
+  try {
+    const ts = new Date().toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
+    const line = `${ts} | ${target} | ${status.padEnd(14)} | --- | ${note}`;
+    let sha = '';
+    let current = '';
+    try {
+      const fileRaw = execSync(
+        `curl -sf -H "Authorization: Bearer ${token}" ` +
+        `"https://api.github.com/repos/${LOG_REPO}/contents/${MUST_LOG_PATH}"`
+      ).toString();
+      const file = JSON.parse(fileRaw);
+      sha = file.sha;
+      current = Buffer.from(file.content, 'base64').toString('utf8');
+    } catch (_) {}
+    const updated = line + '\n' + current;
+    const payload = JSON.stringify({
+      message: `must-update-md: log ${ts} — ${target}`,
+      content: Buffer.from(updated).toString('base64'),
+      ...(sha ? { sha } : {}),
+      committer: { name: 'must-update', email: 'admin@toigroup.co.nz' },
+    });
+    execSync(
+      `curl -sf -X PUT -H "Authorization: Bearer ${token}" ` +
+      `-H "Content-Type: application/json" ` +
+      `"https://api.github.com/repos/${LOG_REPO}/contents/${MUST_LOG_PATH}" ` +
+      `--data-binary @-`,
+      { input: payload }
+    );
+    console.log(`[${new Date().toISOString()}] must log: ${line}`);
+  } catch (e) {
+    console.error(`[${new Date().toISOString()}] appendToMustLog error: ${e.message}`);
+  }
+}
+
+function runMustSkill(target, quarter_override) {
+  mustRunning = true;
+  console.log(`[${new Date().toISOString()}] must-skill starting — target: ${target}`);
+  let outputRepo, token;
+  try {
+    ({ outputRepo, token } = getTargetConfig(target));
+  } catch (e) {
+    console.error(`[${new Date().toISOString()}] must-skill error: ${e.message}`);
+    mustRunning = false;
+    appendToMustLog(target, 'WRITE_FAIL', `config error: ${e.message}`);
+    processMustQueue();
+    return;
+  }
+  const env = {
+    ...process.env,
+    GH_TOKEN: token,
+    OUTPUT_REPO: outputRepo,
+    ...(quarter_override ? { QUARTER_OVERRIDE: quarter_override } : {}),
+  };
+  execFile('claude', ['--dangerously-skip-permissions', '--print', `/must/must-update-md ${target}`], {
+    env,
+    maxBuffer: 10 * 1024 * 1024,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  }, (err, stdout, stderr) => {
+    mustRunning = false;
+    if (err) {
+      console.error(`[${new Date().toISOString()}] must-skill error: ${err.message}`);
+      if (stderr) console.error(`[${new Date().toISOString()}] stderr: ${stderr.slice(0, 1000)}`);
+      appendToMustLog(target, 'WRITE_FAIL', `skill error: ${err.message.slice(0, 120)}`);
+      processMustQueue();
+      return;
+    }
+    const jsonMatch = stdout.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) {
+      console.error(`[${new Date().toISOString()}] must-skill error: No JSON array in skill output`);
+      appendToMustLog(target, 'WRITE_FAIL', 'skill error: no JSON array in output');
+      processMustQueue();
+      return;
+    }
+    const sanitized = jsonMatch[0].replace(/("(?:[^"\\]|\\.)*")/g, m =>
+      m.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
+    );
+    let entries;
+    try {
+      entries = JSON.parse(sanitized);
+    } catch (parseErr) {
+      console.error(`[${new Date().toISOString()}] must-skill error: ${parseErr.message}`);
+      appendToMustLog(target, 'WRITE_FAIL', `skill error: JSON parse failed — ${parseErr.message.slice(0, 80)}`);
+      processMustQueue();
+      return;
+    }
+    console.log(`[${new Date().toISOString()}] must-skill done — ${entries.length} entries`);
+    const { ok, fail } = writeEntriesToGitHub(entries, outputRepo, token);
+    const status = fail === 0 ? 'WRITE_OK' : ok === 0 ? 'WRITE_FAIL' : 'WRITE_PARTIAL';
+    const note = fail === 0 ? `${ok}/${entries.length} entries committed` : `${ok} ok, ${fail} failed of ${entries.length}`;
+    appendToMustLog(target, status, note);
+    processMustQueue();
+  });
+}
 // === SHOULD-UPDATE-MD ===
 const shouldQueue = [];
 let shouldRunning = false;
@@ -346,6 +457,16 @@ function handle(req, res) {
       res.writeHead(202).end('Accepted');
       shouldQueue.push({ target, quarter_override });
       setImmediate(processShouldQueue);
+    });
+  } else if (req.url === '/must/must-update-md') {
+    let body = '';
+    req.on('data', d => { body += d; });
+    req.on('end', () => {
+      const { target = 'ts-back', quarter_override } = body ? JSON.parse(body) : {};
+      console.log(`[${new Date().toISOString()}] /must/must-update-md accepted — target: ${target}${quarter_override ? ` quarter=${quarter_override}` : ''}`);
+      res.writeHead(202).end('Accepted');
+      mustQueue.push({ target, quarter_override });
+      setImmediate(processMustQueue);
     });
   } else {
     res.writeHead(404).end();
