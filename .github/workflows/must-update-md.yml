@@ -74,6 +74,7 @@ jobs:
         id: categories
         run: |
           CATS=$(ls must/ 2>/dev/null | grep -oE '^[A-Z]+' | sort -u | tr '\n' ',' | sed 's/,$//')
+          [ -z "$CATS" ] && CATS="TC,PRIVACY,PRICE,USAGE,ROADMAP"
           echo "cats=$CATS" >> $GITHUB_OUTPUT
           echo "Categories: $CATS"
 
@@ -104,8 +105,6 @@ jobs:
             fi
           }
 
-          create_file "must/ASSET-${QUARTER}.md" "$(make_header ASSET GENERAL $QUARTER must/ASSET-${QUARTER}.md)"
-          create_file "must/ISSUE-${QUARTER}.md" "$(make_header ISSUE GENERAL $QUARTER must/ISSUE-${QUARTER}.md)"
 
           IFS=',' read -ra CATS <<< "$CATEGORIES"
           for CAT in "${CATS[@]}"; do
