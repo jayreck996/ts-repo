@@ -165,7 +165,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TS=$(date -u '+%Y-%m-%d %H:%M UTC')
-          CURRENT=$(gh api repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log --jq '{sha: .sha, content: .content}' 2>/dev/null || echo '{"sha":"","content":""}')
+          LOG_PATH="would/COULD-UPDATE-MD-TRIGGER-LOG.log"
+          CURRENT=$(gh api repos/jayreck996/ts-repo/contents/${LOG_PATH} --jq '{sha: .sha, content: .content}' 2>/dev/null || echo '{"sha":"","content":""}')
           SHA=$(echo "$CURRENT" | jq -r '.sha')
           LOGBODY=$(echo "$CURRENT" | jq -r '.content' | base64 -d 2>/dev/null || echo "")
           for file in /tmp/trigger-results/*.txt; do
@@ -178,11 +179,22 @@ jobs:
             LINE="${TS} | ${TARGET} | ${STATUS} | ${HTTP_CODE:-???} | ${NOTE}"
             UPDATED=$(echo "$LINE"; echo "$LOGBODY")
             ENCODED=$(echo "$UPDATED" | base64 -w 0)
-            if [ -n "$SHA" ] && [ "$SHA" != "null" ]; then
-              RESPONSE=$(gh api --method PUT repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log -f message="could-update-md: log ${TS} — ${TARGET}" -f sha="$SHA" -f content="$ENCODED")
-            else
-              RESPONSE=$(gh api --method PUT repos/jayreck996/ts-repo/contents/would/TRIGGER-LOG.log -f message="could-update-md: log ${TS} — ${TARGET}" -f content="$ENCODED")
-            fi
+            RESPONSE=""
+            for attempt in 1 2 3; do
+              if [ -n "$SHA" ] && [ "$SHA" != "null" ]; then
+                RESPONSE=$(gh api --method PUT repos/jayreck996/ts-repo/contents/${LOG_PATH} \
+                  -f message="could-update-md: log ${TS} — ${TARGET}" -f sha="$SHA" -f content="$ENCODED") && break
+              else
+                RESPONSE=$(gh api --method PUT repos/jayreck996/ts-repo/contents/${LOG_PATH} \
+                  -f message="could-update-md: log ${TS} — ${TARGET}" -f content="$ENCODED") && break
+              fi
+              echo "PUT attempt $attempt failed; re-fetching SHA"
+              CURRENT=$(gh api repos/jayreck996/ts-repo/contents/${LOG_PATH} --jq '{sha: .sha, content: .content}' 2>/dev/null || echo '{"sha":"","content":""}')
+              SHA=$(echo "$CURRENT" | jq -r '.sha')
+              LOGBODY=$(echo "$CURRENT" | jq -r '.content' | base64 -d 2>/dev/null || echo "")
+              UPDATED=$(echo "$LINE"; echo "$LOGBODY")
+              ENCODED=$(echo "$UPDATED" | base64 -w 0)
+            done
             SHA=$(echo "$RESPONSE" | jq -r '.content.sha')
             LOGBODY="$UPDATED"
             echo "Logged: $LINE"
