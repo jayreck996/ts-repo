@@ -123,6 +123,12 @@ ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 - could/ init now only creates could/{CAT}-ASSET/ISSUE per discovered category (dynamic, no preset list)
 - would/ASSET + ISSUE creation retained — would-update-md workflow parked, not yet built
 - Aligns all three workflows: could/ reads folder, should/ defaults ARCH/MIGRATE/RECOVERY, must/ defaults TC/PRIVACY/PRICE/USAGE/ROADMAP
+### should/must listener routes confirmed live; category fallback pattern established (2026-06-28)
+- Mac Mini listener returning 202 for /should/should-update-md and /must/must-update-md — confirms toigroup-listener.js was already reloaded with new routes
+- Mac Mini requires git pull in ts-repo dir to pick up new .claude/commands/should/ and .claude/commands/must/ skill files before skills can execute
+- Category fallback pattern: if tier dir is empty on first run, workflow defaults to preset list (ARCH,MIGRATE,RECOVERY / TC,PRIVACY,PRICE,USAGE,ROADMAP) — prevents silent no-op runs
+- could/ remains fully dynamic — no preset list, reads folder and analyzes per file header/prompt
+- would/ creation retained in could-update-md init but parked — placeholder for future would-update-md workflow
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
 ### Tunnel config state — toifood vs toigroup (2026-06-26)
 
