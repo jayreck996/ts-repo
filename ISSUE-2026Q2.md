@@ -139,6 +139,14 @@ Both should-update-md.yml and must-update-md.yml created spurious `should/ASSET-
 **[OPEN] must-update-md log job fails with 409 SHA conflict on multi-target runs**
 The log step reads the file SHA once before the loop, then writes sequentially. First write succeeds and changes the SHA; second write uses the pre-loop SHA and gets 409. `must/MUST-UPDATE-MD-TRIGGER-LOG.log` never created on run #1. Same bug exists in should-update-md but only one target was processed so it didn't surface.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### must/should log job 409 — concurrent Sunday schedule causes GitHub CDN stale blob SHA (2026-06-28) [RESOLVED]
+- Root cause confirmed from run 28307267235: should-update-md and must-update-md both schedule at `0 18 * * 0`
+- Log jobs ran in parallel, both committing to jayreck996/ts-repo at 01:12 UTC
+- should's commits (f9215f5d3a at 01:12:11Z, dbc24573d9 at 01:12:12Z) modified repo tree mid-loop
+- GitHub CDN returned stale blob SHA for must/MUST-UPDATE-MD-TRIGGER-LOG.log on second PUT → 409
+- SHA chaining from PUT response was already present; the stale SHA came from CDN, not from re-using the pre-loop GET value
+- must/MUST-UPDATE-MD-TRIGGER-LOG.log was never created on run #1
+- Fix: 3-attempt retry loop in both log steps — on fail, re-fetches SHA + rebuilds UPDATED before retrying — commit 4ca9454
 ### 530 root cause — toigroup-tunnel DNS failure + PM2 clean-exit gap (2026-06-25)
 - Mac Mini ISP DNS (202.180.64.11) became unreachable at 15:00 UTC; cloudflared could not resolve argotunnel.com SRV records
 - cloudflared performed a graceful shutdown (signal interrupt / clean exit) — not a crash
