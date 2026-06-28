@@ -1,3 +1,5 @@
+2026-06-28 22:31 UTC | ts-test-front | WRITE_FAIL     | --- | skill error: Command failed: claude --dangerously-skip-permissions --print /could/could-update-md ts-test-front
+Warning: no stdin dat
 2026-06-28 21:03 UTC | ts-test-front | WRITE_OK       | --- | 4/4 entries committed
 2026-06-28 20:59 UTC | ts-test-back | WRITE_OK       | --- | 4/4 entries committed
 2026-06-28 18:39 UTC | ts-toifood-back | WRITE_PARTIAL  | --- | 2 ok, 16 failed of 18
