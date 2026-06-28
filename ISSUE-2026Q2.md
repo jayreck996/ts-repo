@@ -1,3 +1,10 @@
+### could-update-md log job: HTTP 409 SHA conflict on multi-target runs (2026-06-28)
+- Write-log step fails with "is at X but expected Y" (HTTP 409) when 2+ targets produce trigger-result artifacts
+- Root cause: TRIGGER-LOG.log SHA read once before loop; first iteration writes fine and SHA changes, second iteration reuses stale pre-loop SHA -> GitHub rejects with 409
+- Pattern: only fails when 2+ prod targets run simultaneously (ts-toifood-back + ts-toifood-web)
+- Fix: re-fetch SHA from GitHub API at top of each loop iteration with 3-attempt retry (matches must/should pattern)
+- Also: renamed would/TRIGGER-LOG.log -> would/COULD-UPDATE-MD-TRIGGER-LOG.log to match must/should naming convention
+
 ### ts-toifood-back WRITE_PARTIAL 2/18 — skill writing to deleted categories (2026-06-28)
 - 18 entries generated but 16 failed: MIGRATE, PRICE, RECOVERY, USAGE categories no longer exist in output repo could/
 - writeEntriesToGitHub GET-SHA step returns 404 for deleted files → write fails
@@ -643,4 +650,3 @@ Confirmed: Claude skills run in the interactive Claude Code CLI session covered 
 ## ISSUE:toifood 2026-06-07 → Claude skills (Claude Code) are CLI-only — not callable from GitHub Actions
 
 Confirmed: skills run in the interactive CLI session, covered by Claude Pro subscription. Cannot be invoked from GitHub Actions workflows. Rules out using Claude Code/skills as the pipeline LLM backend — `api.anthropic.com` is used instead (`ANTHROPIC_API_KEY` org secret).
-
