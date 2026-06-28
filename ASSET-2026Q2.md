@@ -118,6 +118,11 @@ ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 - Fixed should-update-md.yml: removed generic file creation; hardcoded ARCH,MIGRATE,RECOVERY as category fallback
 - Fixed must-update-md.yml: removed generic file creation; hardcoded TC,PRIVACY,PRICE,USAGE,ROADMAP as category fallback
 - Root cause: init step always created generic ASSET/ISSUE before category loop; should/must have fixed categories unlike could/
+### could-update-md.yml: root-level ASSET/ISSUE removed from init step (2026-06-28)
+- Removed creation of root ASSET-2026Q2.md + ISSUE-2026Q2.md from output repos (never written to by skill)
+- could/ init now only creates could/{CAT}-ASSET/ISSUE per discovered category (dynamic, no preset list)
+- would/ASSET + ISSUE creation retained — would-update-md workflow parked, not yet built
+- Aligns all three workflows: could/ reads folder, should/ defaults ARCH/MIGRATE/RECOVERY, must/ defaults TC/PRIVACY/PRICE/USAGE/ROADMAP
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
 ### Tunnel config state — toifood vs toigroup (2026-06-26)
 
