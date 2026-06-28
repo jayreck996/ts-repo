@@ -128,6 +128,16 @@ ISSUE LOG
 INSTRUCTION FOR AI MODEL:
 
 ALWAYS ADD NEW ISSUE ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
+## ISSUE:ts-repo 2026-06-28 → workflow init steps creating spurious files; must-update-md log job 409 SHA race
+
+**[RESOLVED] should/must-update-md init step created generic ASSET/ISSUE files**
+Both should-update-md.yml and must-update-md.yml created spurious `should/ASSET-2026Q2.md`, `should/ISSUE-2026Q2.md` (and must/ equivalents) in output repos on first run. Root cause: hardcoded `create_file` calls before the category loop. Fixed: removed those lines, added category fallback defaults (ARCH/MIGRATE/RECOVERY for should, TC/PRIVACY/PRICE/USAGE/ROADMAP for must). Spurious files deleted from ts-toifood-back + ts-toifood-web; correct ARCH/MIGRATE/RECOVERY files seeded in all 4 repos.
+
+**[RESOLVED] could-update-md init step created root-level ASSET/ISSUE in output repos**
+`ASSET-.md` and `ISSUE-.md` were created at output repo root on each run — never written to by the skill (which writes to `could/{CAT}-*`). Removed from init step. `would/` creation retained (workflow parked).
+
+**[OPEN] must-update-md log job fails with 409 SHA conflict on multi-target runs**
+The log step reads the file SHA once before the loop, then writes sequentially. First write succeeds and changes the SHA; second write uses the pre-loop SHA and gets 409. `must/MUST-UPDATE-MD-TRIGGER-LOG.log` never created on run #1. Same bug exists in should-update-md but only one target was processed so it didn't surface.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
 ### 530 root cause — toigroup-tunnel DNS failure + PM2 clean-exit gap (2026-06-25)
 - Mac Mini ISP DNS (202.180.64.11) became unreachable at 15:00 UTC; cloudflared could not resolve argotunnel.com SRV records
