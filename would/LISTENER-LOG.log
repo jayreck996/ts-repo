@@ -1,3 +1,4 @@
+2026-06-28 18:39 UTC | ts-toifood-back | WRITE_PARTIAL  | --- | 2 ok, 16 failed of 18
 2026-06-28 18:31 UTC | ts-toifood-web | WRITE_OK       | --- | 4/4 entries committed
 2026-06-27 18:43 UTC | ts-toifood-web | WRITE_OK       | --- | 4/4 entries committed
 2026-06-27 18:36 UTC | ts-toifood-back | WRITE_PARTIAL  | --- | 2 ok, 16 failed of 18
