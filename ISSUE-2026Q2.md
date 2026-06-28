@@ -1,3 +1,16 @@
+### ts-toifood-back WRITE_PARTIAL 2/18 — skill writing to deleted categories (2026-06-28)
+- 18 entries generated but 16 failed: MIGRATE, PRICE, RECOVERY, USAGE categories no longer exist in output repo could/
+- writeEntriesToGitHub GET-SHA step returns 404 for deleted files → write fails
+- 2 ok entries: BUG + TEST (the only remaining could/ categories)
+- Root cause: skill discovered stale categories from a prior run or the output repo still had some remnants
+- Self-resolves on next clean run — categories confined to BUG + TEST in both output repos
+
+### GitHub Actions Node.js 20 deprecation — all three workflows affected (2026-06-28)
+- actions/checkout@v4, upload-artifact@v4, download-artifact@v4 all run on Node.js 20 runtime
+- GitHub forcing Node.js 20 actions to run on Node.js 24 with deprecation warning
+- Affects could-update-md.yml, should-update-md.yml, must-update-md.yml (9 action references)
+- Not yet a hard error; fix: bump all three workflows from @v4 → @v5 for all three action types
+
 ### ts-repo: cron schedule wrong timezone - runs at 6 PM NZT not 6 AM NZT (2026-06-27) [RESOLVED]
 - Schedule was set to '0 6 * * *' (06:00 UTC = 18:00 NZST) - Mac Mini asleep at that time
 - Diagnosed from run #33: workflow succeeded but zero entries in all three logs (530 tunnel down)
