@@ -102,8 +102,6 @@ jobs:
             fi
           }
 
-          create_file "ASSET-${QUARTER}.md" "$ASSET_HEADER"
-          create_file "ISSUE-${QUARTER}.md" "$ISSUE_HEADER"
 
           IFS=',' read -ra CATS <<< "$CATEGORIES"
           for CAT in "${CATS[@]}"; do
