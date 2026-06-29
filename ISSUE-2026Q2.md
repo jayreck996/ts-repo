@@ -146,6 +146,12 @@ Both should-update-md.yml and must-update-md.yml created spurious `should/ASSET-
 **[OPEN] must-update-md log job fails with 409 SHA conflict on multi-target runs**
 The log step reads the file SHA once before the loop, then writes sequentially. First write succeeds and changes the SHA; second write uses the pre-loop SHA and gets 409. `must/MUST-UPDATE-MD-TRIGGER-LOG.log` never created on run #1. Same bug exists in should-update-md but only one target was processed so it didn't surface.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### test mono-repo migration — -ts-test-dev created (2026-06-29)
+- `jayreck996/-ts-test-dev` created as mono output repo for test env
+- Docs migrated from `-ts-test-front` → `front/` and `-ts-test-back` → `back/` (48 files total)
+- `targets.json` updated: ts-test-front + ts-test-back now route to `jayreck996/-ts-test-dev` with subPath front/back
+- All four targets now follow mono-repo + subPath pattern
+
 ### toifood mono-repo migration — listener + skill subPath gap (2026-06-29)
 - toifood output repos consolidated into `toifood/-ts-toifood-dev` (`back/` + `web/` subdirs)
 - `targets.json` updated: outputRepo now `toifood/-ts-toifood-dev` with `subPath` field
