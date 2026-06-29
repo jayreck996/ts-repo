@@ -136,6 +136,10 @@ ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 - could/ remains fully dynamic — no preset list, reads folder and analyzes per file header/prompt
 - would/ creation retained in could-update-md init but parked — placeholder for future would-update-md workflow
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### Mac Mini listener restarted on 2f18f9ea — Option A revert live (2026-06-30)
+- git pull + pm2 restart toigroup-listener on Mac Mini completed
+- Listener running current code: SUB_PATH removed from runSkill(), runMustSkill(), runShouldSkill()
+- All three skill tiers now route to individual child repos with no subPath prefix
 ### Local ts-repo synced to 2f18f9ea — Option A revert complete (2026-06-30)
 - git pull fast-forwarded 4ca9454 → 2f18f9ea (9 commits across Option B attempt + full revert)
 - targets.json: back to individual child repos (toifood/-ts-toifood-back, -web, jayreck996/-ts-test-front, -ts-test-back); subPath field removed
