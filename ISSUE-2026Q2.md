@@ -146,6 +146,14 @@ Both should-update-md.yml and must-update-md.yml created spurious `should/ASSET-
 **[OPEN] must-update-md log job fails with 409 SHA conflict on multi-target runs**
 The log step reads the file SHA once before the loop, then writes sequentially. First write succeeds and changes the SHA; second write uses the pre-loop SHA and gets 409. `must/MUST-UPDATE-MD-TRIGGER-LOG.log` never created on run #1. Same bug exists in should-update-md but only one target was processed so it didn't surface.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### ts-repo: reverted to individual child repos — subPath routing removed (Option A) (2026-06-30)
+- Decision: parent repos (-ts-toifood-dev, -ts-test-dev) are organisational mono-repos with .gitmodules only
+- Workflow checks out individual child repos directly (toifood/-ts-toifood-back etc) — no subPath prefix
+- targets.json: subPath field removed; outputRepo reverts to individual child repos; env retained for filtering
+- could-update-md.yml, toigroup-listener.js, could-update-md.md: BASE/SUB_PATH logic removed
+- .gitmodules added to -ts-toifood-dev and -ts-test-dev to register child repos as submodules (reference only)
+- Stale back/ web/ front/ subdirs in parent repos are legacy copies from migration — safe to delete later
+- Mac Mini pm2 restart recommended: listener will no longer set SUB_PATH env for skill runs
 ### test mono-repo migration — -ts-test-dev created (2026-06-29)
 - `jayreck996/-ts-test-dev` created as mono output repo for test env
 - Docs migrated from `-ts-test-front` → `front/` and `-ts-test-back` → `back/` (48 files total)
