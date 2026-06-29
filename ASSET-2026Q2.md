@@ -136,6 +136,11 @@ ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 - could/ remains fully dynamic — no preset list, reads folder and analyzes per file header/prompt
 - would/ creation retained in could-update-md init but parked — placeholder for future would-update-md workflow
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### test mono-repo migration complete — -ts-test-dev live (2026-06-29)
+- `jayreck996/-ts-test-dev` scaffolded with `front/` and `back/` subdirs
+- 48 files migrated: root ASSET/ISSUE, could/, would/, must/, should/ for each subdir
+- `targets.json`: all 4 targets now use subPath — prod via `toifood/-ts-toifood-dev`, test via `jayreck996/-ts-test-dev`
+
 ### toifood mono-repo migration complete — targets, workflow, listener, skill updated (2026-06-29)
 - `targets.json`: ts-toifood-back + ts-toifood-web now route to `toifood/-ts-toifood-dev` with subPath back/web
 - `could-update-md.yml`: subPath support added — backward compatible (non-subPath targets unaffected)
