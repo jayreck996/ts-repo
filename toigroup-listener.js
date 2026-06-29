@@ -135,9 +135,9 @@ function runSkill(target, quarter_override) {
   skillRunning = true;
   console.log(`[${new Date().toISOString()}] skill starting — target: ${target}`);
 
-  let outputRepo, subPath, token;
+  let outputRepo, token;
   try {
-    ({ outputRepo, subPath, token } = getTargetConfig(target));
+    ({ outputRepo, token } = getTargetConfig(target));
   } catch (e) {
     console.error(`[${new Date().toISOString()}] skill error: ${e.message}`);
     skillRunning = false;
@@ -149,7 +149,6 @@ function runSkill(target, quarter_override) {
     ...process.env,
     GH_TOKEN: token,
     OUTPUT_REPO: outputRepo,
-    SUB_PATH: subPath || '',
     ...(quarter_override ? { QUARTER_OVERRIDE: quarter_override } : {}),
   };
 
@@ -259,9 +258,9 @@ function appendToMustLog(target, status, note) {
 function runMustSkill(target, quarter_override) {
   mustRunning = true;
   console.log(`[${new Date().toISOString()}] must-skill starting — target: ${target}`);
-  let outputRepo, subPath, token;
+  let outputRepo, token;
   try {
-    ({ outputRepo, subPath, token } = getTargetConfig(target));
+    ({ outputRepo, token } = getTargetConfig(target));
   } catch (e) {
     console.error(`[${new Date().toISOString()}] must-skill error: ${e.message}`);
     mustRunning = false;
@@ -273,7 +272,6 @@ function runMustSkill(target, quarter_override) {
     ...process.env,
     GH_TOKEN: token,
     OUTPUT_REPO: outputRepo,
-    SUB_PATH: subPath || '',
     ...(quarter_override ? { QUARTER_OVERRIDE: quarter_override } : {}),
   };
   execFile('claude', ['--dangerously-skip-permissions', '--print', `/must/must-update-md ${target}`], {
@@ -370,9 +368,9 @@ function appendToShouldLog(target, status, note) {
 function runShouldSkill(target, quarter_override) {
   shouldRunning = true;
   console.log(`[${new Date().toISOString()}] should-skill starting — target: ${target}`);
-  let outputRepo, subPath, token;
+  let outputRepo, token;
   try {
-    ({ outputRepo, subPath, token } = getTargetConfig(target));
+    ({ outputRepo, token } = getTargetConfig(target));
   } catch (e) {
     console.error(`[${new Date().toISOString()}] should-skill error: ${e.message}`);
     shouldRunning = false;
@@ -384,7 +382,6 @@ function runShouldSkill(target, quarter_override) {
     ...process.env,
     GH_TOKEN: token,
     OUTPUT_REPO: outputRepo,
-    SUB_PATH: subPath || '',
     ...(quarter_override ? { QUARTER_OVERRIDE: quarter_override } : {}),
   };
   execFile('claude', ['--dangerously-skip-permissions', '--print', `/should/should-update-md ${target}`], {
