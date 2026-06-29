@@ -136,6 +136,13 @@ ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 - could/ remains fully dynamic — no preset list, reads folder and analyzes per file header/prompt
 - would/ creation retained in could-update-md init but parked — placeholder for future would-update-md workflow
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### toifood mono-repo migration complete — targets, workflow, listener, skill updated (2026-06-29)
+- `targets.json`: ts-toifood-back + ts-toifood-web now route to `toifood/-ts-toifood-dev` with subPath back/web
+- `could-update-md.yml`: subPath support added — backward compatible (non-subPath targets unaffected)
+- `toigroup-listener.js`: SUB_PATH env passed to could/must/should skill runners
+- `could-update-md.md` skill: BASE prefix on category discovery and output paths
+- Prod test run confirmed 202 on both targets; listener writes pending Mac Mini restart
+
 ### must/should log step: 3-attempt retry loop on 409 — concurrent Sunday run fix (2026-06-28)
 - must-update-md.yml + should-update-md.yml log steps: added `for attempt in 1 2 3` retry loop around gh api PUT
 - On each failed attempt: re-fetches current blob SHA via gh api GET, rebuilds UPDATED content, re-encodes
