@@ -146,6 +146,12 @@ Both should-update-md.yml and must-update-md.yml created spurious `should/ASSET-
 **[OPEN] must-update-md log job fails with 409 SHA conflict on multi-target runs**
 The log step reads the file SHA once before the loop, then writes sequentially. First write succeeds and changes the SHA; second write uses the pre-loop SHA and gets 409. `must/MUST-UPDATE-MD-TRIGGER-LOG.log` never created on run #1. Same bug exists in should-update-md but only one target was processed so it didn't surface.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### Mac Mini listener running stale code — pm2 restart needed after Option A revert (2026-06-30) [OPEN]
+- Local ts-repo pulled to 2f18f9ea; toigroup-listener.js, targets.json, could-update-md.yml, skill all reverted to Option A (individual child repos, no subPath)
+- ~/.claude/commands/could/could-update-md.md auto-synced by post-merge hook
+- toigroup-listener.js: SUB_PATH env var removed from runSkill(), runMustSkill(), runShouldSkill()
+- Mac Mini listener still running old version — will set SUB_PATH='' on each skill exec until restarted
+- Fix: SSH into Mac Mini → cd ~/toifood/ts-repo && git pull && pm2 restart toigroup-listener
 ### ts-repo: reverted to individual child repos — subPath routing removed (Option A) (2026-06-30)
 - Decision: parent repos (-ts-toifood-dev, -ts-test-dev) are organisational mono-repos with .gitmodules only
 - Workflow checks out individual child repos directly (toifood/-ts-toifood-back etc) — no subPath prefix
