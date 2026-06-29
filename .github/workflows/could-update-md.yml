@@ -33,11 +33,11 @@ jobs:
           TARGET_OVERRIDE: ${{ inputs.target }}
         run: |
           if [ -n "$TARGET_OVERRIDE" ]; then
-            matrix=$(jq -c --arg t "$TARGET_OVERRIDE" '[.[] | select(.target == $t)] | map({target,outputRepo,subPath,tokenSecret})' targets.json)
+            matrix=$(jq -c --arg t "$TARGET_OVERRIDE" '[.[] | select(.target == $t)] | map({target,outputRepo,tokenSecret})' targets.json)
           elif [ "$ENV_FILTER" = "all" ]; then
-            matrix=$(jq -c '[.[] | {target,outputRepo,subPath,tokenSecret}]' targets.json)
+            matrix=$(jq -c '[.[] | {target,outputRepo,tokenSecret}]' targets.json)
           else
-            matrix=$(jq -c --arg e "$ENV_FILTER" '[.[] | select(.env == $e)] | map({target,outputRepo,subPath,tokenSecret})' targets.json)
+            matrix=$(jq -c --arg e "$ENV_FILTER" '[.[] | select(.env == $e)] | map({target,outputRepo,tokenSecret})' targets.json)
           fi
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
           echo "Targets: $matrix"
@@ -73,11 +73,8 @@ jobs:
 
       - name: Discover categories from could/
         id: categories
-        env:
-          SUB_PATH: ${{ matrix.subPath }}
         run: |
-          BASE="${SUB_PATH:+${SUB_PATH}/}"
-          CATS=$(ls ${BASE}could/ 2>/dev/null | grep -oE '^[A-Z]+' | sort -u | tr '\n' ',' | sed 's/,$//')
+          CATS=$(ls could/ 2>/dev/null | grep -oE '^[A-Z]+' | sort -u | tr '\n' ',' | sed 's/,$//')
           echo "cats=$CATS" >> $GITHUB_OUTPUT
           echo "Categories: $CATS"
 
@@ -86,7 +83,6 @@ jobs:
         env:
           QUARTER: ${{ steps.quarter.outputs.value }}
           CATEGORIES: ${{ steps.categories.outputs.cats }}
-          SUB_PATH: ${{ matrix.subPath }}
         run: |
           CREATED=false
           ANCHOR="####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->"
@@ -107,18 +103,17 @@ jobs:
           }
 
 
-          BASE="${SUB_PATH:+${SUB_PATH}/}"
           IFS=',' read -ra CATS <<< "$CATEGORIES"
           for CAT in "${CATS[@]}"; do
             CAT=$(echo "$CAT" | xargs)
             [ -z "$CAT" ] && continue
-            create_file "${BASE}could/${CAT}-ASSET-${QUARTER}.md" "$ASSET_HEADER"
-            create_file "${BASE}could/${CAT}-ISSUE-${QUARTER}.md" "$ISSUE_HEADER"
+            create_file "could/${CAT}-ASSET-${QUARTER}.md" "$ASSET_HEADER"
+            create_file "could/${CAT}-ISSUE-${QUARTER}.md" "$ISSUE_HEADER"
           done
 
-          mkdir -p "${BASE}would"
-          create_file "${BASE}would/ISSUE-${QUARTER}.md" "$ISSUE_HEADER"
-          create_file "${BASE}would/ASSET-${QUARTER}.md" "$ASSET_HEADER"
+          mkdir -p "would"
+          create_file "would/ISSUE-${QUARTER}.md" "$ISSUE_HEADER"
+          create_file "would/ASSET-${QUARTER}.md" "$ASSET_HEADER"
 
           echo "created=$CREATED" >> $GITHUB_OUTPUT
 
