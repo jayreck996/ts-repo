@@ -94,7 +94,7 @@ For each discovered category, fetch the ISSUE and ASSET file headers to read CUS
 ```bash
 for cat in $CATS; do
   for type in ISSUE ASSET; do
-    path="could/${cat}-${type}-${QUARTER}.md"
+    path="${BASE}could/${cat}-${type}-${QUARTER}.md"
     gh api "repos/${OUTPUT_REPO}/contents/${path}" --jq '.content' | base64 -d 2>/dev/null || echo ""
   done
 done
@@ -132,11 +132,11 @@ Structure (where `{CAT}` = each word from CATEGORIES_LOCKED, `{QUARTER}` = compu
 ```json
 [
   {
-    "path": "could/{CAT}-ISSUE-{QUARTER}.md",
+    "path": "${SUB_PATH:+${SUB_PATH}/}could/{CAT}-ISSUE-{QUARTER}.md",
     "entry": "## ISSUE:{cat} {TS} → one-line summary\n\n**Finding — `File.jsx`**\nExplanation. Second paragraph.\n\n**Finding 2**\nMore detail."
   },
   {
-    "path": "could/{CAT}-ASSET-{QUARTER}.md",
+    "path": "${SUB_PATH:+${SUB_PATH}/}could/{CAT}-ASSET-{QUARTER}.md",
     "entry": "## ASSET:{cat} {TS} → one-line summary\n\nContent here. All line breaks as \\n, never literal newlines."
   }
 ]
