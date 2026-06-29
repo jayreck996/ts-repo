@@ -77,10 +77,11 @@ if [ -z "$OUTPUT_REPO" ]; then
   echo "[]"
   exit 0
 fi
-CATS=$(gh api "repos/${OUTPUT_REPO}/contents/could" --jq '.[].name' 2>/dev/null \
+BASE="${SUB_PATH:+${SUB_PATH}/}"
+CATS=$(gh api "repos/${OUTPUT_REPO}/contents/${BASE}could" --jq '.[].name' 2>/dev/null \
   | grep -oE '^[A-Z]+' | sort -u)
 if [ -z "$CATS" ]; then
-  echo "FATAL: No categories found in repos/${OUTPUT_REPO}/contents/could — emitting empty array."
+  echo "FATAL: No categories found in repos/${OUTPUT_REPO}/contents/${BASE}could — emitting empty array."
   echo "[]"
   exit 0
 fi
