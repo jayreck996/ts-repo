@@ -136,6 +136,12 @@ ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 - could/ remains fully dynamic — no preset list, reads folder and analyzes per file header/prompt
 - would/ creation retained in could-update-md init but parked — placeholder for future would-update-md workflow
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### ts-repo: mono-repo Option A decided — workflow routes to individual child repos + .gitmodules added (2026-06-30)
+- targets.json: 4 entries, each outputRepo = individual child repo (toifood/-ts-toifood-back etc), subPath removed
+- env field retained for prod/test schedule filtering
+- .gitmodules added to toifood/-ts-toifood-dev (back, web) and jayreck996/-ts-test-dev (front, back)
+- Parent mono-repos serve as developer-facing organisational view; pipeline writes directly to child repos
+- Mac Mini pm2 restart recommended after listener.js update
 ### test mono-repo migration complete — -ts-test-dev live (2026-06-29)
 - `jayreck996/-ts-test-dev` scaffolded with `front/` and `back/` subdirs
 - 48 files migrated: root ASSET/ISSUE, could/, would/, must/, should/ for each subdir
