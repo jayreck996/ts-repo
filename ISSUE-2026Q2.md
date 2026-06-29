@@ -146,6 +146,10 @@ Both should-update-md.yml and must-update-md.yml created spurious `should/ASSET-
 **[OPEN] must-update-md log job fails with 409 SHA conflict on multi-target runs**
 The log step reads the file SHA once before the loop, then writes sequentially. First write succeeds and changes the SHA; second write uses the pre-loop SHA and gets 409. `must/MUST-UPDATE-MD-TRIGGER-LOG.log` never created on run #1. Same bug exists in should-update-md but only one target was processed so it didn't surface.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### Mac Mini listener restarted — Option A revert live on Mac Mini (2026-06-30) [RESOLVED]
+- cd ~/toifood/ts-repo && git pull && pm2 restart toigroup-listener completed
+- Listener now running 2f18f9ea: SUB_PATH removed from all skill runners, targets.json back to individual child repos
+- Next could-update-md run will use reverted listener (no SUB_PATH env passed to skills)
 ### Mac Mini listener running stale code — pm2 restart needed after Option A revert (2026-06-30) [OPEN]
 - Local ts-repo pulled to 2f18f9ea; toigroup-listener.js, targets.json, could-update-md.yml, skill all reverted to Option A (individual child repos, no subPath)
 - ~/.claude/commands/could/could-update-md.md auto-synced by post-merge hook
