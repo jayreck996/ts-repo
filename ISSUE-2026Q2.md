@@ -146,6 +146,14 @@ Both should-update-md.yml and must-update-md.yml created spurious `should/ASSET-
 **[OPEN] must-update-md log job fails with 409 SHA conflict on multi-target runs**
 The log step reads the file SHA once before the loop, then writes sequentially. First write succeeds and changes the SHA; second write uses the pre-loop SHA and gets 409. `must/MUST-UPDATE-MD-TRIGGER-LOG.log` never created on run #1. Same bug exists in should-update-md but only one target was processed so it didn't surface.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### toifood mono-repo migration — listener + skill subPath gap (2026-06-29)
+- toifood output repos consolidated into `toifood/-ts-toifood-dev` (`back/` + `web/` subdirs)
+- `targets.json` updated: outputRepo now `toifood/-ts-toifood-dev` with `subPath` field
+- `could-update-md.yml` updated: subPath flows through matrix, BASE prefix on all could/would/ paths
+- Gap found: `toigroup-listener.js` did not pass subPath as SUB_PATH to skill env; skill discovered categories from root `could/` and output paths without subdir prefix
+- Fix: listener now destructures subPath + sets SUB_PATH in all 3 skill runners; skill step 3 uses BASE/could/, step 5 prefixes output paths with SUB_PATH/
+- Pending: pm2 restart toigroup-listener on Mac Mini to pick up listener fix
+
 ### must/should log job 409 — concurrent Sunday schedule causes GitHub CDN stale blob SHA (2026-06-28) [RESOLVED]
 - Root cause confirmed from run 28307267235: should-update-md and must-update-md both schedule at `0 18 * * 0`
 - Log jobs ran in parallel, both committing to jayreck996/ts-repo at 01:12 UTC
