@@ -136,6 +136,13 @@ ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 - could/ remains fully dynamic — no preset list, reads folder and analyzes per file header/prompt
 - would/ creation retained in could-update-md init but parked — placeholder for future would-update-md workflow
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### Local ts-repo synced to 2f18f9ea — Option A revert complete (2026-06-30)
+- git pull fast-forwarded 4ca9454 → 2f18f9ea (9 commits across Option B attempt + full revert)
+- targets.json: back to individual child repos (toifood/-ts-toifood-back, -web, jayreck996/-ts-test-front, -ts-test-back); subPath field removed
+- could-update-md.yml: BASE/SUB_PATH logic removed; log path updated to would/COULD-UPDATE-MD-TRIGGER-LOG.log; 3-attempt retry added to log step
+- toigroup-listener.js: SUB_PATH removed from all 3 skill runners (runSkill, runMustSkill, runShouldSkill)
+- ~/.claude/commands/could/could-update-md.md auto-synced by post-merge hook (BASE/SUB_PATH paths removed)
+- Mac Mini pm2 restart pending — listener not yet on current code
 ### ts-repo: mono-repo Option A decided — workflow routes to individual child repos + .gitmodules added (2026-06-30)
 - targets.json: 4 entries, each outputRepo = individual child repo (toifood/-ts-toifood-back etc), subPath removed
 - env field retained for prod/test schedule filtering
