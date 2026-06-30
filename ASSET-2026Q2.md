@@ -136,6 +136,11 @@ ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 - could/ remains fully dynamic — no preset list, reads folder and analyzes per file header/prompt
 - would/ creation retained in could-update-md init but parked — placeholder for future would-update-md workflow
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### ts-repo: listener JSON parsing hardened — extractJsonArray() + sanitizeJsonLiterals() (2026-06-30)
+- extractJsonArray(): depth-counting, finds first complete [...] correctly regardless of length or nested content
+- sanitizeJsonLiterals(): O(n) state machine, replaces literal \n \r \t inside strings only — no regex backtracking
+- Replaces jsonMatch regex + regex sanitiser in all 3 skill runners (runSkill, runMustSkill, runShouldSkill)
+- Mac Mini pm2 restart required
 ### Mac Mini listener restarted on 2f18f9ea — Option A revert live (2026-06-30)
 - git pull + pm2 restart toigroup-listener on Mac Mini completed
 - Listener running current code: SUB_PATH removed from runSkill(), runMustSkill(), runShouldSkill()
