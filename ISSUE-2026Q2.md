@@ -146,6 +146,13 @@ Both should-update-md.yml and must-update-md.yml created spurious `should/ASSET-
 **[OPEN] must-update-md log job fails with 409 SHA conflict on multi-target runs**
 The log step reads the file SHA once before the loop, then writes sequentially. First write succeeds and changes the SHA; second write uses the pre-loop SHA and gets 409. `must/MUST-UPDATE-MD-TRIGGER-LOG.log` never created on run #1. Same bug exists in should-update-md but only one target was processed so it didn't surface.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### ts-repo: hard fix for JSON parse failures — depth-counter + state-machine sanitiser (2026-06-30)
+- Recurring WRITE_FAIL: Claude outputs literal newlines inside JSON strings; regex sanitiser fails beyond ~500-1400 chars
+- Symptoms today: ts-toifood-back WRITE_FAIL pos 1406, ts-toifood-web WRITE_FAIL pos 520 (scheduled run #43)
+- Fix 1: replaced greedy /\[[\s\S]*\]/ extractor with extractJsonArray() — depth-counting, finds correct closing bracket
+- Fix 2: replaced regex sanitiser with sanitizeJsonLiterals() — O(n) state machine, no backtracking, any string length
+- Both functions added once at top of toigroup-listener.js; all 3 runners (could/must/should) updated
+- Mac Mini pm2 restart required to activate
 ### Mac Mini listener restarted — Option A revert live on Mac Mini (2026-06-30) [RESOLVED]
 - cd ~/toifood/ts-repo && git pull && pm2 restart toigroup-listener completed
 - Listener now running 2f18f9ea: SUB_PATH removed from all skill runners, targets.json back to individual child repos
