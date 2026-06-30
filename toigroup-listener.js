@@ -6,6 +6,40 @@
 const http = require('http');
 const { execSync, execFile } = require('child_process');
 
+
+function extractJsonArray(str) {
+  const start = str.indexOf('[');
+  if (start === -1) return null;
+  let depth = 0, inString = false, escaped = false;
+  for (let i = start; i < str.length; i++) {
+    const ch = str[i];
+    if (escaped) { escaped = false; continue; }
+    if (ch === '\\' && inString) { escaped = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (!inString) {
+      if (ch === '[') depth++;
+      if (ch === ']') { depth--; if (depth === 0) return str.slice(start, i + 1); }
+    }
+  }
+  return null;
+}
+
+function sanitizeJsonLiterals(raw) {
+  let result = '', inString = false, escaped = false;
+  for (let i = 0; i < raw.length; i++) {
+    const ch = raw[i];
+    if (escaped) { result += ch; escaped = false; continue; }
+    if (ch === '\\' && inString) { result += ch; escaped = true; continue; }
+    if (ch === '"') { inString = !inString; result += ch; continue; }
+    if (inString) {
+      if (ch === '\n') { result += '\\n'; continue; }
+      if (ch === '\r') { result += '\\r'; continue; }
+      if (ch === '\t') { result += '\\t'; continue; }
+    }
+    result += ch;
+  }
+  return result;
+}
 const skillQueue = [];
 let skillRunning = false;
 
@@ -166,29 +200,24 @@ function runSkill(target, quarter_override) {
       return;
     }
 
-    const jsonMatch = stdout.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) {
+    const raw = extractJsonArray(stdout);
+    if (!raw) {
       console.error(`[${new Date().toISOString()}] skill error: No JSON array in skill output`);
       console.error(`[${new Date().toISOString()}] raw output (first 2000 chars): ${stdout.slice(0, 2000)}`);
       appendToRunLog(target, 'WRITE_FAIL', 'skill error: no JSON array in output');
       processQueue();
       return;
     }
-
-    const sanitized = jsonMatch[0].replace(/("(?:[^"\\]|\\.)*")/g, m =>
-      m.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
-    );
     let entries;
     try {
-      entries = JSON.parse(sanitized);
+      entries = JSON.parse(sanitizeJsonLiterals(raw));
     } catch (parseErr) {
       console.error(`[${new Date().toISOString()}] skill error: ${parseErr.message}`);
-      console.error(`[${new Date().toISOString()}] raw JSON match (first 3000 chars): ${jsonMatch[0].slice(0, 3000)}`);
+      console.error(`[${new Date().toISOString()}] raw output (first 3000 chars): ${raw.slice(0, 3000)}`);
       appendToRunLog(target, 'WRITE_FAIL', `skill error: JSON parse failed — ${parseErr.message.slice(0, 80)}`);
       processQueue();
       return;
     }
-
     console.log(`[${new Date().toISOString()}] skill done — ${entries.length} entries`);
     const { ok, fail } = writeEntriesToGitHub(entries, outputRepo, token);
     console.log(`[${new Date().toISOString()}] all entries written`);
@@ -287,21 +316,20 @@ function runMustSkill(target, quarter_override) {
       processMustQueue();
       return;
     }
-    const jsonMatch = stdout.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) {
-      console.error(`[${new Date().toISOString()}] must-skill error: No JSON array in skill output`);
+    const raw = extractJsonArray(stdout);
+    if (!raw) {
+      console.error(`[${new Date().toISOString()}] skill error: No JSON array in skill output`);
+      console.error(`[${new Date().toISOString()}] raw output (first 2000 chars): ${stdout.slice(0, 2000)}`);
       appendToMustLog(target, 'WRITE_FAIL', 'skill error: no JSON array in output');
       processMustQueue();
       return;
     }
-    const sanitized = jsonMatch[0].replace(/("(?:[^"\\]|\\.)*")/g, m =>
-      m.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
-    );
     let entries;
     try {
-      entries = JSON.parse(sanitized);
+      entries = JSON.parse(sanitizeJsonLiterals(raw));
     } catch (parseErr) {
-      console.error(`[${new Date().toISOString()}] must-skill error: ${parseErr.message}`);
+      console.error(`[${new Date().toISOString()}] skill error: ${parseErr.message}`);
+      console.error(`[${new Date().toISOString()}] raw output (first 3000 chars): ${raw.slice(0, 3000)}`);
       appendToMustLog(target, 'WRITE_FAIL', `skill error: JSON parse failed — ${parseErr.message.slice(0, 80)}`);
       processMustQueue();
       return;
@@ -397,23 +425,20 @@ function runShouldSkill(target, quarter_override) {
       processShouldQueue();
       return;
     }
-    const jsonMatch = stdout.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) {
-      console.error(`[${new Date().toISOString()}] should-skill error: No JSON array in skill output`);
+    const raw = extractJsonArray(stdout);
+    if (!raw) {
+      console.error(`[${new Date().toISOString()}] skill error: No JSON array in skill output`);
       console.error(`[${new Date().toISOString()}] raw output (first 2000 chars): ${stdout.slice(0, 2000)}`);
       appendToShouldLog(target, 'WRITE_FAIL', 'skill error: no JSON array in output');
       processShouldQueue();
       return;
     }
-    const sanitized = jsonMatch[0].replace(/("(?:[^"\\]|\\.)*")/g, m =>
-      m.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
-    );
     let entries;
     try {
-      entries = JSON.parse(sanitized);
+      entries = JSON.parse(sanitizeJsonLiterals(raw));
     } catch (parseErr) {
-      console.error(`[${new Date().toISOString()}] should-skill error: ${parseErr.message}`);
-      console.error(`[${new Date().toISOString()}] raw JSON match (first 3000 chars): ${jsonMatch[0].slice(0, 3000)}`);
+      console.error(`[${new Date().toISOString()}] skill error: ${parseErr.message}`);
+      console.error(`[${new Date().toISOString()}] raw output (first 3000 chars): ${raw.slice(0, 3000)}`);
       appendToShouldLog(target, 'WRITE_FAIL', `skill error: JSON parse failed — ${parseErr.message.slice(0, 80)}`);
       processShouldQueue();
       return;
