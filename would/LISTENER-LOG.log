@@ -1,3 +1,4 @@
+2026-06-30 18:55 UTC | ts-toifood-web | WRITE_FAIL     | --- | skill error: JSON parse failed — Expected ',' or '}' after property value in JSON at position 520 (line 4 column 
 2026-06-30 18:48 UTC | ts-toifood-back | WRITE_FAIL     | --- | skill error: JSON parse failed — Expected ',' or '}' after property value in JSON at position 1406 (line 1 column
 2026-06-29 21:27 UTC | ts-test-back | WRITE_OK       | --- | 4/4 entries committed
 2026-06-29 21:25 UTC | ts-test-front | WRITE_OK       | --- | 4/4 entries committed
