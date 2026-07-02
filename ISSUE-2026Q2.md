@@ -175,6 +175,13 @@ Both should-update-md.yml and must-update-md.yml created spurious `should/ASSET-
 **[OPEN] must-update-md log job fails with 409 SHA conflict on multi-target runs**
 The log step reads the file SHA once before the loop, then writes sequentially. First write succeeds and changes the SHA; second write uses the pre-loop SHA and gets 409. `must/MUST-UPDATE-MD-TRIGGER-LOG.log` never created on run #1. Same bug exists in should-update-md but only one target was processed so it didn't surface.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### skill source read path broken for prod targets — reads non-existent -ts-back/-ts-web (2026-07-03) [OPEN]
+- All 3 skills (could/must/should) build source path as repos/${org}/-ts-${suffix} with suffix=back/web
+- Resolves to toifood/-ts-back and toifood/-ts-web — neither exists post org migration
+- || echo [] guard silently exits with zero entries — prod runs will be silent no-ops, no WRITE_FAIL logged
+- Actual source repos: toifood/ts-toifood-back (real app code), doc repos: toifood/-ts-toifood-back (could/ headers only)
+- Fix pending decision: read source code (ts-toifood-*) vs doc repo headers (-ts-toifood-*)
+- Mac Mini sync also pending: git pull + must/should skill copy + pm2 restart + remote set-url × 4 clones
 ### test target rename — old ts-test-front/ts-test-back entries removed (2026-07-03) [RESOLVED]
 - targets.json previously pointed to non-existent repos (absorbed into -ts-test-dev during mono-repo migration)
 - Replaced with 4 dash-prefix entries matching toifood pattern
