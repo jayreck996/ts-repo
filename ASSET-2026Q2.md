@@ -165,6 +165,12 @@ ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 - could/ remains fully dynamic — no preset list, reads folder and analyzes per file header/prompt
 - would/ creation retained in could-update-md init but parked — placeholder for future would-update-md workflow
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### pipeline naming convention finalised — dash-prefix targets + SRC_REPO mapping live in ts-repo (2026-07-03)
+- Convention: leading dash = doc/output repo target, no dash = source repo target — target name now tells you the write destination at a glance
+- targets.json (8 targets): prod -ts-toifood-back, -ts-toifood-web, ts-toifood-back, ts-toifood-dev; test -ts-test-back, -ts-test-front, ts-test-back, ts-test-front
+- Skill case pattern shared by all 3 tiers: -ts-X|ts-X → SRC_REPO="org/ts-X" — doc and source targets analyse the same codebase, each writes to its own outputRepo
+- No workflow YAML changes needed — matrix builds from targets.json at run time
+- targets.json refreshes on the listener within 60s (fetchTargets cache); skill file changes only take effect after Mac Mini sync
 ### toifood-dev → toifood org migration confirmed executed — all 4 repos transferred (2026-07-03)
 - toifood org now holds: ts-toifood-dev, ts-toifood-back, ts-toifood-front, ts-toifood-web (private) + -ts-toifood-dev, -ts-toifood-back, -ts-toifood-web (public)
 - toifood-dev org empty — migration complete on GitHub side
