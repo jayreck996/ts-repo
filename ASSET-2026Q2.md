@@ -165,6 +165,11 @@ ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 - could/ remains fully dynamic — no preset list, reads folder and analyzes per file header/prompt
 - would/ creation retained in could-update-md init but parked — placeholder for future would-update-md workflow
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### toifood-dev → toifood org migration confirmed executed — all 4 repos transferred (2026-07-03)
+- toifood org now holds: ts-toifood-dev, ts-toifood-back, ts-toifood-front, ts-toifood-web (private) + -ts-toifood-dev, -ts-toifood-back, -ts-toifood-web (public)
+- toifood-dev org empty — migration complete on GitHub side
+- ts-repo code current: targets.json, 3 skills, listener, 4 workflows all pushed (latest 2026-07-02T21:58Z)
+- Remaining: Mac Mini git pull, must/should skill copy (post-merge hook covers could/ only), pm2 restart, git remote set-url for 4 local clones
 ### test repos restructured — mirroring toifood source/doc separation (2026-07-03)
 - ts-test-back (private) + ts-test-front (private): source stubs with README/package.json/src/ + could/must/should/would structure
 - -ts-test-back (public) + -ts-test-front (public): doc output repos — already existed, fully seeded
