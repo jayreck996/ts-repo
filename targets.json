@@ -1,24 +1,24 @@
 [
   {
-    "target": "ts-toifood-back",
+    "target": "-ts-toifood-back",
     "outputRepo": "toifood/-ts-toifood-back",
     "tokenSecret": "TSREPO_TOKEN",
     "env": "prod"
   },
   {
-    "target": "ts-toifood-web",
+    "target": "-ts-toifood-web",
     "outputRepo": "toifood/-ts-toifood-web",
     "tokenSecret": "TSREPO_TOKEN",
     "env": "prod"
   },
   {
-    "target": "ts-toifood-dev-src",
+    "target": "ts-toifood-dev",
     "outputRepo": "toifood/ts-toifood-dev",
     "tokenSecret": "TSREPO_TOKEN",
     "env": "prod"
   },
   {
-    "target": "ts-toifood-back-src",
+    "target": "ts-toifood-back",
     "outputRepo": "toifood/ts-toifood-back",
     "tokenSecret": "TSREPO_TOKEN",
     "env": "prod"
