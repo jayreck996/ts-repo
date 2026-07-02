@@ -1,6 +1,6 @@
-**OUTPUT RULE: Your entire response must be a single JSON array. No prose, no explanation, no markdown, no preamble. If you cannot produce valid entries for any reason, output `[]` and nothing else.**
+**OUTPUT RULE: Your entire response must be sentinel-delimited entry blocks (`<<<ENTRY {path}>>>` … `<<<END>>>`). No prose, no explanation, no preamble outside the blocks. If you cannot produce valid entries for any reason, output `<<<NO_ENTRIES>>>` and nothing else.**
 
-Review the target repo's compliance and business requirements across T&C, PRIVACY, PRICE, USAGE, and ROADMAP. Output a JSON array of must/ entries. Agents may read and update existing entries — do not duplicate; update or extend as requirements evolve.
+Review the target repo's compliance and business requirements across T&C, PRIVACY, PRICE, USAGE, and ROADMAP. Output must/ entry blocks. Agents may read and update existing entries — do not duplicate; update or extend as requirements evolve.
 
 ## Arguments
 `$ARGUMENTS` is the target repo name, e.g. `ts-toifood-back`.
@@ -35,10 +35,10 @@ case "$ARGUMENTS" in
   ts-toifood-dev)                   SRC_REPO="toifood/ts-toifood-dev" ;;
   -ts-test-back|ts-test-back)       SRC_REPO="jayreck996/ts-test-back" ;;
   -ts-test-front|ts-test-front)     SRC_REPO="jayreck996/ts-test-front" ;;
-  *)                                echo "[]"; exit 0 ;;
+  *)                                echo "<<<NO_ENTRIES>>>"; exit 0 ;;
 esac
 
-tree=$(gh api "repos/${SRC_REPO}/git/trees/${latestBranch}?recursive=1" 2>/dev/null) || { echo "[]"; exit 0; }
+tree=$(gh api "repos/${SRC_REPO}/git/trees/${latestBranch}?recursive=1" 2>/dev/null) || { echo "<<<NO_ENTRIES>>>"; exit 0; }
 gh api "repos/${SRC_REPO}/git/trees/${latestBranch}?recursive=1" \
   --jq '.tree[] | select(.type=="blob") | select(.path | test("\.(csv|log|md|lock|d\.ts|map|spec\.ts|test\.ts)$") | not) | select(.path | test("(^|/)node_modules/|(-|/)dist/") | not) | .path'
 ```
@@ -51,7 +51,7 @@ Focus reads on: `package.json`, `prisma/schema.prisma`, payment/pricing/subscrip
 OUTPUT_REPO="${OUTPUT_REPO}"
 CATS=$(gh api "repos/${OUTPUT_REPO}/contents/must" --jq '.[].name' 2>/dev/null \
   | grep -oE '^[A-Z]+' | sort -u)
-if [ -z "$CATS" ]; then echo "[]"; exit 0; fi
+if [ -z "$CATS" ]; then echo "<<<NO_ENTRIES>>>"; exit 0; fi
 echo "CATEGORIES_LOCKED: $CATS"
 ```
 
@@ -90,24 +90,25 @@ Format:
 {specific finding with file/field references}
 ```
 
-### 5. Output JSON
+### 5. Output entry blocks
 
-**JSON ENCODING RULES:**
-- Use `\n` for line breaks — never literal newlines inside string values
-- Escape double-quotes as `\"`
-- No trailing commas, no prose outside the array
+**OUTPUT FORMAT RULES:**
+- Each entry starts with a line `<<<ENTRY {path}>>>` and ends with a line `<<<END>>>`, each on its own line.
+- Between the sentinels, write the entry content verbatim as markdown — real newlines, quotes, and code fences allowed. No escaping.
+- Never put `<<<END>>>` on a line inside entry content.
+- Nothing outside the blocks — no prose, no JSON.
 
-```json
-[
-  {
-    "path": "must/{CAT}-ISSUE-{QUARTER}.md",
-    "entry": "## ISSUE:{cat} {TS} ▸ one-line summary\n\nContent here."
-  },
-  {
-    "path": "must/{CAT}-ASSET-{QUARTER}.md",
-    "entry": "## ASSET:{cat} {TS} ▸ one-line summary\n\nContent here."
-  }
-]
+```
+<<<ENTRY must/{CAT}-ISSUE-{QUARTER}.md>>>
+## ISSUE:{cat} {TS} ▸ one-line summary
+
+Content here, written as normal markdown.
+<<<END>>>
+<<<ENTRY must/{CAT}-ASSET-{QUARTER}.md>>>
+## ASSET:{cat} {TS} ▸ one-line summary
+
+Content here.
+<<<END>>>
 ```
 
-**If anything failed — output `[]` only. Never output prose.**
+**If anything failed — output `<<<NO_ENTRIES>>>` only. Never output prose.**
