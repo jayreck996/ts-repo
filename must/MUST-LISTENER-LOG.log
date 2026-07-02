@@ -1,3 +1,5 @@
+2026-07-02 23:55 UTC | -ts-test-back | WRITE_FAIL     | --- | skill error: Command failed: claude --dangerously-skip-permissions --print /must/must-update-md -ts-test-back
+Ignoring 59 permissions
 2026-07-02 23:55 UTC | ts-test-back | WRITE_FAIL     | --- | skill error: Command failed: claude --dangerously-skip-permissions --print /must/must-update-md ts-test-back
 Ignoring 59 permissions.
 2026-07-02 23:55 UTC | ts-test-front | WRITE_PARTIAL  | --- | 9 ok, 1 failed of 10
