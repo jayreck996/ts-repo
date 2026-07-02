@@ -165,6 +165,26 @@ ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 - could/ remains fully dynamic — no preset list, reads folder and analyzes per file header/prompt
 - would/ creation retained in could-update-md init but parked — placeholder for future would-update-md workflow
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### toifood-dev → toifood org migration plan — full change map (2026-07-03)
+- Decision: migrate all 4 repos (ts-toifood-dev, ts-toifood-back, ts-toifood-front, ts-toifood-web) from toifood-dev to toifood org
+- Source repos stay private; toifood org becomes mixed (public doc repos + private source repos)
+- No naming collision: source repos (ts-toifood-*) vs doc repos (-ts-toifood-*) distinguished by leading dash
+- TSREPO_TOKEN already covers toifood org — no token changes needed after migration
+
+**Change map:**
+- targets.json: ts-toifood-dev-src + ts-toifood-back-src outputRepo → toifood/ts-toifood-dev, toifood/ts-toifood-back
+- 3 skill files (could/must/should-update-md.md): org="toifood-dev" → org="toifood" (lines 41-43 / 33-35)
+- toifood-dev/ts-toifood-dev .gitmodules: submodule URLs toifood-dev → toifood for back/front/web
+- Mac Mini: git remote set-url for all 4 local clones + pm2 restart toigroup-listener
+- Workflow .yml files: no changes needed (use matrix.outputRepo dynamically)
+
+**Migration order:**
+1. GitHub UI: transfer ts-toifood-dev, ts-toifood-back, ts-toifood-front, ts-toifood-web → toifood org (Settings → Transfer, one at a time)
+2. Update targets.json (2 entries)
+3. Update 3 skill files + push (post-merge hook auto-syncs Mac Mini skill)
+4. Update .gitmodules in ts-toifood-dev
+5. SSH Mac Mini → git remote set-url for all 4 clones + pm2 restart toigroup-listener
+
 ### ts-repo: listener JSON parsing hardened — extractJsonArray() + sanitizeJsonLiterals() (2026-06-30)
 - extractJsonArray(): depth-counting, finds first complete [...] correctly regardless of length or nested content
 - sanitizeJsonLiterals(): O(n) state machine, replaces literal \n \r \t inside strings only — no regex backtracking
