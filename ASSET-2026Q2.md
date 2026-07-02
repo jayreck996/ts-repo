@@ -1,3 +1,9 @@
+### targets.json updated — toifood-dev org added as prod targets (2026-07-02)
+- ts-toifood-dev-src → toifood-dev/ts-toifood-dev (has could/ and would/)
+- ts-toifood-back-src → toifood-dev/ts-toifood-back (has could/ and would/)
+- outputRepo org/repo format handles toifood-dev org natively — no schema change needed
+- 6 total targets now: 4 prod, 2 test
+
 ### toifood-dev org mapped — 4 real source code repos confirmed (2026-07-02)
 - toifood-dev/ts-toifood-dev: mono-repo (back, front, web as gitlinks post-fix)
 - toifood-dev/ts-toifood-back: Node.js/TypeScript + Prisma (real backend, has could/ and would/)
