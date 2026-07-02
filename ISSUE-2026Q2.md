@@ -1,3 +1,8 @@
+### target repos lack git submodule structure — mono-repos not wired as reference layer (2026-07-02)
+- -ts-toifood-dev and -ts-test-dev exist but submodule references to individual target repos incomplete or inconsistent
+- No branch pinning on submodule refs (unlike ts-htd pattern which tracks specific branches per submodule)
+- targets.json in ts-repo points directly to individual repos rather than through the mono-repo layer
+
 ### could-update-md log job: HTTP 409 SHA conflict on multi-target runs (2026-06-28)
 - Write-log step fails with "is at X but expected Y" (HTTP 409) when 2+ targets produce trigger-result artifacts
 - Root cause: TRIGGER-LOG.log SHA read once before loop; first iteration writes fine and SHA changes, second iteration reuses stale pre-loop SHA -> GitHub rejects with 409
