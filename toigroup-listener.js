@@ -7,38 +7,31 @@ const http = require('http');
 const { execSync, execFile } = require('child_process');
 
 
-function extractJsonArray(str) {
-  const start = str.indexOf('[');
-  if (start === -1) return null;
-  let depth = 0, inString = false, escaped = false;
-  for (let i = start; i < str.length; i++) {
-    const ch = str[i];
-    if (escaped) { escaped = false; continue; }
-    if (ch === '\\' && inString) { escaped = true; continue; }
-    if (ch === '"') { inString = !inString; continue; }
-    if (!inString) {
-      if (ch === '[') depth++;
-      if (ch === ']') { depth--; if (depth === 0) return str.slice(start, i + 1); }
+// Skill output format v2: sentinel-delimited blocks — no JSON, no escaping.
+//   <<<ENTRY {path}>>>  ...raw markdown lines...  <<<END>>>
+//   <<<NO_ENTRIES>>> when the skill has nothing to emit.
+// Returns [] on <<<NO_ENTRIES>>> (legit empty), null when no blocks found (parse failure).
+function parseEntryBlocks(stdout) {
+  const entries = [];
+  let sawNoEntries = false;
+  let current = null;
+  for (const rawLine of stdout.split('\n')) {
+    const line = rawLine.replace(/\r$/, '');
+    if (current === null) {
+      const m = line.match(/^<<<ENTRY (.+?)>>>\s*$/);
+      if (m) { current = { path: m[1].trim(), lines: [] }; continue; }
+      if (/^<<<NO_ENTRIES>>>\s*$/.test(line)) sawNoEntries = true;
+      continue;
     }
-  }
-  return null;
-}
-
-function sanitizeJsonLiterals(raw) {
-  let result = '', inString = false, escaped = false;
-  for (let i = 0; i < raw.length; i++) {
-    const ch = raw[i];
-    if (escaped) { result += ch; escaped = false; continue; }
-    if (ch === '\\' && inString) { result += ch; escaped = true; continue; }
-    if (ch === '"') { inString = !inString; result += ch; continue; }
-    if (inString) {
-      if (ch === '\n') { result += '\\n'; continue; }
-      if (ch === '\r') { result += '\\r'; continue; }
-      if (ch === '\t') { result += '\\t'; continue; }
+    if (/^<<<END>>>\s*$/.test(line)) {
+      entries.push({ path: current.path, entry: current.lines.join('\n').trim() });
+      current = null;
+      continue;
     }
-    result += ch;
+    current.lines.push(line);
   }
-  return result;
+  if (entries.length > 0) return entries;
+  return sawNoEntries ? [] : null;
 }
 const skillQueue = [];
 let skillRunning = false;
@@ -200,21 +193,11 @@ function runSkill(target, quarter_override) {
       return;
     }
 
-    const raw = extractJsonArray(stdout);
-    if (!raw) {
-      console.error(`[${new Date().toISOString()}] skill error: No JSON array in skill output`);
+    const entries = parseEntryBlocks(stdout);
+    if (entries === null) {
+      console.error(`[${new Date().toISOString()}] skill error: no entry blocks in skill output`);
       console.error(`[${new Date().toISOString()}] raw output (first 2000 chars): ${stdout.slice(0, 2000)}`);
-      appendToRunLog(target, 'WRITE_FAIL', 'skill error: no JSON array in output');
-      processQueue();
-      return;
-    }
-    let entries;
-    try {
-      entries = JSON.parse(sanitizeJsonLiterals(raw));
-    } catch (parseErr) {
-      console.error(`[${new Date().toISOString()}] skill error: ${parseErr.message}`);
-      console.error(`[${new Date().toISOString()}] raw output (first 3000 chars): ${raw.slice(0, 3000)}`);
-      appendToRunLog(target, 'WRITE_FAIL', `skill error: JSON parse failed — ${parseErr.message.slice(0, 80)}`);
+      appendToRunLog(target, 'WRITE_FAIL', 'skill error: no entry blocks in output');
       processQueue();
       return;
     }
@@ -316,21 +299,11 @@ function runMustSkill(target, quarter_override) {
       processMustQueue();
       return;
     }
-    const raw = extractJsonArray(stdout);
-    if (!raw) {
-      console.error(`[${new Date().toISOString()}] skill error: No JSON array in skill output`);
+    const entries = parseEntryBlocks(stdout);
+    if (entries === null) {
+      console.error(`[${new Date().toISOString()}] skill error: no entry blocks in skill output`);
       console.error(`[${new Date().toISOString()}] raw output (first 2000 chars): ${stdout.slice(0, 2000)}`);
-      appendToMustLog(target, 'WRITE_FAIL', 'skill error: no JSON array in output');
-      processMustQueue();
-      return;
-    }
-    let entries;
-    try {
-      entries = JSON.parse(sanitizeJsonLiterals(raw));
-    } catch (parseErr) {
-      console.error(`[${new Date().toISOString()}] skill error: ${parseErr.message}`);
-      console.error(`[${new Date().toISOString()}] raw output (first 3000 chars): ${raw.slice(0, 3000)}`);
-      appendToMustLog(target, 'WRITE_FAIL', `skill error: JSON parse failed — ${parseErr.message.slice(0, 80)}`);
+      appendToMustLog(target, 'WRITE_FAIL', 'skill error: no entry blocks in output');
       processMustQueue();
       return;
     }
@@ -425,21 +398,11 @@ function runShouldSkill(target, quarter_override) {
       processShouldQueue();
       return;
     }
-    const raw = extractJsonArray(stdout);
-    if (!raw) {
-      console.error(`[${new Date().toISOString()}] skill error: No JSON array in skill output`);
+    const entries = parseEntryBlocks(stdout);
+    if (entries === null) {
+      console.error(`[${new Date().toISOString()}] skill error: no entry blocks in skill output`);
       console.error(`[${new Date().toISOString()}] raw output (first 2000 chars): ${stdout.slice(0, 2000)}`);
-      appendToShouldLog(target, 'WRITE_FAIL', 'skill error: no JSON array in output');
-      processShouldQueue();
-      return;
-    }
-    let entries;
-    try {
-      entries = JSON.parse(sanitizeJsonLiterals(raw));
-    } catch (parseErr) {
-      console.error(`[${new Date().toISOString()}] skill error: ${parseErr.message}`);
-      console.error(`[${new Date().toISOString()}] raw output (first 3000 chars): ${raw.slice(0, 3000)}`);
-      appendToShouldLog(target, 'WRITE_FAIL', `skill error: JSON parse failed — ${parseErr.message.slice(0, 80)}`);
+      appendToShouldLog(target, 'WRITE_FAIL', 'skill error: no entry blocks in output');
       processShouldQueue();
       return;
     }
