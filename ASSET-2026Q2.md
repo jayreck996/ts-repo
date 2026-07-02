@@ -165,6 +165,13 @@ ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 - could/ remains fully dynamic — no preset list, reads folder and analyzes per file header/prompt
 - would/ creation retained in could-update-md init but parked — placeholder for future would-update-md workflow
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### test repos restructured — mirroring toifood source/doc separation (2026-07-03)
+- ts-test-back (private) + ts-test-front (private): source stubs with README/package.json/src/ + could/must/should/would structure
+- -ts-test-back (public) + -ts-test-front (public): doc output repos — already existed, fully seeded
+- Pattern mirrors toifood: ts-* = source (private), -ts-* = doc output (public)
+- targets.json: 4 test entries using dash-prefix convention (-ts-test-back, -ts-test-front, ts-test-back, ts-test-front)
+- 3 skill files updated: dash-prefix test cases added to all case statements
+
 ### targets.json — -src suffix to be replaced by dash-prefix convention (2026-07-03)
 - Decision: rename targets to match existing dash-prefix repo naming convention — eliminates -src workaround
 - dash prefix = doc/output repo target; no dash = source code repo target — self-documenting
