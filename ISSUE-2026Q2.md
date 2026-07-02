@@ -175,6 +175,13 @@ Both should-update-md.yml and must-update-md.yml created spurious `should/ASSET-
 **[OPEN] must-update-md log job fails with 409 SHA conflict on multi-target runs**
 The log step reads the file SHA once before the loop, then writes sequentially. First write succeeds and changes the SHA; second write uses the pre-loop SHA and gets 409. `must/MUST-UPDATE-MD-TRIGGER-LOG.log` never created on run #1. Same bug exists in should-update-md but only one target was processed so it didn't surface.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### toifood-dev → toifood org migration — pending execution (2026-07-03) [OPEN]
+- Plan documented; code changes identified but GitHub repo transfers not yet done
+- Transfers must happen first (GitHub UI) before any code changes take effect
+- Repos to transfer: ts-toifood-dev, ts-toifood-back, ts-toifood-front, ts-toifood-web
+- After transfers: targets.json (2 lines), 3 skill files (3 lines each), .gitmodules, Mac Mini git remotes
+- Eliminates open TSREPO_TOKEN toifood-dev access issue — token already covers toifood org
+
 ### ts-repo: hard fix for JSON parse failures — depth-counter + state-machine sanitiser (2026-06-30)
 - Recurring WRITE_FAIL: Claude outputs literal newlines inside JSON strings; regex sanitiser fails beyond ~500-1400 chars
 - Symptoms today: ts-toifood-back WRITE_FAIL pos 1406, ts-toifood-web WRITE_FAIL pos 520 (scheduled run #43)
