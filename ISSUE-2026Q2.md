@@ -175,6 +175,11 @@ Both should-update-md.yml and must-update-md.yml created spurious `should/ASSET-
 **[OPEN] must-update-md log job fails with 409 SHA conflict on multi-target runs**
 The log step reads the file SHA once before the loop, then writes sequentially. First write succeeds and changes the SHA; second write uses the pre-loop SHA and gets 409. `must/MUST-UPDATE-MD-TRIGGER-LOG.log` never created on run #1. Same bug exists in should-update-md but only one target was processed so it didn't surface.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### targets.json target rename — -src suffix → dash-prefix convention (2026-07-03) [OPEN]
+- -src suffix is a workaround for name collision; dash-prefix convention already used for repo names
+- Rename deferred — to be executed after toifood-dev → toifood org migration completes
+- Files to update: targets.json (4 target names), 3 skill case statements (could/must/should)
+
 ### toifood-dev → toifood org migration — pending execution (2026-07-03) [OPEN]
 - Plan documented; code changes identified but GitHub repo transfers not yet done
 - Transfers must happen first (GitHub UI) before any code changes take effect
