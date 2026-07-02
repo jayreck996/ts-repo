@@ -30,18 +30,16 @@ latestBranch="main"
 
 ```bash
 case "$ARGUMENTS" in
-  ts-toifood)      suffix="dev";  org="toifood" ;;
-  ts-toifood-back) suffix="back"; org="toifood" ;;
-  ts-toifood-web)  suffix="web";  org="toifood" ;;
-  -ts-test-back)   suffix="test-back";  org="jayreck996" ;;
-  -ts-test-front)  suffix="test-front"; org="jayreck996" ;;
-  ts-test-back)    suffix="test-back";  org="jayreck996" ;;
-  ts-test-front)   suffix="test-front"; org="jayreck996" ;;
-  *)               suffix="${ARGUMENTS#ts-}"; org="jayreck996" ;;
+  -ts-toifood-back|ts-toifood-back) SRC_REPO="toifood/ts-toifood-back" ;;
+  -ts-toifood-web)                  SRC_REPO="toifood/ts-toifood-web" ;;
+  ts-toifood-dev)                   SRC_REPO="toifood/ts-toifood-dev" ;;
+  -ts-test-back|ts-test-back)       SRC_REPO="jayreck996/ts-test-back" ;;
+  -ts-test-front|ts-test-front)     SRC_REPO="jayreck996/ts-test-front" ;;
+  *)                                echo "[]"; exit 0 ;;
 esac
 
-tree=$(gh api "repos/${org}/-ts-${suffix}/git/trees/${latestBranch}?recursive=1" 2>/dev/null) || { echo "[]"; exit 0; }
-gh api "repos/${org}/-ts-${suffix}/git/trees/${latestBranch}?recursive=1" \
+tree=$(gh api "repos/${SRC_REPO}/git/trees/${latestBranch}?recursive=1" 2>/dev/null) || { echo "[]"; exit 0; }
+gh api "repos/${SRC_REPO}/git/trees/${latestBranch}?recursive=1" \
   --jq '.tree[] | select(.type=="blob") | select(.path | test("\.(csv|log|md|lock|d\.ts|map|spec\.ts|test\.ts)$") | not) | select(.path | test("(^|/)node_modules/|(-|/)dist/") | not) | .path'
 ```
 
