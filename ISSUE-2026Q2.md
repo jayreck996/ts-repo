@@ -1,3 +1,17 @@
+### toifood-dev org not in pipeline loop — ts-toifood-dev and ts-toifood-back have could/would dirs but no targets.json entry (2026-07-02)
+- toifood-dev org discovered as the real source code org (ts-toifood-back, ts-toifood-front, ts-toifood-web, ts-toifood-dev)
+- pipeline writes only to toifood org (doc repos) — toifood-dev org completely outside pipeline loop
+- TSREPO_TOKEN access for toifood-dev org unconfirmed — needed before adding targets
+- outputRepo format already handles org/repo — no schema change needed, just new entries
+
+### toifood-dev/ts-toifood-dev — gitlink missing on back, front, web (2026-07-02)
+- Same recurring pattern: .gitmodules absent, back/front/web were type tree not commit
+- Fix applied: .gitmodules created with branch = main, tree patched with mode 160000 gitlinks
+
+### -ts-recruitment-dev gitlink structure unclear — parked (2026-07-02)
+- No separate backend/frontend/database repos exist under jayreck996
+- Real source is one monorepo (ts-recruitment-dev) — unclear if single submodule or split repos
+- Decision parked pending repo structure confirmation
 ### gitlink missing — submodule declared in .gitmodules but tree entries remain type tree not commit (2026-07-02)
 - Recurring: adding .gitmodules and submodule dirs is not enough — git does not treat dirs as submodules unless tree entry is type commit (mode 160000)
 - Symptom: back/, web/, front/ show as regular directories; git submodule update --init fetches nothing; no @ commit ref shown in GitHub UI
