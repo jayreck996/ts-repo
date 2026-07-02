@@ -1,3 +1,4 @@
+2026-07-02 23:55 UTC | ts-test-front | WRITE_PARTIAL  | --- | 9 ok, 1 failed of 10
 2026-06-28 18:34 UTC | ts-toifood-web | WRITE_OK       | --- | 10/10 entries committed
 2026-06-28 18:30 UTC | ts-toifood-back | WRITE_OK       | --- | 10/10 entries committed
 2026-06-28 01:17 UTC | ts-toifood-back | WRITE_OK       | --- | 0/0 entries committed
