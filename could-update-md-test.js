@@ -1,13 +1,13 @@
-﻿#!/usr/bin/env node
+#!/usr/bin/env node
 // Test harness for would-update-md pipeline.
 // Usage: node could-update-md-test.js [target]   (default: ts-web)
-// Tests: JSON sanitization, anchor insertion, GitHub API write — no Claude skill run.
+// Tests: entry block parsing, anchor insertion, GitHub API write — no Claude skill run.
 
 const { execSync } = require('child_process');
 const path = require('path');
 
 const TARGETS = require(path.join(__dirname, 'targets.json'));
-const target = process.argv[2] || 'ts-toifood-web';
+const target = process.argv[2] || '-ts-toifood-web';
 
 const m = new Date().getMonth() + 1;
 const QUARTER = new Date().getFullYear() + 'Q' + Math.ceil(m / 3);
@@ -20,32 +20,54 @@ const { outputRepo } = config;
 
 const TS = new Date().toISOString().slice(0, 16).replace('T', ' ');
 
-// --- 1. JSON sanitizer (mirrors listener logic) ---
-function sanitizeJSON(raw) {
-  return raw.replace(/("(?:[^"\\]|\\.)*")/g, m =>
-    m.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
-  );
+// --- 1. Entry block parser (mirrors listener logic) ---
+function parseEntryBlocks(stdout) {
+  const entries = [];
+  let sawNoEntries = false;
+  let current = null;
+  for (const rawLine of stdout.split('\n')) {
+    const line = rawLine.replace(/\r$/, '');
+    if (current === null) {
+      const m = line.match(/^<<<ENTRY (.+?)>>>\s*$/);
+      if (m) { current = { path: m[1].trim(), lines: [] }; continue; }
+      if (/^<<<NO_ENTRIES>>>\s*$/.test(line)) sawNoEntries = true;
+      continue;
+    }
+    if (/^<<<END>>>\s*$/.test(line)) {
+      entries.push({ path: current.path, entry: current.lines.join('\n').trim() });
+      current = null;
+      continue;
+    }
+    current.lines.push(line);
+  }
+  if (entries.length > 0) return entries;
+  return sawNoEntries ? [] : null;
 }
 
-function testSanitizer() {
-  const raw = `[
-  {
-    "path": "could/TEST-ISSUE-${QUARTER}.md",
-    "entry": "## ISSUE:test ${TS} → line one
-line two with raw newline
-line three"
+function testBlockParser() {
+  const sample = [
+    `<<<ENTRY could/TEST-ISSUE-${QUARTER}.md>>>`,
+    `## ISSUE:test ${TS} → line one`,
+    'line two with "quotes" untouched',
+    '```js',
+    'const x = 1; // inner code fence must not close the block',
+    '```',
+    'line after fence',
+    '<<<END>>>',
+  ].join('\n');
+  const parsed = parseEntryBlocks(sample);
+  if (!parsed || parsed.length !== 1) { console.error('❌ block parser: wrong entry count'); process.exit(1); }
+  if (!parsed[0].entry.includes('```js') || !parsed[0].entry.includes('line after fence')) {
+    console.error('❌ block parser: inner code fence corrupted the entry'); process.exit(1);
   }
-]`;
-  const sanitized = sanitizeJSON(raw);
-  let parsed;
-  try {
-    parsed = JSON.parse(sanitized);
-    console.log('✅ sanitizer: raw newlines handled correctly');
-    return parsed;
-  } catch (e) {
-    console.error('❌ sanitizer failed:', e.message);
-    process.exit(1);
+  if (JSON.stringify(parseEntryBlocks('<<<NO_ENTRIES>>>')) !== '[]') {
+    console.error('❌ block parser: NO_ENTRIES must return []'); process.exit(1);
   }
+  if (parseEntryBlocks('random prose, no blocks') !== null) {
+    console.error('❌ block parser: garbage must return null'); process.exit(1);
+  }
+  console.log('✅ block parser: entries, inner fences, NO_ENTRIES, garbage all handled');
+  return parsed;
 }
 
 // --- 2. Anchor insertion (mirrors listener logic) ---
@@ -142,7 +164,7 @@ function testGitHubWrite(entry) {
 
 // --- Run ---
 console.log(`\ncould-update-md-test — target: ${target} (${outputRepo})\n`);
-const entries = testSanitizer();
+const entries = testBlockParser();
 const entry = entries[0].entry;
 testAnchorInsertion(entry);
 testGitHubWrite(entry);
