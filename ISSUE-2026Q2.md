@@ -175,6 +175,14 @@ Both should-update-md.yml and must-update-md.yml created spurious `should/ASSET-
 **[OPEN] must-update-md log job fails with 409 SHA conflict on multi-target runs**
 The log step reads the file SHA once before the loop, then writes sequentially. First write succeeds and changes the SHA; second write uses the pre-loop SHA and gets 409. `must/MUST-UPDATE-MD-TRIGGER-LOG.log` never created on run #1. Same bug exists in should-update-md but only one target was processed so it didn't surface.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### recurring JSON output failures from Claude skills — replaced with sentinel-block format (2026-07-03) [RESOLVED]
+- Recurring failure class: skill entries are multi-paragraph markdown that Claude must escape into JSON strings — literal newlines and bad escapes keep breaking JSON.parse
+- Three mitigation rounds previously applied (prompt encoding rules 137cb9a, regex sanitiser, state-machine sanitiser 2026-06-30) — failures still recurred
+- Fix: JSON eliminated — skills output sentinel-delimited blocks, content written verbatim with no escaping
+- Plain ``` fences rejected: entry content contains code fences (code analysis), inner fence would close the block early — sentinel lines <<<ENTRY path>>> / <<<END>>> used instead
+- Changed: 3 skill step-5 sections + output rules, toigroup-listener.js (shared parseEntryBlocks replaces extractJsonArray + sanitizeJsonLiterals + JSON.parse in all 3 runners), could-update-md-test.js
+- Failure fallback changed from [] to <<<NO_ENTRIES>>>
+- Listener and skills switch format together — Mac Mini must git pull + cp must/should skills + pm2 restart in one sync before next run
 ### source-path fix + dash-prefix rename executed — closes two open items from this morning (2026-07-03) [RESOLVED]
 - Closes "skill source read path broken for prod targets" and "targets.json target rename — -src suffix" (both logged [OPEN] 2026-07-03 above — entries unchanged)
 - Root cause of the path break: post org-migration, skills still built repos/${org}/-ts-${suffix} → toifood/-ts-back and toifood/-ts-web, which never existed; the [] guard turned every prod run into a silent no-op
