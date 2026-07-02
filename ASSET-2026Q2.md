@@ -1,3 +1,14 @@
+### toifood-dev org mapped — 4 real source code repos confirmed (2026-07-02)
+- toifood-dev/ts-toifood-dev: mono-repo (back, front, web as gitlinks post-fix)
+- toifood-dev/ts-toifood-back: Node.js/TypeScript + Prisma (real backend, has could/ and would/)
+- toifood-dev/ts-toifood-front: Expo/React Native (src only, no pipeline dirs)
+- toifood-dev/ts-toifood-web: web frontend + og-worker (has _ISSUE/_ASSET old format)
+
+### toifood-dev/ts-toifood-dev gitlink conversion done (2026-07-02)
+- back @ e8a84b3 → toifood-dev/ts-toifood-back
+- front @ 1b5765c → toifood-dev/ts-toifood-front
+- web @ 4bbf230 → toifood-dev/ts-toifood-web
+- .gitmodules created with branch = main pinning
 ### gitlink missing fix applied — back/web/front converted to commit-type gitlinks in both mono-repos (2026-07-02)
 - toifood/-ts-toifood-dev: back @ 089aa01 (toifood/-ts-toifood-back), web @ 305914f (toifood/-ts-toifood-web)
 - jayreck996/-ts-test-dev: back @ 3668e6b (jayreck996/-ts-test-back), front @ 7b0ca41 (jayreck996/-ts-test-front)
