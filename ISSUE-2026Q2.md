@@ -1,3 +1,8 @@
+### gitlink missing — submodule declared in .gitmodules but tree entries remain type tree not commit (2026-07-02)
+- Recurring: adding .gitmodules and submodule dirs is not enough — git does not treat dirs as submodules unless tree entry is type commit (mode 160000)
+- Symptom: back/, web/, front/ show as regular directories; git submodule update --init fetches nothing; no @ commit ref shown in GitHub UI
+- Fix: POST new git tree with mode 160000 commit-type gitlink entries, create commit, PATCH ref — replaces tree-type dirs with proper gitlinks
+
 ### target repos lack git submodule structure — mono-repos not wired as reference layer (2026-07-02)
 - -ts-toifood-dev and -ts-test-dev exist but submodule references to individual target repos incomplete or inconsistent
 - No branch pinning on submodule refs (unlike ts-htd pattern which tracks specific branches per submodule)
