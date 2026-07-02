@@ -1,6 +1,6 @@
-**OUTPUT RULE: Your entire response must be a single JSON array. No prose, no explanation, no markdown, no preamble. If you cannot produce valid entries for any reason, output `[]` and nothing else.**
+**OUTPUT RULE: Your entire response must be sentinel-delimited entry blocks (`<<<ENTRY {path}>>>` … `<<<END>>>`). No prose, no explanation, no preamble outside the blocks. If you cannot produce valid entries for any reason, output `<<<NO_ENTRIES>>>` and nothing else.**
 
-Analyse the source codebase and output a JSON array of issue/asset entries for the target repo's could/ directory. Do not write any files — print only the JSON array to stdout.
+Analyse the source codebase and output issue/asset entry blocks for the target repo's could/ directory. Do not write any files — print only the entry blocks to stdout.
 
 ## Arguments
 `$ARGUMENTS` is the target repo name, e.g. `ts-back`.
@@ -43,11 +43,11 @@ case "$ARGUMENTS" in
   ts-toifood-dev)                   SRC_REPO="toifood/ts-toifood-dev" ;;
   -ts-test-back|ts-test-back)       SRC_REPO="jayreck996/ts-test-back" ;;
   -ts-test-front|ts-test-front)     SRC_REPO="jayreck996/ts-test-front" ;;
-  *)                                echo "[]"; exit 0 ;;
+  *)                                echo "<<<NO_ENTRIES>>>"; exit 0 ;;
 esac
 
 # Get all blob paths (guard if source repo unreachable)
-tree=$(gh api "repos/${SRC_REPO}/git/trees/${latestBranch}?recursive=1" 2>/dev/null) || { echo "[]"; exit 0; }
+tree=$(gh api "repos/${SRC_REPO}/git/trees/${latestBranch}?recursive=1" 2>/dev/null) || { echo "<<<NO_ENTRIES>>>"; exit 0; }
 gh api "repos/${SRC_REPO}/git/trees/${latestBranch}?recursive=1" \
   --jq '.tree[] | select(.type=="blob") | select(.path | test("\\.(csv|log|md|lock|d\\.ts|map|spec\\.ts|test\\.ts)$") | not) | select(.path | test("(^|/)node_modules/|(^|/)dist/") | not) | .path'
 ```
@@ -73,15 +73,15 @@ First, discover which categories exist in the output repo's `could/` directory f
 ```bash
 OUTPUT_REPO="${OUTPUT_REPO}"
 if [ -z "$OUTPUT_REPO" ]; then
-  echo "FATAL: OUTPUT_REPO env var is not set — cannot discover categories. Emitting empty array."
-  echo "[]"
+  echo "FATAL: OUTPUT_REPO env var is not set — cannot discover categories."
+  echo "<<<NO_ENTRIES>>>"
   exit 0
 fi
 CATS=$(gh api "repos/${OUTPUT_REPO}/contents/could" --jq '.[].name' 2>/dev/null \
   | grep -oE '^[A-Z]+' | sort -u)
 if [ -z "$CATS" ]; then
-  echo "FATAL: No categories found in repos/${OUTPUT_REPO}/contents/could — emitting empty array."
-  echo "[]"
+  echo "FATAL: No categories found in repos/${OUTPUT_REPO}/contents/could."
+  echo "<<<NO_ENTRIES>>>"
   exit 0
 fi
 echo "CATEGORIES_LOCKED: $CATS"
@@ -118,33 +118,38 @@ Format each entry as:
 ```
 (use `ASSET:` prefix for asset type)
 
-### 5. Output JSON to stdout
+### 5. Output entry blocks to stdout
 
-Print a single JSON array — nothing else before or after it.
+Print sentinel-delimited entry blocks — nothing else before or after them.
 
-**JSON ENCODING RULES:**
-- Every `entry` value is a single JSON string. Use `\n` (backslash + n) for line breaks — never a literal newline character inside a string value.
-- Escape all double-quotes inside entry content as `\"`.
-- No trailing commas. No comments. No prose outside the array.
+**OUTPUT FORMAT RULES:**
+- Each entry starts with a line `<<<ENTRY {path}>>>` and ends with a line `<<<END>>>`, each on its own line.
+- Between the sentinels, write the entry content **verbatim as markdown** — real newlines, real quotes, code fences all allowed. No escaping of any kind.
+- Never put `<<<END>>>` on a line inside entry content.
+- Nothing outside the blocks — no prose, no JSON, no wrapper.
 
 Structure (where `{CAT}` = each word from CATEGORIES_LOCKED, `{QUARTER}` = computed quarter, `{TS}` = computed timestamp):
 
-```json
-[
-  {
-    "path": "could/{CAT}-ISSUE-{QUARTER}.md",
-    "entry": "## ISSUE:{cat} {TS} → one-line summary\n\n**Finding — `File.jsx`**\nExplanation. Second paragraph.\n\n**Finding 2**\nMore detail."
-  },
-  {
-    "path": "could/{CAT}-ASSET-{QUARTER}.md",
-    "entry": "## ASSET:{cat} {TS} → one-line summary\n\nContent here. All line breaks as \\n, never literal newlines."
-  }
-]
+```
+<<<ENTRY could/{CAT}-ISSUE-{QUARTER}.md>>>
+## ISSUE:{cat} {TS} → one-line summary
+
+**Finding — `File.jsx`**
+Explanation. Second paragraph.
+
+**Finding 2**
+More detail.
+<<<END>>>
+<<<ENTRY could/{CAT}-ASSET-{QUARTER}.md>>>
+## ASSET:{cat} {TS} → one-line summary
+
+Content here, written as normal markdown.
+<<<END>>>
 ```
 
-Emit exactly N×2 objects — one ISSUE and one ASSET per discovered category.
+Emit exactly N×2 blocks — one ISSUE and one ASSET per discovered category.
 
-**If anything went wrong at any step — source repo unreachable, no categories found, skill error — output `[]` and nothing else. Never output prose.**
+**If anything went wrong at any step — source repo unreachable, no categories found, skill error — output `<<<NO_ENTRIES>>>` and nothing else. Never output prose.**
 
 ### 6. Clean up
 
