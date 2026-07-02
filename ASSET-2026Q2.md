@@ -165,6 +165,13 @@ ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 - could/ remains fully dynamic — no preset list, reads folder and analyzes per file header/prompt
 - would/ creation retained in could-update-md init but parked — placeholder for future would-update-md workflow
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### skill output format v2 live — sentinel-delimited blocks replace JSON array (2026-07-03)
+- Format: <<<ENTRY {path}>>> on its own line, raw markdown content verbatim, <<<END>>> on its own line; repeat per entry; <<<NO_ENTRIES>>> when nothing to emit
+- Content needs zero escaping — real newlines, quotes, and inline code fences all pass through untouched
+- Listener parsing: parseEntryBlocks() line scanner — on <<<ENTRY path>>> collect lines until <<<END>>>; returns null when no blocks found (parse failure) vs [] on <<<NO_ENTRIES>>> (legit empty)
+- Replaced in all 3 runners (runSkill/runMustSkill/runShouldSkill): extractJsonArray + sanitizeJsonLiterals + JSON.parse → single parseEntryBlocks call
+- could-update-md-test.js: sanitizer test replaced with block-parser test including inner code-fence case
+- Rollout: skills + listener pushed together; Mac Mini git pull + skill cp + pm2 restart required in one sync — mixed versions fail to parse
 ### pipeline naming convention finalised — dash-prefix targets + SRC_REPO mapping live in ts-repo (2026-07-03)
 - Convention: leading dash = doc/output repo target, no dash = source repo target — target name now tells you the write destination at a glance
 - targets.json (8 targets): prod -ts-toifood-back, -ts-toifood-web, ts-toifood-back, ts-toifood-dev; test -ts-test-back, -ts-test-front, ts-test-back, ts-test-front
