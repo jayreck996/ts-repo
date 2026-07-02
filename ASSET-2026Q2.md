@@ -1,3 +1,9 @@
+### git submodule wiring plan — mono-repos reference individual target repos (2026-07-02)
+- Pattern from ts-htd: mono-repo holds .gitmodules pointing to individual repos; individual repos untouched
+- -ts-toifood-dev: back → toifood/-ts-toifood-back, web → toifood/-ts-toifood-web
+- -ts-test-dev: back → jayreck996/-ts-test-back, front → jayreck996/-ts-test-front
+- Workflows paused in ts-repo while submodule restructure is in progress
+
 ### could-update-md: log job SHA conflict fixed + log file renamed to COULD-UPDATE-MD-TRIGGER-LOG.log (2026-06-29)
 - Write-log loop now re-fetches SHA from GitHub API at start of each iteration with 3-attempt retry — matches must/should pattern
 - Eliminates HTTP 409 conflicts on multi-target runs where 2+ artifacts are processed in the same log job
