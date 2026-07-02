@@ -1,3 +1,9 @@
+### gitlink missing fix applied — back/web/front converted to commit-type gitlinks in both mono-repos (2026-07-02)
+- toifood/-ts-toifood-dev: back @ 089aa01 (toifood/-ts-toifood-back), web @ 305914f (toifood/-ts-toifood-web)
+- jayreck996/-ts-test-dev: back @ 3668e6b (jayreck996/-ts-test-back), front @ 7b0ca41 (jayreck996/-ts-test-front)
+- Method: GitHub git trees API — POST tree with mode 160000 + type commit entries, POST commit, PATCH heads/main ref
+- Both .gitmodules files also updated with branch = main pinning to match ts-htd pattern
+
 ### git submodule wiring plan — mono-repos reference individual target repos (2026-07-02)
 - Pattern from ts-htd: mono-repo holds .gitmodules pointing to individual repos; individual repos untouched
 - -ts-toifood-dev: back → toifood/-ts-toifood-back, web → toifood/-ts-toifood-web
