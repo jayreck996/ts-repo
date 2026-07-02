@@ -30,9 +30,9 @@ latestBranch="main"
 
 ```bash
 case "$ARGUMENTS" in
-  ts-toifood)      suffix="dev";  org="toifood-dev" ;;
-  ts-toifood-back) suffix="back"; org="toifood-dev" ;;
-  ts-toifood-web)  suffix="web";  org="toifood-dev" ;;
+  ts-toifood)      suffix="dev";  org="toifood" ;;
+  ts-toifood-back) suffix="back"; org="toifood" ;;
+  ts-toifood-web)  suffix="web";  org="toifood" ;;
   ts-test-front)   suffix="test-front"; org="jayreck996" ;;
   ts-test-back)    suffix="test-back";  org="jayreck996" ;;
   *)               suffix="${ARGUMENTS#ts-}"; org="jayreck996" ;;
