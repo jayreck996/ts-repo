@@ -175,6 +175,13 @@ Both should-update-md.yml and must-update-md.yml created spurious `should/ASSET-
 **[OPEN] must-update-md log job fails with 409 SHA conflict on multi-target runs**
 The log step reads the file SHA once before the loop, then writes sequentially. First write succeeds and changes the SHA; second write uses the pre-loop SHA and gets 409. `must/MUST-UPDATE-MD-TRIGGER-LOG.log` never created on run #1. Same bug exists in should-update-md but only one target was processed so it didn't surface.
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ISSUE ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ISSUE ENTRIES-->
+### source-path fix + dash-prefix rename executed — closes two open items from this morning (2026-07-03) [RESOLVED]
+- Closes "skill source read path broken for prod targets" and "targets.json target rename — -src suffix" (both logged [OPEN] 2026-07-03 above — entries unchanged)
+- Root cause of the path break: post org-migration, skills still built repos/${org}/-ts-${suffix} → toifood/-ts-back and toifood/-ts-web, which never existed; the [] guard turned every prod run into a silent no-op
+- Fix: all 3 skills (could/must/should) now resolve a SRC_REPO per target via explicit case entries; no fallback guessing — unknown target emits [] and exits
+- Rename executed in targets.json: ts-toifood-back-src → ts-toifood-back, ts-toifood-dev-src → ts-toifood-dev; doc targets → -ts-toifood-back, -ts-toifood-web
+- Confirmed flow: step 2 reads source code from SRC_REPO → step 3 reads header instructions from OUTPUT_REPO doc repo → entries written back to OUTPUT_REPO
+- Remaining before next run: Mac Mini git pull, cp must/should skills to ~/.claude/commands/, pm2 restart toigroup-listener, git remote set-url on 4 migrated clones
 ### skill source read path broken for prod targets — reads non-existent -ts-back/-ts-web (2026-07-03) [OPEN]
 - All 3 skills (could/must/should) build source path as repos/${org}/-ts-${suffix} with suffix=back/web
 - Resolves to toifood/-ts-back and toifood/-ts-web — neither exists post org migration
