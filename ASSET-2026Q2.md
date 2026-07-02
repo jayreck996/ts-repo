@@ -165,6 +165,21 @@ ALWAYS ADD NEW ASSET ENTRIES AT THE TOP, DIRECTLY BELOW THIS HEADER.
 - could/ remains fully dynamic — no preset list, reads folder and analyzes per file header/prompt
 - would/ creation retained in could-update-md init but parked — placeholder for future would-update-md workflow
 ####### <!-- ANCHOR MARKER - ADD ALL NEW ASSET ENTRIES DIRECTLY BELOW THIS LINE, NEVER DELETE OR EDIT PREVIOUS ASSET ENTRIES-->
+### targets.json — -src suffix to be replaced by dash-prefix convention (2026-07-03)
+- Decision: rename targets to match existing dash-prefix repo naming convention — eliminates -src workaround
+- dash prefix = doc/output repo target; no dash = source code repo target — self-documenting
+
+**Rename map:**
+- ts-toifood-back     → -ts-toifood-back  (outputRepo: toifood/-ts-toifood-back, doc)
+- ts-toifood-back-src → ts-toifood-back   (outputRepo: toifood/ts-toifood-back, source)
+- ts-toifood-web      → -ts-toifood-web   (outputRepo: toifood/-ts-toifood-web, doc)
+- ts-toifood-dev-src  → ts-toifood-dev    (outputRepo: toifood/ts-toifood-dev, source)
+
+**Files to update when executing:**
+- targets.json: 4 target name changes
+- 3 skill files (could/must/should): case statement entries updated to match new names
+- TRIGGER-LOG entries use new names going forward
+
 ### toifood-dev → toifood org migration plan — full change map (2026-07-03)
 - Decision: migrate all 4 repos (ts-toifood-dev, ts-toifood-back, ts-toifood-front, ts-toifood-web) from toifood-dev to toifood org
 - Source repos stay private; toifood org becomes mixed (public doc repos + private source repos)
