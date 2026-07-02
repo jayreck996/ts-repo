@@ -1,3 +1,8 @@
+### targets.json — toifood-dev org entries added, TSREPO_TOKEN access unconfirmed (2026-07-02)
+- ts-toifood-dev-src (toifood-dev/ts-toifood-dev) and ts-toifood-back-src (toifood-dev/ts-toifood-back) added as prod targets
+- Both use TSREPO_TOKEN — access to toifood-dev org not yet confirmed; pipeline will fail if token lacks org permission
+- toifood-dev/ts-toifood-front not added — no could/ or would/ dirs
+
 ### toifood-dev org not in pipeline loop — ts-toifood-dev and ts-toifood-back have could/would dirs but no targets.json entry (2026-07-02)
 - toifood-dev org discovered as the real source code org (ts-toifood-back, ts-toifood-front, ts-toifood-web, ts-toifood-dev)
 - pipeline writes only to toifood org (doc repos) — toifood-dev org completely outside pipeline loop
