@@ -1,5 +1,6 @@
 [
   {
+    "_comment": "Skill target map — dash-prefixed repos only (target/document repos). Consumed by .github/workflows/*-update-*.yml and toigroup-listener.js, which read this file FROM GITHUB: changes take effect only after push.",
     "target": "-ts-toifood-back",
     "outputRepo": "toifood/-ts-toifood-back",
     "tokenSecret": "TSREPO_TOKEN",
@@ -12,18 +13,6 @@
     "env": "prod"
   },
   {
-    "target": "ts-toifood-dev",
-    "outputRepo": "toifood/ts-toifood-dev",
-    "tokenSecret": "TSREPO_TOKEN",
-    "env": "prod"
-  },
-  {
-    "target": "ts-toifood-back",
-    "outputRepo": "toifood/ts-toifood-back",
-    "tokenSecret": "TSREPO_TOKEN",
-    "env": "prod"
-  },
-  {
     "target": "-ts-test-back",
     "outputRepo": "jayreck996/-ts-test-back",
     "tokenSecret": "TSREPO_TOKEN",
@@ -32,18 +21,6 @@
   {
     "target": "-ts-test-front",
     "outputRepo": "jayreck996/-ts-test-front",
-    "tokenSecret": "TSREPO_TOKEN",
-    "env": "test"
-  },
-  {
-    "target": "ts-test-back",
-    "outputRepo": "jayreck996/ts-test-back",
-    "tokenSecret": "TSREPO_TOKEN",
-    "env": "test"
-  },
-  {
-    "target": "ts-test-front",
-    "outputRepo": "jayreck996/ts-test-front",
     "tokenSecret": "TSREPO_TOKEN",
     "env": "test"
   }
