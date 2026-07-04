@@ -131,8 +131,11 @@ function writeEntriesToGitHub(entries, outputRepo, token) {
       const anchorIdx = current.indexOf('####### <!-- ANCHOR MARKER');
       if (anchorIdx === -1) throw new Error('Anchor marker not found');
       const newlineIdx = current.indexOf('\n', anchorIdx);
-      const insertAt = newlineIdx === -1 ? current.length : newlineIdx + 1;
-      const updated = current.slice(0, insertAt) + entry + '\n' + current.slice(insertAt);
+      // Anchor may be the last line with no trailing newline (fresh seeded files) —
+      // add one so the entry starts on its own line instead of gluing to the marker.
+      const updated = newlineIdx === -1
+        ? current + '\n' + entry + '\n'
+        : current.slice(0, newlineIdx + 1) + entry + '\n' + current.slice(newlineIdx + 1);
 
       const payload = JSON.stringify({
         message: `could-update: ${filePath}`,
