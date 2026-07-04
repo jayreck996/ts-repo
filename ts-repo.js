@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// toigroup-listener — responds 202 immediately, runs skill async, writes to GitHub
-// PM2: pm2 start toigroup-listener.js --name toigroup-listener
+// ts-repo.js — ts-repo listener: responds 202 immediately, runs skill async, writes to GitHub
+// PM2: pm2 start ts-repo.js --name ts-repo
 // Env: MACMINI_TRIGGER_TOKEN, <ORG>_CROSS_REPO_TOKEN per target
 
 const http = require('http');
@@ -47,7 +47,7 @@ let targetsCache = null;
 let targetsCacheAt = 0;
 const TARGETS_URL = 'https://api.github.com/repos/jayreck996/ts-repo/contents/targets.json';
 const LOG_REPO = 'jayreck996/ts-repo';
-const LOG_PATH = 'would/LISTENER-LOG.log';
+const LOG_PATH = 'would/COULD-LISTENER-LOG.log';
 
 function fetchTargets() {
   if (targetsCache && Date.now() - targetsCacheAt < 60_000) return targetsCache;
@@ -182,7 +182,7 @@ function runSkill(target, quarter_override) {
     ...(quarter_override ? { QUARTER_OVERRIDE: quarter_override } : {}),
   };
 
-  execFile('claude', ['--dangerously-skip-permissions', '--print', `/could/could-update-md ${target}`], {
+  execFile('claude', ['--dangerously-skip-permissions', '--print', `/ts-repo/could-update-md ${target}`], {
     env,
     maxBuffer: 10 * 1024 * 1024,
     stdio: ['ignore', 'pipe', 'pipe'],
@@ -222,7 +222,7 @@ function runSkill(target, quarter_override) {
 // === MUST-UPDATE-MD ===
 const mustQueue = [];
 let mustRunning = false;
-const MUST_LOG_PATH = 'must/MUST-LISTENER-LOG.log';
+const MUST_LOG_PATH = 'would/MUST-LISTENER-LOG.log';
 
 function processMustQueue() {
   if (mustRunning || mustQueue.length === 0) return;
@@ -289,7 +289,7 @@ function runMustSkill(target, quarter_override) {
     OUTPUT_REPO: outputRepo,
     ...(quarter_override ? { QUARTER_OVERRIDE: quarter_override } : {}),
   };
-  execFile('claude', ['--dangerously-skip-permissions', '--print', `/must/must-update-md ${target}`], {
+  execFile('claude', ['--dangerously-skip-permissions', '--print', `/ts-repo/must-update-md ${target}`], {
     env,
     maxBuffer: 10 * 1024 * 1024,
     stdio: ['ignore', 'pipe', 'pipe'],
@@ -321,7 +321,7 @@ function runMustSkill(target, quarter_override) {
 // === SHOULD-UPDATE-MD ===
 const shouldQueue = [];
 let shouldRunning = false;
-const SHOULD_LOG_PATH = 'should/SHOULD-LISTENER-LOG.log';
+const SHOULD_LOG_PATH = 'would/SHOULD-LISTENER-LOG.log';
 
 function processShouldQueue() {
   if (shouldRunning || shouldQueue.length === 0) return;
@@ -388,7 +388,7 @@ function runShouldSkill(target, quarter_override) {
     OUTPUT_REPO: outputRepo,
     ...(quarter_override ? { QUARTER_OVERRIDE: quarter_override } : {}),
   };
-  execFile('claude', ['--dangerously-skip-permissions', '--print', `/should/should-update-md ${target}`], {
+  execFile('claude', ['--dangerously-skip-permissions', '--print', `/ts-repo/should-update-md ${target}`], {
     env,
     maxBuffer: 10 * 1024 * 1024,
     stdio: ['ignore', 'pipe', 'pipe'],
@@ -429,32 +429,32 @@ function handle(req, res) {
     return;
   }
 
-  if (req.url === '/could/could-update-md') {
+  if (req.url === '/ts-repo/could-update-md') {
     let body = '';
     req.on('data', d => { body += d; });
     req.on('end', () => {
       const { target = 'ts-back', quarter_override } = body ? JSON.parse(body) : {};
-      console.log(`[${new Date().toISOString()}] /could/could-update-md accepted — target: ${target}${quarter_override ? ` quarter=${quarter_override}` : ''}`);
+      console.log(`[${new Date().toISOString()}] /ts-repo/could-update-md accepted — target: ${target}${quarter_override ? ` quarter=${quarter_override}` : ''}`);
       res.writeHead(202).end('Accepted');
       skillQueue.push({ target, quarter_override });
       setImmediate(processQueue);
     });
-  } else if (req.url === '/should/should-update-md') {
+  } else if (req.url === '/ts-repo/should-update-md') {
     let body = '';
     req.on('data', d => { body += d; });
     req.on('end', () => {
       const { target = 'ts-back', quarter_override } = body ? JSON.parse(body) : {};
-      console.log(`[${new Date().toISOString()}] /should/should-update-md accepted — target: ${target}${quarter_override ? ` quarter=${quarter_override}` : ''}`);
+      console.log(`[${new Date().toISOString()}] /ts-repo/should-update-md accepted — target: ${target}${quarter_override ? ` quarter=${quarter_override}` : ''}`);
       res.writeHead(202).end('Accepted');
       shouldQueue.push({ target, quarter_override });
       setImmediate(processShouldQueue);
     });
-  } else if (req.url === '/must/must-update-md') {
+  } else if (req.url === '/ts-repo/must-update-md') {
     let body = '';
     req.on('data', d => { body += d; });
     req.on('end', () => {
       const { target = 'ts-back', quarter_override } = body ? JSON.parse(body) : {};
-      console.log(`[${new Date().toISOString()}] /must/must-update-md accepted — target: ${target}${quarter_override ? ` quarter=${quarter_override}` : ''}`);
+      console.log(`[${new Date().toISOString()}] /ts-repo/must-update-md accepted — target: ${target}${quarter_override ? ` quarter=${quarter_override}` : ''}`);
       res.writeHead(202).end('Accepted');
       mustQueue.push({ target, quarter_override });
       setImmediate(processMustQueue);
@@ -467,9 +467,9 @@ function handle(req, res) {
 http.createServer(handle).listen(PORT, () => {
   try {
     const targets = fetchTargets();
-    console.log(`toigroup-listener ready on :${PORT} — targets: ${targets.map(t => t.target).join(', ')}`);
+    console.log(`ts-repo listener ready on :${PORT} — targets: ${targets.map(t => t.target).join(', ')}`);
   } catch (e) {
-    console.error(`toigroup-listener ready on :${PORT} — targets: (fetch failed: ${e.message})`);
+    console.error(`ts-repo listener ready on :${PORT} — targets: (fetch failed: ${e.message})`);
   }
 });
 

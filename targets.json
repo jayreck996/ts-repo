@@ -1,6 +1,6 @@
 [
   {
-    "_comment": "Skill target map — dash-prefixed repos only (target/document repos). Consumed by .github/workflows/*-update-*.yml and toigroup-listener.js, which read this file FROM GITHUB: changes take effect only after push.",
+    "_comment": "Skill target map — dash-prefixed repos only (target/document repos). Consumed by .github/workflows/*-update-*.yml and ts-repo.js (pm2: ts-repo, port 3456), which read this file FROM GITHUB: changes take effect only after push.",
     "target": "-ts-toifood-back",
     "outputRepo": "toifood/-ts-toifood-back",
     "tokenSecret": "TSREPO_TOKEN",
