@@ -1,3 +1,5 @@
+2026-09-20 20:34 UTC | -ts-toifood-back | WRITE_FAIL     | --- | skill error: Command failed: claude --dangerously-skip-permissions --print /ts-repo/should-update-md -ts-toifood-back
+Warning: no std
 2026-09-20 20:34 UTC | -ts-toifood-web | WRITE_FAIL     | --- | skill error: Command failed: claude --dangerously-skip-permissions --print /ts-repo/should-update-md -ts-toifood-web
 Warning: no stdi
 2026-09-13 20:43 UTC | -ts-toifood-back | WRITE_OK       | --- | 2/2 entries committed
